@@ -1,4 +1,4 @@
-name: Prettier
+name: autofix.ci
 
 on:
   pull_request:
@@ -24,3 +24,5 @@ jobs:
       - name: Check formatting
         working-directory: backend
         run: npx prettier . --write
+
+      - uses: autofix-ci/action@7a166d7532b277f34e16238930461bf77f9d7ed8
