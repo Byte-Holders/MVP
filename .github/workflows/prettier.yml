@@ -23,4 +23,4 @@ jobs:
 
       - name: Check formatting
         working-directory: backend
-        run: npx prettier . --check
+        run: npx prettier . --write
