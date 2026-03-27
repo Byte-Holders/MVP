@@ -21,6 +21,29 @@ jobs:
         working-directory: backend
         run: npm ci
 
-      - name: Check formatting
+      - name: Auto formatting
         working-directory: backend
-        run: npx prettier . --check
+        run: npx prettier . --write
+
+      - uses: autofix-ci/action@7a166d7532b277f34e16238930461bf77f9d7ed8
+
+  prettier-frontend:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 20
+          cache: 'pnpm'
+          cache-dependency-path: frontend/package-lock.json
+      
+      - name: Install dependencies
+        working-directory: frontend
+        run: pnpm i --frozen-lockfile
+
+      - name: Auto formatting
+        working-directory: frontend
+        run: pnpm exec prettier . --write
+      
+      - uses: autofix-ci/action@7a166d7532b277f34e16238930461bf77f9d7ed8
