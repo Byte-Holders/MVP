@@ -3,7 +3,7 @@ name: autofix.ci
 on:
   pull_request:
   push:
-    branches: [main, develop, prettier]
+    branches: [main, develop]
 
 jobs:
   prettier-backend:

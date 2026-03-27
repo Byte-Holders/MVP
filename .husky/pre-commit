@@ -1,5 +1,5 @@
-cd backend && prettier --write . && cd ..
+cd backend && npx prettier --write . && cd ..
 
-cd frontend && prettier --write . && cd ..
+cd frontend && npx prettier --write . && cd ..
 
 git add .
