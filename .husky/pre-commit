@@ -1,5 +1,5 @@
-cd backend && npx prettier --write . && cd ..
+(cd backend && npx lint-staged && cd ..)
 
-cd frontend && npx prettier --write . && cd ..
+(cd frontend && npx lint-staged && cd ..)
 
 git add .

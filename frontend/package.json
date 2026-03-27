@@ -14,6 +14,9 @@
     "format": "prettier --check .",
     "check": "prettier --write . && eslint --fix"
   },
+  "lint-staged": {
+    "*.{ts,tsx,js,jsx,json,css,md}": "prettier --write"
+  },
   "dependencies": {
     "@tailwindcss/vite": "^4.1.18",
     "@tanstack/react-devtools": "latest",
@@ -42,6 +45,7 @@
     "@types/react-dom": "^19.2.0",
     "@vitejs/plugin-react": "^5.1.4",
     "jsdom": "^28.1.0",
+    "lint-staged": "^16.4.0",
     "prettier": "^3.8.1",
     "typescript": "^5.7.2",
     "vite": "^7.3.1",
