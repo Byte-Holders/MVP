@@ -1,0 +1,5 @@
+cd backend && prettier --write . && cd ..
+
+cd frontend && prettier --write . && cd ..
+
+git add .
