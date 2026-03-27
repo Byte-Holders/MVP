@@ -1,0 +1,5 @@
+(cd backend && npx lint-staged && cd ..)
+
+(cd frontend && npx lint-staged && cd ..)
+
+git add .
