@@ -11,18 +11,39 @@ jobs:
     steps:
       - uses: actions/checkout@v6
 
-      - uses: actions/setup-node@v6  
+      - uses: actions/setup-node@v6
         with:
           node-version: 24
-          cache: 'npm'
+          cache: "npm"
           cache-dependency-path: backend/package-lock.json
 
       - name: Install dependencies
         working-directory: backend
         run: npm ci
 
-      - name: Check formatting
+      - name: Auto formatting
         working-directory: backend
+        run: npx prettier . --write
+
+      - uses: autofix-ci/action@7a166d7532b277f34e16238930461bf77f9d7ed8
+
+  prettier-frontend:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 20
+          cache: "npm"
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Install dependencies
+        working-directory: frontend
+        run: npm ci
+
+      - name: Auto formatting
+        working-directory: frontend
         run: npx prettier . --write
 
       - uses: autofix-ci/action@7a166d7532b277f34e16238930461bf77f9d7ed8
