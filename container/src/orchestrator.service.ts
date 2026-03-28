@@ -11,7 +11,7 @@ import { CoverageNodeService }    from './nodes/coverage-node.service';
 import { RemediationNodeService } from './nodes/remediation-node.service';
 import { DocsNodeService }        from './nodes/docs-node.service';
 import { GithubNodeService }      from './nodes/github-node.service';
-import { DepsNodeService }        from './nodes/deps-node.service';
+import { DepsNodeService }        from './nodes/dependency-node.service';
 import { SynthesizerNode }        from './nodes/synthesizer-node.service';
 
 // Stato del grafo
