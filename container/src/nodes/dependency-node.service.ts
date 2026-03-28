@@ -4,7 +4,6 @@ import { WorkflowState, DepsReport, DepsReportUnit } from '../types';
 
 @Injectable()
 export class DepsNodeService {
-    private readonly logger = new Logger(DepsNodeService.name);
 
     //Runna syft
     async Scan(state: WorkflowState): Promise<Partial<WorkflowState>> {
