@@ -2,27 +2,25 @@ import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document, Model } from 'mongoose';
-import { exec } from 'child_process';
-import { promisify } from 'util';
+import { execSync } from 'child_process';
 import * as fs from 'fs';
 import * as path from 'path';
 import { WorkflowState, CoverageReport } from '../types';
 
-const execPromise = promisify(exec);
-
 // ── Schema ────────────────────────────────────────────────────────────────────
 @Schema({ timestamps: true })
 export class Coverage extends Document {
-  @Prop({ required: true })
-  percentage: number;
+  @Prop({ required: true, type: Number })
+  lines: number;
 
-  @Prop({ type: Object })
-  details: {
-    lines:      number;
-    statements: number;
-    functions:  number;
-    branches:   number;
-  };
+  @Prop({ required: true, type: Number })
+  statements: number;
+
+  @Prop({ required: true, type: Number })
+  functions: number;
+
+  @Prop({ required: true, type: Number })
+  branches: number;
 }
 
 export const CoverageSchema = SchemaFactory.createForClass(Coverage);
@@ -37,105 +35,49 @@ export class CoverageNodeService {
   // ── LangGraph node entry point ──────────────────────────────────────────────
   async Scan(state: WorkflowState): Promise<Partial<WorkflowState>> {
     console.log(`[CoverageNode] Starting test coverage in: ${state.repoPath}`);
+
+    let report: CoverageReport = {
+      statements: 0,
+      branches: 0,
+      functions: 0,
+      lines: 0,
+    };
+
     try {
-      const coverageReport = await this.runTestsAndUpload(state.repoPath);
-      return { coverageReport };
-    } catch (err) {
-      console.error('[CoverageNode] Coverage failed, continuing anyway.');
-      const empty: CoverageReport = {
-        statementsReport: 0,
-        branchesReport:   0,
-        functionsReport:  0,
-        linesReport:      0,
-      };
-      return { coverageReport: empty };
+      report = await this.runTestsAndUpload(state.repoPath);
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        console.error(`[CoverageNode] Coverage failed: ${err.message}`);
+      } else {
+        console.error('[CoverageNode] Coverage failed, continuing anyway.');
+      }
     }
+    return { coverageReport: report };
   }
 
   // ── Esegue Jest nella repo target e ritorna un CoverageReport ───────────────
-  async runTestsAndUpload(targetPath: string = process.cwd()): Promise<CoverageReport> {
-    // 1. Individua la cartella corretta (gestione monorepo)
-    let actualPath = targetPath;
-    if (!fs.existsSync(path.join(targetPath, 'package.json'))) {
-      const backendPath = path.join(targetPath, 'backend');
-      if (fs.existsSync(path.join(backendPath, 'package.json'))) {
-        actualPath = backendPath;
-        console.log(`[CoverageNode] Monorepo rilevato, entro in: ${actualPath}`);
-      } else {
-        throw new Error('Nessun package.json trovato nella root o in /backend');
-      }
-    }
+  async runTestsAndUpload(
+    targetPath: string = process.cwd(),
+  ): Promise<CoverageReport> {
+    this.checkValidFolder(targetPath);
 
-    console.log(`[CoverageNode] Preparazione ambiente in: ${actualPath}`);
+    console.log(`[CoverageNode] Preparazione ambiente in: ${targetPath}`);
 
     // 2. Esegui i test con reporter json-summary
-    const command =
-      `cd "${actualPath}" && npm install && ` +
-      `npx jest --coverage --coverageReporters="json-summary" --coverageReporters="text-summary"`;
+    let coverageReport: CoverageReport;
 
-    console.log(`[CoverageNode] Esecuzione comando: ${command}`);
-    await execPromise(command);
-
-    // 3. Leggi il file prodotto (summary oppure final come fallback)
-    const coverageDir = path.join(actualPath, 'coverage');
-    const summaryPath = path.join(coverageDir, 'coverage-summary.json');
-    const finalPath   = path.join(coverageDir, 'coverage-final.json');
-
-    let data: any;
-
-    if (fs.existsSync(summaryPath)) {
-      data = JSON.parse(fs.readFileSync(summaryPath, 'utf-8'));
-    } else if (fs.existsSync(finalPath)) {
-      console.log('[CoverageNode] Summary non trovato, estraggo dati da coverage-final.json');
-      data = this.mapFinalToSummary(JSON.parse(fs.readFileSync(finalPath, 'utf-8')));
-    } else {
-      const files = fs.existsSync(coverageDir) ? fs.readdirSync(coverageDir) : 'cartella mancante';
-      throw new Error(`Nessun file di coverage valido trovato. Files: ${files}`);
+    try {
+      coverageReport = this.runCoverageTool(targetPath);
+      await this.persistReport(coverageReport);
+      console.log(`[CoverageNode] Coverage completata con successo.`);
+    } catch (err: unknown) {
+      console.error(
+        `[CoverageNode] Errore durante generazione report code coverage: ${(err as Error).message}`,
+      );
+      throw err;
     }
-
-    // 4. Mappa nei campi CoverageReport (allineato all'UML)
-    const coverageReport: CoverageReport = {
-      statementsReport: data.total.statements.pct || 0,
-      branchesReport:   data.total.branches.pct   || 0,
-      functionsReport:  data.total.functions.pct  || 0,
-      linesReport:      data.total.lines.pct       || 0,
-    };
-
-    console.log(`[CoverageNode] Coverage completata: ${coverageReport.linesReport}% lines`);
-
-    // 5. Persisti su MongoDB
-    await this.coverageModel.create({
-      percentage: coverageReport.linesReport,
-      details: {
-        lines:      coverageReport.linesReport,
-        statements: coverageReport.statementsReport,
-        functions:  coverageReport.functionsReport,
-        branches:   coverageReport.branchesReport,
-      },
-    });
 
     return coverageReport;
-  }
-
-  // ── Salva la coverage già prodotta da Jest nella cwd ────────────────────────
-  async runAndSaveCoverage(): Promise<Coverage> {
-    const filePath = path.join(process.cwd(), 'coverage', 'coverage-summary.json');
-
-    if (!fs.existsSync(filePath)) {
-      throw new Error('File coverage-summary.json non trovato! Assicurati di aver lanciato i test.');
-    }
-
-    const summary = JSON.parse(fs.readFileSync(filePath, 'utf8'));
-
-    return new this.coverageModel({
-      percentage: summary.total.lines.pct,
-      details: {
-        lines:      summary.total.lines.pct,
-        statements: summary.total.statements.pct,
-        functions:  summary.total.functions.pct,
-        branches:   summary.total.branches.pct,
-      },
-    }).save();
   }
 
   // ── Storico coverage dal DB ──────────────────────────────────────────────────
@@ -143,15 +85,59 @@ export class CoverageNodeService {
     return this.coverageModel.find().sort({ createdAt: -1 }).exec();
   }
 
-  // ── Fallback: coverage-final.json → struttura summary ───────────────────────
-  private mapFinalToSummary(_finalData: any) {
-    return {
-      total: {
-        lines:      { pct: 0 },
-        statements: { pct: 0 },
-        functions:  { pct: 0 },
-        branches:   { pct: 0 },
-      },
+  private runCoverageTool(targetPath: string): CoverageReport {
+    try {
+      const stdout = this.executionWrapper(targetPath);
+      return this.parseOutput(stdout);
+    } catch (err: unknown) {
+      throw new Error(
+        `Errore durante esecuzione coverage: ${(err as Error).message})`,
+      );
+    }
+  }
+
+  private parseOutput(output: string): CoverageReport {
+    const split: string[] = this.splitResult(output);
+
+    const report: CoverageReport = {
+      statements: parseFloat(split[0].replace('%', '')),
+      branches: parseFloat(split[1].replace('%', '')),
+      functions: parseFloat(split[2].replace('%', '')),
+      lines: parseFloat(split[3].replace('%', '')),
     };
+
+    return report;
+  }
+
+  private checkValidFolder(checkPath: string) {
+    if (!fs.existsSync(path.join(checkPath, 'package.json')))
+      throw new Error('Nessun package.json in root');
+  }
+
+  private async persistReport(reportData: CoverageReport): Promise<void> {
+    await this.coverageModel.create(reportData);
+  }
+
+  private executionWrapper(targetPath: string): string {
+    const command =
+      `cd "${targetPath}" && npm install && ` +
+      ` npx jest --coverage --coverageReporters="text-summary" 2>&1 | grep : | head -n 4`;
+
+    console.log(`[CoverageNode] Esecuzione comando: ${command}`);
+    return execSync(command).toString();
+  }
+
+  private splitResult(result: string) {
+    const split = result
+      .replaceAll(/\s*(\s*\d+\/\d+\s*)*/, '')
+      .replaceAll(/(Statements|Branches|Functions|Lines)\s+:\s*/, '')
+      .split('\n')
+      .filter((line) => line.trim().length != 0);
+
+    if (split.length != 4) {
+      throw new Error('Errore lettura parametro');
+    }
+
+    return split;
   }
 }
