@@ -27,6 +27,27 @@ jobs:
 
       - uses: autofix-ci/action@7a166d7532b277f34e16238930461bf77f9d7ed8
 
+  prettier-container:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 24
+          cache: "npm"
+          cache-dependency-path: container/package-lock.json
+
+      - name: Install dependencies
+        working-directory: container
+        run: npm ci
+
+      - name: Auto formatting
+        working-directory: container
+        run: npx prettier . --write
+
+      - uses: autofix-ci/action@7a166d7532b277f34e16238930461bf77f9d7ed8
+
   prettier-frontend:
     runs-on: ubuntu-latest
     steps:
