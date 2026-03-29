@@ -2,27 +2,18 @@ import { useEffect } from 'react';
 import { useNavigate, useRouterState } from '@tanstack/react-router';
 import { useAuthContext } from '../AuthContext';
 
-// Rotte accessibili senza autenticazione
-const PUBLIC_ROUTES = ['/', '/callback'];
-
 export function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const { isAuthenticated, isLoading, login } = useAuthContext();
   const routerState = useRouterState();
   const currentPath = routerState.location.pathname;
 
-  const isPublic = PUBLIC_ROUTES.includes(currentPath);
-
   useEffect(() => {
-    if (!isLoading && !isAuthenticated && !isPublic) {
-      login(currentPath);
+    if (!isLoading && !isAuthenticated) {
+      login(currentPath); // salva il path e reindirizza a Cognito
     }
-  }, [isAuthenticated, isLoading, isPublic]);
+  }, [isAuthenticated, isLoading]);
 
-  // Rotte pubbliche: sempre accessibili
-  if (isPublic) return <>{children}</>;
-
-  // Rotte protette: aspetta il check, poi mostra o blocca
-  if (isLoading) return <p>Caricamento...</p>;
+  if (isLoading) return <div>Caricamento...</div>;
   if (!isAuthenticated) return null;
 
   return <>{children}</>;
