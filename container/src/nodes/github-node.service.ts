@@ -6,34 +6,54 @@ import { WorkflowState } from '../types';
 export class GithubNodeService {
   private readonly octokit = new Octokit({ auth: process.env.GITHUB_TOKEN });
 
-  async getLanguages(state: WorkflowState): Promise<Partial<WorkflowState>> {
+  async scan(state: WorkflowState): Promise<Partial<WorkflowState>> {
     const { owner, repository } = state.target;
 
     console.log(`[GithubNode] Fetching languages for ${owner}/${repository}`);
 
     try {
-      const { data } = await this.octokit.rest.repos.listLanguages({
-        owner,
-        repo: repository,
-      });
+      const languageData = await this.getLanguages({ owner, repository });
 
-      const total = Object.values(data).reduce((sum, bytes) => sum + bytes, 0);
+      const normalized: LanguageBreakdown = this.normalizeData(languageData);
 
-      const languageBreakdown: Record<string, number> = {};
-      for (const [lang, bytes] of Object.entries(data)) {
-        languageBreakdown[lang] = Math.round((bytes / total) * 10000) / 100; // percentuale con 2 decimali
-      }
-
-      console.log(`[GithubNode] Languages found: ${Object.keys(languageBreakdown).join(', ')}`);
-      return { languageBreakdown };
+      console.log(
+        `[GithubNode] Languages found: ${Object.keys(normalized).join(', ')}`,
+      );
+      return { languageBreakdown: normalized };
     } catch (error) {
       console.error('[GithubNode] Failed to fetch languages.', error);
       return { languageBreakdown: {} };
     }
   }
 
-  async authTest(): Promise<string> {
-    const { data: { login } } = await this.octokit.rest.users.getAuthenticated();
-    return login;
+  private async getLanguages({
+    owner,
+    repository,
+  }: {
+    owner: string;
+    repository: string;
+  }): Promise<LanguageBreakdown> {
+    const { data } = await this.octokit.rest.repos.listLanguages({
+      owner,
+      repo: repository,
+    });
+    return data;
+  }
+
+  private normalizeData(languageData: LanguageBreakdown): LanguageBreakdown {
+    const normalized: LanguageBreakdown = {};
+
+    const totalBytes = Object.values(languageData).reduce(
+      (sum, bytes) => sum + bytes,
+      0,
+    );
+
+    for (const [lang, bytes] of Object.entries(languageData)) {
+      normalized[lang] = Math.round((bytes / totalBytes) * 10000) / 100; // percentuale con 2 decimali
+    }
+
+    return normalized;
   }
 }
+
+type LanguageBreakdown = Record<string, number>;
