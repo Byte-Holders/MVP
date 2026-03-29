@@ -15,6 +15,7 @@
     "check": "prettier --write . && eslint --fix"
   },
   "dependencies": {
+    "@aws-amplify/ui-react": "^6.15.2",
     "@tailwindcss/vite": "^4.1.18",
     "@tanstack/react-devtools": "latest",
     "@tanstack/react-router": "latest",
@@ -28,9 +29,11 @@
     "lucide-react": "^0.577.0",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
+    "react-oidc-context": "^3.3.1",
     "tailwind-merge": "^3.0.2",
     "tailwindcss": "^4.1.18",
-    "tw-animate-css": "^1.3.6"
+    "tw-animate-css": "^1.3.6",
+    "zustand": "^5.0.12"
   },
   "devDependencies": {
     "@tailwindcss/typography": "^0.5.16",

@@ -1,11 +1,6 @@
 import { createFileRoute } from '@tanstack/react-router'
-import { AuthCallbackPage } from '@/features/auth/pages/callback'
+import {CallbackPage} from '#/features/auth/pages/CallbackPage'
 
 export const Route = createFileRoute('/callback')({
-    validateSearch: (search) => {
-    return {
-      redirect: typeof search.redirect === 'string' ? search.redirect : undefined,
-    }
-  },
-  component: AuthCallbackPage,
+  component: CallbackPage,
 })

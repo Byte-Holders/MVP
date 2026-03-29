@@ -9,14 +9,14 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as LoginRouteImport } from './routes/login'
+import { Route as WorkspacesRouteImport } from './routes/workspaces'
 import { Route as CallbackRouteImport } from './routes/callback'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
 
-const LoginRoute = LoginRouteImport.update({
-  id: '/login',
-  path: '/login',
+const WorkspacesRoute = WorkspacesRouteImport.update({
+  id: '/workspaces',
+  path: '/workspaces',
   getParentRoute: () => rootRouteImport,
 } as any)
 const CallbackRoute = CallbackRouteImport.update({
@@ -39,43 +39,43 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
   '/callback': typeof CallbackRoute
-  '/login': typeof LoginRoute
+  '/workspaces': typeof WorkspacesRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
   '/callback': typeof CallbackRoute
-  '/login': typeof LoginRoute
+  '/workspaces': typeof WorkspacesRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
   '/callback': typeof CallbackRoute
-  '/login': typeof LoginRoute
+  '/workspaces': typeof WorkspacesRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/about' | '/callback' | '/login'
+  fullPaths: '/' | '/about' | '/callback' | '/workspaces'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/about' | '/callback' | '/login'
-  id: '__root__' | '/' | '/about' | '/callback' | '/login'
+  to: '/' | '/about' | '/callback' | '/workspaces'
+  id: '__root__' | '/' | '/about' | '/callback' | '/workspaces'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AboutRoute: typeof AboutRoute
   CallbackRoute: typeof CallbackRoute
-  LoginRoute: typeof LoginRoute
+  WorkspacesRoute: typeof WorkspacesRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/login': {
-      id: '/login'
-      path: '/login'
-      fullPath: '/login'
-      preLoaderRoute: typeof LoginRouteImport
+    '/workspaces': {
+      id: '/workspaces'
+      path: '/workspaces'
+      fullPath: '/workspaces'
+      preLoaderRoute: typeof WorkspacesRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/callback': {
@@ -106,7 +106,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AboutRoute: AboutRoute,
   CallbackRoute: CallbackRoute,
-  LoginRoute: LoginRoute,
+  WorkspacesRoute: WorkspacesRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
