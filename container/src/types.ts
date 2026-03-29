@@ -1,21 +1,21 @@
 // ── Target ────────────────────────────────────────────────────────────────────
 export type Target = {
-  owner:      string;
+  owner: string;
   repository: string;
-  branch?:    string;
+  branch?: string;
 };
 
 // ── Leaf units ────────────────────────────────────────────────────────────────
 export type DepsReportUnit = {
-  name:    string;
+  name: string;
   version: string;
 };
 
 export type VulnerabilityUnit = {
-  id:          string;
+  id: string;
   description: string;
   remediation: string;
-  severity:    number;
+  severity: number;
 };
 
 export type DocsReportUnit = {
@@ -41,52 +41,52 @@ export type ReadmeReport = {
 };
 
 export type DocsReport = {
-  readmeReport:  ReadmeReport;
+  readmeReport: ReadmeReport;
   commentReport: CommentDocsUnit[];
-  mark:          number;
+  mark: number;
 };
 
 export type CoverageReport = {
-  statementsReport: number;
-  branchesReport:   number;
-  functionsReport:  number;
-  linesReport:      number;
+  statements: number;
+  branches: number;
+  functions: number;
+  lines: number;
 };
 
 // ── Final report ──────────────────────────────────────────────────────────────
 export type ReportSummary = {
   summary: string;
-  mark:    number;
+  mark: number;
 };
 
 export type DataReport = {
-  depsReport:             DepsReport;
-  vulnerabilitiesReport:  VulnerabilitiesReport;
-  docsReport:             DocsReport;
-  coverageReport:         CoverageReport;
+  depsReport: DepsReport;
+  vulnerabilitiesReport: VulnerabilitiesReport;
+  docsReport: DocsReport;
+  coverageReport: CoverageReport;
 };
 
 export type ReportMetadata = {
   startScanTime: Date;
-  endScanTime:   Date | null;
-  target:        Target;
+  endScanTime: Date | null;
+  target: Target;
 };
 
 export type Report = {
-  summary:  ReportSummary;
-  data:     DataReport;
+  summary: ReportSummary;
+  data: DataReport;
   metadata: ReportMetadata;
 };
 
 // ── LangGraph workflow state ──────────────────────────────────────────────────
 export type WorkflowState = {
-  target:                Target;
-  repoPath:              string;
-  startScanTime:         Date;
-  semgrepReportPath?:    string;
-  languageBreakdown?:    Record<string, number>;
-  depsReport?:           DepsReport;
+  target: Target;
+  repoPath: string;
+  startScanTime: Date;
+  semgrepReportPath?: string;
+  languageBreakdown?: Record<string, number>;
+  depsReport?: DepsReport;
   vulnerabilitiesReport?: VulnerabilitiesReport;
-  docsReport?:           DocsReport;
-  coverageReport?:       CoverageReport;
+  docsReport?: DocsReport;
+  coverageReport?: CoverageReport;
 };

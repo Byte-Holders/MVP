@@ -9,7 +9,7 @@ import { WorkflowState, CoverageReport } from '../types';
 
 // ── Schema ────────────────────────────────────────────────────────────────────
 @Schema({ timestamps: true })
-export class Coverage extends Document {
+export class Coverage {
   @Prop({ required: true, type: Number })
   lines: number;
 
@@ -23,6 +23,7 @@ export class Coverage extends Document {
   branches: number;
 }
 
+export type CoverageDocument = Coverage & Document;
 export const CoverageSchema = SchemaFactory.createForClass(Coverage);
 
 // ── Node ──────────────────────────────────────────────────────────────────────
@@ -80,30 +81,29 @@ export class CoverageNodeService {
     return coverageReport;
   }
 
-  // ── Storico coverage dal DB ──────────────────────────────────────────────────
-  async findAll(): Promise<Coverage[]> {
-    return this.coverageModel.find().sort({ createdAt: -1 }).exec();
-  }
-
   private runCoverageTool(targetPath: string): CoverageReport {
+    let report: CoverageReport;
+
     try {
       const stdout = this.executionWrapper(targetPath);
-      return this.parseOutput(stdout);
+      report = this.parseOutput(stdout);
     } catch (err: unknown) {
       throw new Error(
         `Errore durante esecuzione coverage: ${(err as Error).message})`,
       );
     }
+
+    return report;
   }
 
   private parseOutput(output: string): CoverageReport {
     const split: string[] = this.splitResult(output);
 
     const report: CoverageReport = {
-      statements: parseFloat(split[0].replace('%', '')),
-      branches: parseFloat(split[1].replace('%', '')),
-      functions: parseFloat(split[2].replace('%', '')),
-      lines: parseFloat(split[3].replace('%', '')),
+      statements: parseFloat(split[0]),
+      branches: parseFloat(split[1]),
+      functions: parseFloat(split[2]),
+      lines: parseFloat(split[3]),
     };
 
     return report;
@@ -127,15 +127,15 @@ export class CoverageNodeService {
     return execSync(command).toString();
   }
 
-  private splitResult(result: string) {
+  private splitResult(result: string): string[] {
     const split = result
-      .replaceAll(/\s*(\s*\d+\/\d+\s*)*/, '')
-      .replaceAll(/(Statements|Branches|Functions|Lines)\s+:\s*/, '')
+      .replaceAll(/% *\(\s*\d+\/\d+\s*\) */g, '')
+      .replaceAll(/(Statements|Branches|Functions|Lines)\s*:\s*/g, '')
       .split('\n')
-      .filter((line) => line.trim().length != 0);
+      .map((line) => line.trim());
 
     if (split.length != 4) {
-      throw new Error('Errore lettura parametro');
+      throw new Error(`Errore lettura parametro: ${split.toString()}`);
     }
 
     return split;
