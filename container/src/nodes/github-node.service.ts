@@ -17,7 +17,7 @@ export class GithubNodeService {
       const normalized: LanguageBreakdown = this.normalizeData(languageData);
 
       console.log(
-        `[GithubNode] Languages found: ${Object.keys(normalized).join(', ')}`,
+        `[GithubNode] Languages found: ${Object.entries(normalized).join(',\n')}`,
       );
       return { languageBreakdown: normalized };
     } catch (error) {

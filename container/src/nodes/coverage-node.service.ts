@@ -1,7 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Document, Model } from 'mongoose';
+import { Document } from 'mongoose';
 import { execSync } from 'child_process';
 import * as fs from 'fs';
 import * as path from 'path';
@@ -29,12 +28,10 @@ export const CoverageSchema = SchemaFactory.createForClass(Coverage);
 // ── Node ──────────────────────────────────────────────────────────────────────
 @Injectable()
 export class CoverageNodeService {
-  constructor(
-    @InjectModel(Coverage.name) private readonly coverageModel: Model<Coverage>,
-  ) {}
+  constructor() {}
 
   // ── LangGraph node entry point ──────────────────────────────────────────────
-  async Scan(state: WorkflowState): Promise<Partial<WorkflowState>> {
+  async scan(state: WorkflowState): Promise<Partial<WorkflowState>> {
     console.log(`[CoverageNode] Starting test coverage in: ${state.repoPath}`);
 
     let report: CoverageReport = {
@@ -115,13 +112,11 @@ export class CoverageNodeService {
   }
 
   private async persistReport(reportData: CoverageReport): Promise<void> {
-    await this.coverageModel.create(reportData);
+    // await this.coverageModel.create(reportData);
   }
 
   private executionWrapper(targetPath: string): string {
-    const command =
-      `cd "${targetPath}" && npm install && ` +
-      ` npx jest --coverage --coverageReporters="text-summary" 2>&1 | grep : | head -n 4`;
+    const command = `cd "${targetPath}" && npm install --silent && npx jest --coverage --coverageReporters="text-summary" 2>&1 | grep -E "Statements|Branches|Functions|Lines"`;
 
     console.log(`[CoverageNode] Esecuzione comando: ${command}`);
     return execSync(command).toString();
@@ -129,6 +124,11 @@ export class CoverageNodeService {
 
   private splitResult(result: string): string[] {
     const split = result
+      .split('\n')
+      .filter(
+        (line) => line.match(/(Statements|Branches|Functions|Lines)/) != null,
+      )
+      .join('\n')
       .replaceAll(/% *\(\s*\d+\/\d+\s*\) */g, '')
       .replaceAll(/(Statements|Branches|Functions|Lines)\s*:\s*/g, '')
       .split('\n')

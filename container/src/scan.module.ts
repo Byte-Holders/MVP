@@ -1,15 +1,11 @@
 import { Module } from '@nestjs/common';
-import { DepsNodeService } from './nodes/dependency-node.service';
-import { SecurityNodeService } from './nodes/security-node.service';
-import { RemediationNodeService } from './nodes/remediation-node.service';
+import { OrchestratorService } from './orchestrator.service';
+import { CoverageNodeService } from './nodes/coverage-node.service';
+import { GithubNodeService } from './nodes/github-node.service';
 
 @Module({
-    imports: [],
-    providers: [
-        DepsNodeService,
-        SecurityNodeService,
-        RemediationNodeService,
-    ],
-    exports: [],
+  imports: [],
+  providers: [OrchestratorService, CoverageNodeService, GithubNodeService],
+  exports: [],
 })
 export class ScanModule {}
