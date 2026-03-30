@@ -1,13 +1,13 @@
 import { Injectable } from '@nestjs/common';
 import { Octokit } from 'octokit';
-import { WorkflowState } from '../types';
+import { Target, WorkflowState } from '../types';
 
 @Injectable()
 export class GithubNodeService {
   private readonly octokit = new Octokit({ auth: process.env.GITHUB_TOKEN });
 
-  async scan(state: WorkflowState): Promise<Partial<WorkflowState>> {
-    const { owner, repository } = state.target;
+  async scan(target: Target): Promise<Partial<WorkflowState>> {
+    const { owner, repository } = target;
 
     console.log(`[GithubNode] Fetching languages for ${owner}/${repository}`);
 

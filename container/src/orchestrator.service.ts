@@ -3,11 +3,12 @@ import path from 'path';
 import fs from 'fs';
 import git from 'isomorphic-git';
 import http from 'isomorphic-git/http/node';
-import { StateGraph, START, END, Annotation } from '@langchain/langgraph';
+import { StateGraph, START, END, Annotation, Send } from '@langchain/langgraph';
 
 import { Target, Report, WorkflowState } from './types';
 import { CoverageNodeService } from './nodes/coverage-node.service';
 import { GithubNodeService } from './nodes/github-node.service';
+import { SynthesizerNodeService } from './nodes/synthesizer-node.service';
 
 // Stato del grafo
 const WorkflowAnnotation = Annotation.Root({
@@ -30,37 +31,48 @@ export class OrchestratorService {
   constructor(
     private readonly coverageNode: CoverageNodeService,
     private readonly githubNode: GithubNodeService,
+    private readonly synthesizerNode: SynthesizerNodeService,
   ) {}
 
-  async execute(target: Target): Promise<Report | undefined> {
-    // 1. Clone della repo, stesso pattern del PoC
-    const repoPath = await this.cloneRepo(target);
-    const startScanTime = new Date();
+  async execute(target: Target): Promise<WorkflowState | undefined> {
+    const assignWorkers = (state: State) => {
+      return [
+        new Send('coverage', state.repoPath),
+        new Send('github', state.target),
+      ];
+    };
 
     const workflow = new StateGraph(WorkflowAnnotation)
-      .addNode('coverage', async (state: State) => {
-        return this.coverageNode.scan(state);
+      .addNode('orchestrator', async (state: State) => {
+        const repoPath = await this.cloneRepo(state.target);
+        const startScanTime = new Date();
+        return { repoPath, startScanTime };
       })
-      .addNode('github', async (state: State) => {
-        return this.githubNode.scan(state);
+      .addNode('coverage', async (repoPath: string) => {
+        return await this.coverageNode.scan(repoPath);
       })
-      .addEdge(START, 'coverage')
-      .addEdge('coverage', 'github')
-      .addEdge('github', END);
-
-    let finalReport: Report | undefined;
+      .addNode('github', async (target: Target) => {
+        return await this.githubNode.scan(target);
+      })
+      .addNode('synthesizer', async (state: State) => {
+        const report = await this.synthesizerNode.summarize(state);
+        return { report };
+      })
+      .addEdge(START, 'orchestrator')
+      .addConditionalEdges('orchestrator', assignWorkers, [
+        'coverage',
+        'github',
+      ])
+      .addEdge('coverage', 'synthesizer')
+      .addEdge('github', 'synthesizer')
+      .addEdge('synthesizer', END);
 
     const app = workflow.compile();
 
-    await app.invoke({
-      target,
-      repoPath,
-      startScanTime,
-    });
-
-    // if (!finalReport) {
-    //   throw new Error('Il synthesizer non ha prodotto un report.');
-    // }
+    const finalReport = await app.invoke({ target });
+    if (!finalReport) {
+      throw new Error('Il synthesizer non ha prodotto un report.');
+    }
 
     return finalReport;
   }

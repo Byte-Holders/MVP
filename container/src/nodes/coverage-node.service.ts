@@ -1,10 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
-import { execSync } from 'child_process';
+import { exec } from 'child_process';
 import * as fs from 'fs';
 import * as path from 'path';
 import { WorkflowState, CoverageReport } from '../types';
+import { promisify } from 'util';
 
 // ── Schema ────────────────────────────────────────────────────────────────────
 @Schema({ timestamps: true })
@@ -31,8 +32,8 @@ export class CoverageNodeService {
   constructor() {}
 
   // ── LangGraph node entry point ──────────────────────────────────────────────
-  async scan(state: WorkflowState): Promise<Partial<WorkflowState>> {
-    console.log(`[CoverageNode] Starting test coverage in: ${state.repoPath}`);
+  async scan(repoPath: string): Promise<Partial<WorkflowState>> {
+    console.log(`[CoverageNode] Starting test coverage in: ${repoPath}`);
 
     let report: CoverageReport = {
       statements: 0,
@@ -42,7 +43,7 @@ export class CoverageNodeService {
     };
 
     try {
-      report = await this.runTestsAndUpload(state.repoPath);
+      report = await this.runTestsAndUpload(repoPath);
     } catch (err: unknown) {
       if (err instanceof Error) {
         console.error(`[CoverageNode] Coverage failed: ${err.message}`);
@@ -65,8 +66,8 @@ export class CoverageNodeService {
     let coverageReport: CoverageReport;
 
     try {
-      coverageReport = this.runCoverageTool(targetPath);
-      await this.persistReport(coverageReport);
+      coverageReport = await this.runCoverageTool(targetPath);
+      // await this.persistReport(coverageReport);
       console.log(`[CoverageNode] Coverage completata con successo.`);
     } catch (err: unknown) {
       console.error(
@@ -78,11 +79,11 @@ export class CoverageNodeService {
     return coverageReport;
   }
 
-  private runCoverageTool(targetPath: string): CoverageReport {
+  private async runCoverageTool(targetPath: string): Promise<CoverageReport> {
     let report: CoverageReport;
 
     try {
-      const stdout = this.executionWrapper(targetPath);
+      const stdout = await this.executionWrapper(targetPath);
       report = this.parseOutput(stdout);
     } catch (err: unknown) {
       throw new Error(
@@ -111,15 +112,17 @@ export class CoverageNodeService {
       throw new Error('Nessun package.json in root');
   }
 
-  private async persistReport(reportData: CoverageReport): Promise<void> {
-    // await this.coverageModel.create(reportData);
-  }
+  // private async persistReport(reportData: CoverageReport): Promise<void> {
+  //  await this.coverageModel.create(reportData);
+  // }
 
-  private executionWrapper(targetPath: string): string {
+  private async executionWrapper(targetPath: string): Promise<string> {
+    const execAsync = promisify(exec);
     const command = `cd "${targetPath}" && npm install --silent && npx jest --coverage --coverageReporters="text-summary" 2>&1 | grep -E "Statements|Branches|Functions|Lines"`;
 
     console.log(`[CoverageNode] Esecuzione comando: ${command}`);
-    return execSync(command).toString();
+    const { stdout } = await execAsync(command);
+    return stdout;
   }
 
   private splitResult(result: string): string[] {
