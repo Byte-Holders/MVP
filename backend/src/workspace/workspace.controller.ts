@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Post, UseGuards, UsePipes, ValidationPipe } from '@nestjs/common';
+import { Body, Controller, Param, Post, Request, UseGuards, UsePipes, ValidationPipe } from '@nestjs/common';
 import { WorkspaceService } from './workspace.service';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { CreateWorkspaceDto } from './dtos/CreateWorkspaceDto';
@@ -9,8 +9,8 @@ export class WorkspaceController {
 
     @UseGuards(JwtAuthGuard)
     @Post()
-    async createWorkspace() {
-        return { ciao: "ciao" };
+    async createWorkspace(@Body() createWorkspaceDto: CreateWorkspaceDto, @Request() req) {
+        return req.user;
     }
 
     @Post('no-guard/:userID')

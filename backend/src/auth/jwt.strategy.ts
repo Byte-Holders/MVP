@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { PassportStrategy } from '@nestjs/passport';
 import { passportJwtSecret } from 'jwks-rsa';
 import { ExtractJwt, Strategy } from 'passport-jwt';
@@ -8,23 +9,24 @@ import { ExtractJwt, Strategy } from 'passport-jwt';
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
-  constructor() {
+  constructor(private configService: ConfigService) {
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
       ignoreExpiration: false,
-      audience: process.env.AWS_COGNITO_COGNITO_CLIENT_ID,
-      issuer: process.env.AWS_COGNITO_AUTHORITY,
+      //audience: process.env.AWS_COGNITO_COGNITO_CLIENT_ID,
+      issuer: configService.get<string>('AWS_COGNITO_AUTHORITY'),
       algorithms: ['RS256'],
       secretOrKeyProvider: passportJwtSecret({
         cache: true,
         rateLimit: true,
         jwksRequestsPerMinute: 5,
-        jwksUri: process.env.AWS_COGNITO_AUTHORITY + '/.well-known/jwks.json',
+        jwksUri: configService.get<string>('AWS_COGNITO_AUTHORITY') + '/.well-known/jwks.json',
       }),
     });
   }
 
   async validate(payload: any) {
-    return { idUser: payload.sub, email: payload.email };
+    console.log('JWT payload validated:', payload);
+    return { sub: payload.sub, email: payload.email, username: payload['cognito:username'] };
   }
 }
