@@ -9,6 +9,7 @@ import { Target, Report, WorkflowState } from './types';
 import { CoverageNodeService } from './nodes/coverage-node.service';
 import { GithubNodeService } from './nodes/github-node.service';
 import { SynthesizerNodeService } from './nodes/synthesizer-node.service';
+import { SecurityNodeService } from './nodes/security-node.service';
 
 // Stato del grafo
 const WorkflowAnnotation = Annotation.Root({
@@ -32,6 +33,7 @@ export class OrchestratorService {
     private readonly coverageNode: CoverageNodeService,
     private readonly githubNode: GithubNodeService,
     private readonly synthesizerNode: SynthesizerNodeService,
+    private readonly securityNode: SecurityNodeService,
   ) {}
 
   async execute(target: Target): Promise<WorkflowState | undefined> {
@@ -39,6 +41,7 @@ export class OrchestratorService {
       return [
         new Send('coverage', state.repoPath),
         new Send('github', state.target),
+        new Send('security', state.repoPath),
       ];
     };
 
@@ -54,6 +57,9 @@ export class OrchestratorService {
       .addNode('github', async (target: Target) => {
         return await this.githubNode.scan(target);
       })
+      .addNode('security', async (repoPath: string) => {
+        return await this.securityNode.scan(repoPath);
+      })
       .addNode('synthesizer', async (state: State) => {
         const report = await this.synthesizerNode.summarize(state);
         return { report };
@@ -62,9 +68,11 @@ export class OrchestratorService {
       .addConditionalEdges('orchestrator', assignWorkers, [
         'coverage',
         'github',
+        'security',
       ])
       .addEdge('coverage', 'synthesizer')
       .addEdge('github', 'synthesizer')
+      .addEdge('security', 'synthesizer')
       .addEdge('synthesizer', END);
 
     const app = workflow.compile();
