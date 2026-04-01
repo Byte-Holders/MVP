@@ -3,8 +3,8 @@ import { ConfigService } from '@nestjs/config';
 import { PassportStrategy } from '@nestjs/passport';
 import { passportJwtSecret } from 'jwks-rsa';
 import { ExtractJwt, Strategy } from 'passport-jwt';
-import { GetUserIdFromSubToken } from 'src/user/interfaces/getUserIdFromSub.interface';
-import type { IGetUserIdFromSub } from 'src/user/interfaces/getUserIdFromSub.interface';
+import { GetUserIdFromSubToken } from '../user/interfaces/getUserIdFromSub.interface';
+import type { IGetUserIdFromSub } from '../user/interfaces/getUserIdFromSub.interface';
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
