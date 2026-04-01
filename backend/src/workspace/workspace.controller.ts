@@ -9,7 +9,7 @@ import {
   ValidationPipe,
 } from '@nestjs/common';
 import { WorkspaceService } from './workspace.service';
-import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
+import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { CreateWorkspaceDto } from './dtos/CreateWorkspaceDto';
 import { User } from 'src/auth/customDecorators/user.decorator';
 import type { RequestUser } from 'src/auth/types/requestUser.type';
