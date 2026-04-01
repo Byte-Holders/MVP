@@ -20,7 +20,7 @@ const config = defineConfig({
     port: 3000,
     proxy: {
       '/api': {
-        target: 'http://backend:3001',   // nome del servizio in docker-compose
+        target: 'http://backend:3001', // nome del servizio in docker-compose
         changeOrigin: true,
       },
     },
