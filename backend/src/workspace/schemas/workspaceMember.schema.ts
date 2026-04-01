@@ -7,11 +7,12 @@ export type WorkspaceMemberDocument = HydratedDocument<WorkspaceMember>;
 
 @Schema()
 export class WorkspaceMember {
-    @Prop({type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true})
-    userId: User;
+  @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true })
+  userId: User;
 
-    @Prop({required: true})
-    role: string;
+  @Prop({ required: true })
+  role: string;
 }
 
-export const WorkspaceMemberSchema = SchemaFactory.createForClass(WorkspaceMember);
+export const WorkspaceMemberSchema =
+  SchemaFactory.createForClass(WorkspaceMember);

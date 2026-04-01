@@ -7,7 +7,6 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { UserModule } from './user/user.module';
 import { AuthModule } from './auth/auth.module';
 
-
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -22,7 +21,7 @@ import { AuthModule } from './auth/auth.module';
     }),
     WorkspaceModule,
     UserModule,
-    AuthModule 
+    AuthModule,
   ],
   controllers: [AppController],
   providers: [AppService],

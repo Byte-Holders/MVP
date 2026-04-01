@@ -6,8 +6,12 @@ import { Workspace, WorkspaceSchema } from './schemas/workspace.schema';
 import { MongooseModule } from '@nestjs/mongoose';
 
 @Module({
-  imports: [MongooseModule.forFeature([{ name: Workspace.name, schema: WorkspaceSchema }])],
+  imports: [
+    MongooseModule.forFeature([
+      { name: Workspace.name, schema: WorkspaceSchema },
+    ]),
+  ],
   controllers: [WorkspaceController],
-  providers: [WorkspaceService, WorkspaceRepository]
+  providers: [WorkspaceService, WorkspaceRepository],
 })
 export class WorkspaceModule {}

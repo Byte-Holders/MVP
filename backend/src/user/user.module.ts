@@ -5,17 +5,15 @@ import { UserRepository } from './user.repository';
 import { GetUserIdFromSubToken } from './interfaces/getUserIdFromSub.interface';
 
 @Module({
-    imports: [
-        MongooseModule.forFeature([{ name: User.name, schema: UserSchema }]),
-    ],
-    providers: [
-        {
-            provide: GetUserIdFromSubToken,
-            useClass: UserRepository,
-        }
-    ],
-    exports: [
-        GetUserIdFromSubToken
-    ]
+  imports: [
+    MongooseModule.forFeature([{ name: User.name, schema: UserSchema }]),
+  ],
+  providers: [
+    {
+      provide: GetUserIdFromSubToken,
+      useClass: UserRepository,
+    },
+  ],
+  exports: [GetUserIdFromSubToken],
 })
 export class UserModule {}

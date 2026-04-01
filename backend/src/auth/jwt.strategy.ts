@@ -6,10 +6,12 @@ import { ExtractJwt, Strategy } from 'passport-jwt';
 import { GetUserIdFromSubToken } from 'src/user/interfaces/getUserIdFromSub.interface';
 import type { IGetUserIdFromSub } from 'src/user/interfaces/getUserIdFromSub.interface';
 
-
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
-  constructor(private configService: ConfigService, @Inject(GetUserIdFromSubToken) private userRepository: IGetUserIdFromSub) {
+  constructor(
+    private configService: ConfigService,
+    @Inject(GetUserIdFromSubToken) private userRepository: IGetUserIdFromSub,
+  ) {
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
       ignoreExpiration: false,
@@ -20,7 +22,9 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
         cache: true,
         rateLimit: true,
         jwksRequestsPerMinute: 5,
-        jwksUri: configService.get<string>('AWS_COGNITO_AUTHORITY') + '/.well-known/jwks.json',
+        jwksUri:
+          configService.get<string>('AWS_COGNITO_AUTHORITY') +
+          '/.well-known/jwks.json',
       }),
     });
   }
