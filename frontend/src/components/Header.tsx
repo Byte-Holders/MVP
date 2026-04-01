@@ -1,7 +1,11 @@
 import { Link } from '@tanstack/react-router'
 import ThemeToggle from './ThemeToggle'
 
+import { useAuthContext } from '../features/auth/AuthContext';
+
 export default function Header() {
+  const { isAuthenticated, isLoading, login, logout } = useAuthContext();
+
   return (
     <header className="sticky top-0 z-50 border-b border-[var(--h-line)] bg-[var(--h-bg)] backdrop-blur-md">
       <style>{`
@@ -49,7 +53,7 @@ export default function Header() {
           >
             Workspace
           </Link>
-
+          {/*}
           <Link
             to="/inviti"
             className="nav-btn"
@@ -67,7 +71,7 @@ export default function Header() {
             }}
           >
             Inviti
-          </Link>
+          </Link>*/}
         </div>
 
         {/* ── CENTER: logo placeholder ── */}
@@ -113,7 +117,12 @@ export default function Header() {
             Notifiche
           </button>
 
-          {/* Access / login */}
+          {!isLoading && (
+          isAuthenticated
+            ? <button onClick={logout} className="inline-flex items-center gap-2 rounded-full border border-[var(--chip-line)] bg-[var(--chip-bg)] px-3 py-1.5 text-sm text-[var(--sea-ink)] no-underline shadow-[0_8px_24px_rgba(30,90,72,0.08)] sm:px-4 sm:py-2">Logout</button>
+            : <button onClick={() => login()} className="inline-flex items-center gap-2 rounded-full border border-[var(--chip-line)] bg-[var(--chip-bg)] px-3 py-1.5 text-sm text-[var(--sea-ink)] no-underline shadow-[0_8px_24px_rgba(30,90,72,0.08)] sm:px-4 sm:py-2">Accedi</button>
+          )}
+          {/* Access / login *
           <Link
             to="/login"
             style={{
@@ -130,11 +139,11 @@ export default function Header() {
             }}
           >
             Accesso
-          </Link>
+          </Link>*/}
 
           <ThemeToggle />
         </div>
       </nav>
     </header>
-  )
+    )
 }
