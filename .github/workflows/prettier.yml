@@ -19,7 +19,7 @@ jobs:
 
       - name: Install dependencies
         working-directory: backend
-        run: npm ci
+        run: npm i
 
       - name: Auto formatting
         working-directory: backend
@@ -40,7 +40,7 @@ jobs:
 
       - name: Install dependencies
         working-directory: container
-        run: npm ci
+        run: npm i
 
       - name: Auto formatting
         working-directory: container
@@ -61,7 +61,7 @@ jobs:
 
       - name: Install dependencies
         working-directory: frontend
-        run: npm ci
+        run: npm i
 
       - name: Auto formatting
         working-directory: frontend
