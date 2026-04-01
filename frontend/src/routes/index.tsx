@@ -1,22 +1,22 @@
 import { createFileRoute } from '@tanstack/react-router'
 
-export const Route = createFileRoute('/')({ 
+export const Route = createFileRoute('/')({
   component: App,
   errorComponent: ErrorBoundary, // Aggiungi un componente per gestire gli errori
 })
 
 function ErrorBoundary({ error }: { error: Error }) {
-  console.error(error); // Logga l'errore per il debug
+  console.error(error) // Logga l'errore per il debug
   if (error.message === 'Not authenticated') {
-    window.location.href = '/login'; // Reindirizza alla pagina di login
-    return null;
+    window.location.href = '/login' // Reindirizza alla pagina di login
+    return null
   }
   return (
     <div>
       <h1>Oops! Something went wrong.</h1>
       <p>{error.message}</p>
     </div>
-  );
+  )
 }
 
 function App() {

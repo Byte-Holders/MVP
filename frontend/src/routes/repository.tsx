@@ -1,6 +1,6 @@
-import { createFileRoute } from '@tanstack/react-router';
-import { ProtectedRoute } from '@/features/auth/components/ProtectedRoute';
-import { RepositoryPage} from '@/features/repo/Repository';
+import { createFileRoute } from '@tanstack/react-router'
+import { ProtectedRoute } from '@/features/auth/components/ProtectedRoute'
+import { RepositoryPage } from '@/features/repo/Repository'
 
 export const Route = createFileRoute('/repository')({
   component: () => (
@@ -8,4 +8,4 @@ export const Route = createFileRoute('/repository')({
       <RepositoryPage />
     </ProtectedRoute>
   ),
-});
+})

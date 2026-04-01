@@ -20,8 +20,6 @@ export function WorkspacesPage() {
 
   return (
     <div>
-      
-
       <div>Workspace List</div>
       <button onClick={printToken}>Stampa token</button>
 
