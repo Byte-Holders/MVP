@@ -1,15 +1,15 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { PassportStrategy } from '@nestjs/passport';
 import { passportJwtSecret } from 'jwks-rsa';
 import { ExtractJwt, Strategy } from 'passport-jwt';
+import { GetUserIdFromSubToken } from 'src/user/interfaces/getUserIdFromSub.interface';
+import type { IGetUserIdFromSub } from 'src/user/interfaces/getUserIdFromSub.interface';
 
-//questo file è da fare
-//mi serve consulenza di chi ha setuppato cognito
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
-  constructor(private configService: ConfigService) {
+  constructor(private configService: ConfigService, @Inject(GetUserIdFromSubToken) private userRepository: IGetUserIdFromSub) {
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
       ignoreExpiration: false,
@@ -26,7 +26,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
   }
 
   async validate(payload: any) {
-    console.log('JWT payload validated:', payload);
-    return { sub: payload.sub, email: payload.email, username: payload['cognito:username'] };
+    const userId = await this.userRepository.getUserIdFromSub(payload.sub);
+    return { sub: payload.sub, username: payload.username, userId: userId };
   }
 }

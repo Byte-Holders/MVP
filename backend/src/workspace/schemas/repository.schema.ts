@@ -15,7 +15,9 @@ export class Repository {
     name: string;
 
     @Prop({type: [String], default: []})
-    branches: string[];   //i branch su cui è stata fatta almeno una scansione
+    branches: string[];   
+    //da sistemare questo se abbiamo detto che salviamo i report qua 
+    //pensavo di fare un array di oggetti, ognuno con un branchName e un array di report
 }
 
 export const RepositorySchema = SchemaFactory.createForClass(Repository);

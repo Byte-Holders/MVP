@@ -2,6 +2,8 @@ import { Body, Controller, Param, Post, Request, UseGuards, UsePipes, Validation
 import { WorkspaceService } from './workspace.service';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { CreateWorkspaceDto } from './dtos/CreateWorkspaceDto';
+import { User } from 'src/auth/customDecorators/user.decorator';
+import type { RequestUser } from 'src/auth/types/requestUser.type';
 
 @Controller('workspace')
 export class WorkspaceController {
@@ -9,10 +11,15 @@ export class WorkspaceController {
 
     @UseGuards(JwtAuthGuard)
     @Post()
-    async createWorkspace(@Body() createWorkspaceDto: CreateWorkspaceDto, @Request() req) {
-        return req.user;
+    @UsePipes(new ValidationPipe())
+    async createWorkspace(@Body() createWorkspaceDto: CreateWorkspaceDto, @User() user: RequestUser) {
+        console.log(createWorkspaceDto);
+        console.log(user);
+        return;
     }
 
+
+    //questo solo per testare senza guardia, poi da eliminare
     @Post('no-guard/:userID')
     @UsePipes(new ValidationPipe())
     async createNoGuard(@Body() createWorkspaceDto: CreateWorkspaceDto, @Param('userID') userID: string) {
