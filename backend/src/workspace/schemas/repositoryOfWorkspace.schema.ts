@@ -1,7 +1,7 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import * as mongoose from 'mongoose';
 import { HydratedDocument } from 'mongoose';
-import { Repository } from '../../repository/schemas/repository.schema';
+import { Repository } from './repository.schema';
 
 export type RepositoryOfWorkspaceDocument = HydratedDocument<RepositoryOfWorkspace>;
 

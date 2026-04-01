@@ -5,7 +5,6 @@ import { WorkspaceModule } from './workspace/workspace.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
 import { UserModule } from './user/user.module';
-import { RepositoryModule } from './repository/repository.module';
 import { AuthModule } from './auth/auth.module';
 
 
@@ -23,7 +22,6 @@ import { AuthModule } from './auth/auth.module';
     }),
     WorkspaceModule,
     UserModule,
-    RepositoryModule,
     AuthModule 
   ],
   controllers: [AppController],
