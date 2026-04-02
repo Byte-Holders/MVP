@@ -7,6 +7,16 @@ import { readFile } from 'fs/promises';
 import { VulnerabilityUnit } from '../types';
 import { WorkflowState } from '../orchestrator.service';
 
+type SemgrepResult = {
+  results: {
+    check_id: string;
+    extra?: {
+      message: string;
+      severity: string;
+    };
+  }[];
+};
+
 @Injectable()
 export class SecurityNodeService {
   private readonly logger = new Logger(SecurityNodeService.name);
@@ -67,8 +77,9 @@ export class SecurityNodeService {
 
   private async parseResults(reportPath: string): Promise<VulnerabilityUnit[]> {
     const raw = await readFile(reportPath, 'utf-8');
-    const json = JSON.parse(raw);
-    return (json.results ?? []).map((r: any) => ({
+    const json = JSON.parse(raw) as SemgrepResult;
+
+    return (json.results ?? []).map((r) => ({
       id: r.check_id ?? 'unknown',
       description: r.extra?.message ?? '',
       remediation: '',
