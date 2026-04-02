@@ -2,18 +2,20 @@ import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { User } from './schemas/user.schema';
-import { IGetUserIdFromSub } from './interfaces/getUserIdFromSub.interface';
+import { IFindUser } from './interfaces/IfindUser.interface';
+import { ICreateUser } from './interfaces/ICreateUser.interface';
 
 @Injectable()
-export class UserRepository implements IGetUserIdFromSub {
+export class UserRepository implements IFindUser, ICreateUser {
   constructor(@InjectModel(User.name) private userModel: Model<User>) {}
 
-  async getUserIdFromSub(sub: string): Promise<string> {
+  async find(sub: string): Promise<User | null> {
     const user = await this.userModel.findOne({ sub: sub });
-    if (!user) {
-      throw new Error('Utente con sub ' + sub + ' non trovato');
-    }
+    return user;
+  }
 
-    return user._id.toString();
+  async create(sub: string, username: string, email: string): Promise<User> {
+    const user = new this.userModel({ sub: sub, username: username, email: email });
+    return user.save();
   }
 }

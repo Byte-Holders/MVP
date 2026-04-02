@@ -2,7 +2,11 @@ import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { User, UserSchema } from './schemas/user.schema';
 import { UserRepository } from './user.repository';
-import { GetUserIdFromSubToken } from './interfaces/getUserIdFromSub.interface';
+import { FindUserToken } from './interfaces/IfindUser.interface';
+import { UserService } from './user.service';
+import { CreateUserToken } from './interfaces/ICreateUser.interface';
+import { UserServiceToken } from './interfaces/IUserService.interface';
+import { UserController } from './user.controller';
 
 @Module({
   imports: [
@@ -10,10 +14,19 @@ import { GetUserIdFromSubToken } from './interfaces/getUserIdFromSub.interface';
   ],
   providers: [
     {
-      provide: GetUserIdFromSubToken,
+      provide: FindUserToken,
       useClass: UserRepository,
     },
+    {
+      provide: CreateUserToken,
+      useClass: UserRepository,
+    },
+    {
+      provide: UserServiceToken,
+      useClass: UserService,
+    }
   ],
-  exports: [GetUserIdFromSubToken],
+  exports: [UserServiceToken],
+  controllers: [UserController],
 })
 export class UserModule {}

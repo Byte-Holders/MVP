@@ -3,14 +3,11 @@ import { ConfigService } from '@nestjs/config';
 import { PassportStrategy } from '@nestjs/passport';
 import { passportJwtSecret } from 'jwks-rsa';
 import { ExtractJwt, Strategy } from 'passport-jwt';
-import { UserServiceToken, type IUserService } from '../user/interfaces/IUserService.interface';
-import { User } from '../user/schemas/user.schema';
 
 @Injectable()
-export class JwtStrategy extends PassportStrategy(Strategy, "jwt-auth") {
+export class JwtRegistrationStrategy extends PassportStrategy(Strategy, "jwtRegistration") {
   constructor(
     private configService: ConfigService,
-    @Inject(UserServiceToken) private userService: IUserService,
   ) {
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
@@ -30,10 +27,9 @@ export class JwtStrategy extends PassportStrategy(Strategy, "jwt-auth") {
   }
 
   async validate(payload: any) {
-    const user: User | null = await this.userService.find(payload.sub);
-    if (!user) {
-      throw new Error('User con sub ' + payload.sub + ' non presente nel database');
+    if(!payload.token_use || payload.token_use !== 'id') {
+      throw new Error('Access Token non valido, usare ID Token per la registrazione');
     }
-    return { sub: payload.sub, username: payload.username, userId: user._id.toString() };
+    return { sub: payload.sub, username: payload["cognito:username"], email: payload.email };
   }
 }
