@@ -7,7 +7,6 @@ import { StateGraph, START, END, Annotation, Send } from '@langchain/langgraph';
 
 import {
   Target,
-  Report,
   VulnerabilitiesReport,
   DepsReport,
   DocsReport,
@@ -19,6 +18,7 @@ import { SynthesizerNodeService } from './nodes/synthesizer-node.service';
 import { SecurityNodeService } from './nodes/security-node.service';
 import { RemediationNodeService } from './nodes/remediation-node.service';
 import { DepsNodeService } from './nodes/dependency-node.service';
+import { DocsNodeService } from './nodes/docs-node.service';
 
 const WorkflowAnnotation = Annotation.Root({
   target: Annotation<Target>(),
@@ -40,10 +40,11 @@ export class OrchestratorService {
   constructor(
     private readonly coverageNode: CoverageNodeService,
     private readonly githubNode: GithubNodeService,
-    private readonly synthesizerNode: SynthesizerNodeService,
     private readonly securityNode: SecurityNodeService,
     private readonly remediationNode: RemediationNodeService,
     private readonly dependencyNode: DepsNodeService,
+    private readonly docsNode: DocsNodeService,
+    private readonly synthesizerNode: SynthesizerNodeService,
   ) {}
 
   async execute(target: Target): Promise<WorkflowState | undefined> {
@@ -53,6 +54,7 @@ export class OrchestratorService {
         new Send('dependencies', state.repoPath),
         new Send('github', state.target),
         new Send('security', state.repoPath),
+        new Send('docs', state.repoPath),
       ];
     };
 
@@ -80,6 +82,9 @@ export class OrchestratorService {
       .addNode('dependencies', async (repoPath: string) => {
         return await this.dependencyNode.scan(repoPath);
       })
+      .addNode('docs', async (repoPath: string) => {
+        return await this.docsNode.scan(repoPath);
+      })
       .addNode('synthesizer', async (state: WorkflowState) => {
         const report = await this.synthesizerNode.summarize(state);
         return { report };
@@ -90,12 +95,14 @@ export class OrchestratorService {
         'dependencies',
         'github',
         'security',
+        'docs',
       ])
       .addEdge('coverage', 'synthesizer')
       .addEdge('github', 'synthesizer')
       .addEdge('security', 'remediation')
       .addEdge('remediation', 'synthesizer')
       .addEdge('dependencies', 'synthesizer')
+      .addEdge('docs', 'synthesizer')
       .addEdge('synthesizer', END);
 
     const app = workflow.compile();
