@@ -22,7 +22,7 @@ export class SynthesizerNodeService {
       {
         vulnerabilities: state.vulnerabilitiesReport,
         coverage: state.coverageReport,
-        dependencies: state.depsReport,
+        // dependencies: state.depsReport,
         documentation: state.docsReport,
         languages: state.languageBreakdown,
       },

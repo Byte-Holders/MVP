@@ -5,6 +5,7 @@ import { GithubNodeService } from './nodes/github-node.service';
 import { SynthesizerNodeService } from './nodes/synthesizer-node.service';
 import { SecurityNodeService } from './nodes/security-node.service';
 import { RemediationNodeService } from './nodes/remediation-node.service';
+import { DepsNodeService } from './nodes/dependency-node.service';
 
 @Module({
   imports: [],
@@ -15,6 +16,7 @@ import { RemediationNodeService } from './nodes/remediation-node.service';
     SynthesizerNodeService,
     SecurityNodeService,
     RemediationNodeService,
+    DepsNodeService,
   ],
   exports: [],
 })

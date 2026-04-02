@@ -18,6 +18,7 @@ import { GithubNodeService } from './nodes/github-node.service';
 import { SynthesizerNodeService } from './nodes/synthesizer-node.service';
 import { SecurityNodeService } from './nodes/security-node.service';
 import { RemediationNodeService } from './nodes/remediation-node.service';
+import { DepsNodeService } from './nodes/dependency-node.service';
 
 const WorkflowAnnotation = Annotation.Root({
   target: Annotation<Target>(),
@@ -42,12 +43,14 @@ export class OrchestratorService {
     private readonly synthesizerNode: SynthesizerNodeService,
     private readonly securityNode: SecurityNodeService,
     private readonly remediationNode: RemediationNodeService,
+    private readonly dependencyNode: DepsNodeService,
   ) {}
 
   async execute(target: Target): Promise<WorkflowState | undefined> {
     const assignWorkers = (state: WorkflowState) => {
       return [
         new Send('coverage', state.repoPath),
+        new Send('dependencies', state.repoPath),
         new Send('github', state.target),
         new Send('security', state.repoPath),
       ];
@@ -74,6 +77,9 @@ export class OrchestratorService {
           vulnerabilities: state.vulnerabilitiesReport?.vulnerabilities,
         });
       })
+      .addNode('dependencies', async (repoPath: string) => {
+        return await this.dependencyNode.scan(repoPath);
+      })
       .addNode('synthesizer', async (state: WorkflowState) => {
         const report = await this.synthesizerNode.summarize(state);
         return { report };
@@ -81,6 +87,7 @@ export class OrchestratorService {
       .addEdge(START, 'orchestrator')
       .addConditionalEdges('orchestrator', assignWorkers, [
         'coverage',
+        'dependencies',
         'github',
         'security',
       ])
@@ -88,6 +95,7 @@ export class OrchestratorService {
       .addEdge('github', 'synthesizer')
       .addEdge('security', 'remediation')
       .addEdge('remediation', 'synthesizer')
+      .addEdge('dependencies', 'synthesizer')
       .addEdge('synthesizer', END);
 
     const app = workflow.compile();
