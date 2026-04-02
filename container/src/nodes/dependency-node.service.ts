@@ -1,5 +1,5 @@
-import { Injectable, Logger } from '@nestjs/common';
-import { DepsReport, DepsReportUnit } from '../types';
+import { Injectable } from '@nestjs/common';
+import { DepsReport } from '../types';
 import { WorkflowState } from '../orchestrator.service';
 import { executeCli } from './exec.cli';
 
