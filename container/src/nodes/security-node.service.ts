@@ -4,20 +4,12 @@ import { promisify } from 'util';
 import path from 'path';
 import { mkdir } from 'fs/promises';
 import { readFile } from 'fs/promises';
-import {
-  WorkflowState,
-  VulnerabilitiesReport,
-  VulnerabilityUnit,
-} from '../types';
+import { VulnerabilityUnit } from '../types';
+import { WorkflowState } from '../orchestrator.service';
 
 @Injectable()
 export class SecurityNodeService {
   private readonly logger = new Logger(SecurityNodeService.name);
-
-  private buildReportPath(repoName: string): string {
-    const dateStr = new Date().toISOString().replace(/[:.]/g, '-');
-    return path.resolve(`./reports/${repoName}/scan_${dateStr}.json`);
-  }
 
   async scan(repoPath: string): Promise<Partial<WorkflowState>> {
     const reportPath = this.buildReportPath(path.basename(repoPath));
@@ -27,17 +19,26 @@ export class SecurityNodeService {
     await mkdir(path.dirname(reportPath), { recursive: true });
 
     if (!(await this.isSemgrepInstalled())) {
-      return { vulnerabilitiesReport: { report: [] } };
+      console.error('[Security Node] Semgrep not installed.');
+      return {};
     }
 
     try {
       await this.executeSemgrep(repoPath, reportPath);
       const units = await this.parseResults(reportPath);
-      return this.buildReport(units);
+      return {
+        vulnerabilitiesReport: { vulnerabilities: units },
+        vulnerabilitiesReportPath: reportPath,
+      };
     } catch (error) {
       console.error('[SecurityNode] Semgrep execution failed.', error);
-      return { vulnerabilitiesReport: { report: [] } };
+      return {};
     }
+  }
+
+  private buildReportPath(repoName: string): string {
+    const dateStr = new Date().toISOString().replace(/[:.]/g, '-');
+    return path.resolve(`./reports/${repoName}/scan_${dateStr}.json`);
   }
 
   private async isSemgrepInstalled(): Promise<boolean> {
@@ -73,12 +74,6 @@ export class SecurityNodeService {
       remediation: '',
       severity: this.parseSeverity(r.extra?.severity),
     }));
-  }
-
-  private buildReport(units: VulnerabilityUnit[]): Partial<WorkflowState> {
-    const vulnerabilitiesReport: VulnerabilitiesReport = { report: units };
-    console.log(`[SecurityNode] Found ${units.length} vulnerabilities.`);
-    return { vulnerabilitiesReport };
   }
 
   private parseSeverity(raw?: string): number {

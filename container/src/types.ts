@@ -33,7 +33,7 @@ export type DepsReport = {
 };
 
 export type VulnerabilitiesReport = {
-  report: VulnerabilityUnit[];
+  vulnerabilities: VulnerabilityUnit[];
 };
 
 export type ReadmeReport = {
@@ -76,17 +76,4 @@ export type Report = {
   summary: ReportSummary;
   data: DataReport;
   metadata: ReportMetadata;
-};
-
-// ── LangGraph workflow state ──────────────────────────────────────────────────
-export type WorkflowState = {
-  target: Target;
-  repoPath: string;
-  startScanTime: Date;
-  semgrepReportPath?: string;
-  languageBreakdown?: Record<string, number>;
-  depsReport?: DepsReport;
-  vulnerabilitiesReport?: VulnerabilitiesReport;
-  docsReport?: DocsReport;
-  coverageReport?: CoverageReport;
 };

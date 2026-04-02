@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { Octokit } from 'octokit';
-import { Target, WorkflowState } from '../types';
+import { Target } from '../types';
+import { WorkflowState } from '../orchestrator.service';
 
 @Injectable()
 export class GithubNodeService {

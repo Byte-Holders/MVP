@@ -5,26 +5,33 @@ import git from 'isomorphic-git';
 import http from 'isomorphic-git/http/node';
 import { StateGraph, START, END, Annotation, Send } from '@langchain/langgraph';
 
-import { Target, Report, WorkflowState } from './types';
+import {
+  Target,
+  Report,
+  VulnerabilitiesReport,
+  DepsReport,
+  DocsReport,
+  CoverageReport,
+} from './types';
 import { CoverageNodeService } from './nodes/coverage-node.service';
 import { GithubNodeService } from './nodes/github-node.service';
 import { SynthesizerNodeService } from './nodes/synthesizer-node.service';
 import { SecurityNodeService } from './nodes/security-node.service';
+import { RemediationNodeService } from './nodes/remediation-node.service';
 
-// Stato del grafo
 const WorkflowAnnotation = Annotation.Root({
   target: Annotation<Target>(),
   repoPath: Annotation<string>(),
   startScanTime: Annotation<Date>(),
-  semgrepReportPath: Annotation<string | undefined>(),
+  vulnerabilitiesReportPath: Annotation<string | undefined>(),
   languageBreakdown: Annotation<Record<string, number> | undefined>(),
-  depsReport: Annotation<WorkflowState['depsReport']>(),
-  vulnerabilitiesReport: Annotation<WorkflowState['vulnerabilitiesReport']>(),
-  docsReport: Annotation<WorkflowState['docsReport']>(),
-  coverageReport: Annotation<WorkflowState['coverageReport']>(),
+  depsReport: Annotation<DepsReport | undefined>(),
+  vulnerabilitiesReport: Annotation<VulnerabilitiesReport | undefined>(),
+  docsReport: Annotation<DocsReport | undefined>(),
+  coverageReport: Annotation<CoverageReport | undefined>(),
 });
 
-type State = typeof WorkflowAnnotation.State;
+export type WorkflowState = typeof WorkflowAnnotation.State;
 
 // Service
 @Injectable()
@@ -34,10 +41,11 @@ export class OrchestratorService {
     private readonly githubNode: GithubNodeService,
     private readonly synthesizerNode: SynthesizerNodeService,
     private readonly securityNode: SecurityNodeService,
+    private readonly remediationNode: RemediationNodeService,
   ) {}
 
   async execute(target: Target): Promise<WorkflowState | undefined> {
-    const assignWorkers = (state: State) => {
+    const assignWorkers = (state: WorkflowState) => {
       return [
         new Send('coverage', state.repoPath),
         new Send('github', state.target),
@@ -46,7 +54,7 @@ export class OrchestratorService {
     };
 
     const workflow = new StateGraph(WorkflowAnnotation)
-      .addNode('orchestrator', async (state: State) => {
+      .addNode('orchestrator', async (state: WorkflowState) => {
         const repoPath = await this.cloneRepo(state.target);
         const startScanTime = new Date();
         return { repoPath, startScanTime };
@@ -60,7 +68,13 @@ export class OrchestratorService {
       .addNode('security', async (repoPath: string) => {
         return await this.securityNode.scan(repoPath);
       })
-      .addNode('synthesizer', async (state: State) => {
+      .addNode('remediation', async (state: WorkflowState) => {
+        return await this.remediationNode.scan({
+          vulnerabilitiesReportPath: state.vulnerabilitiesReportPath,
+          vulnerabilities: state.vulnerabilitiesReport?.vulnerabilities,
+        });
+      })
+      .addNode('synthesizer', async (state: WorkflowState) => {
         const report = await this.synthesizerNode.summarize(state);
         return { report };
       })
@@ -72,7 +86,8 @@ export class OrchestratorService {
       ])
       .addEdge('coverage', 'synthesizer')
       .addEdge('github', 'synthesizer')
-      .addEdge('security', 'synthesizer')
+      .addEdge('security', 'remediation')
+      .addEdge('remediation', 'synthesizer')
       .addEdge('synthesizer', END);
 
     const app = workflow.compile();

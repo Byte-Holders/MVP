@@ -4,7 +4,8 @@ import { Document } from 'mongoose';
 import { exec } from 'child_process';
 import * as fs from 'fs';
 import * as path from 'path';
-import { WorkflowState, CoverageReport } from '../types';
+import { CoverageReport } from '../types';
+import { WorkflowState } from '../orchestrator.service';
 import { promisify } from 'util';
 
 // ── Schema ────────────────────────────────────────────────────────────────────
@@ -83,7 +84,12 @@ export class CoverageNodeService {
     let report: CoverageReport;
 
     try {
-      const stdout = await this.executionWrapper(targetPath);
+      const execAsync = promisify(exec);
+      const command = `cd "${targetPath}" && npm install --silent && npx jest --coverage --coverageReporters="text-summary" 2>&1 | grep -E "Statements|Branches|Functions|Lines"`;
+
+      console.log(`[CoverageNode] Esecuzione comando: ${command}`);
+      const { stdout } = await execAsync(command);
+
       report = this.parseOutput(stdout);
     } catch (err: unknown) {
       throw new Error(
@@ -115,15 +121,6 @@ export class CoverageNodeService {
   // private async persistReport(reportData: CoverageReport): Promise<void> {
   //  await this.coverageModel.create(reportData);
   // }
-
-  private async executionWrapper(targetPath: string): Promise<string> {
-    const execAsync = promisify(exec);
-    const command = `cd "${targetPath}" && npm install --silent && npx jest --coverage --coverageReporters="text-summary" 2>&1 | grep -E "Statements|Branches|Functions|Lines"`;
-
-    console.log(`[CoverageNode] Esecuzione comando: ${command}`);
-    const { stdout } = await execAsync(command);
-    return stdout;
-  }
 
   private splitResult(result: string): string[] {
     const split = result

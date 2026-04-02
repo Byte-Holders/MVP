@@ -1,7 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { SystemMessage, HumanMessage } from '@langchain/core/messages';
 import { ChatBedrockConverse } from '@langchain/aws';
-import { WorkflowState, Report, ReportSummary } from '../types';
+import { Report, ReportSummary } from '../types';
+import { WorkflowState } from '../orchestrator.service';
 
 @Injectable()
 export class SynthesizerNodeService {
@@ -68,7 +69,9 @@ Restituisci SOLO un JSON con questa struttura, senza markdown:
       summary: reportSummary,
       data: {
         depsReport: state.depsReport ?? { report: [] },
-        vulnerabilitiesReport: state.vulnerabilitiesReport ?? { report: [] },
+        vulnerabilitiesReport: state.vulnerabilitiesReport ?? {
+          vulnerabilities: [],
+        },
         docsReport: state.docsReport ?? {
           readmeReport: { analysis: { analysis: '' } },
           commentReport: [],
@@ -89,6 +92,11 @@ Restituisci SOLO un JSON con questa struttura, senza markdown:
     };
 
     console.log('[SynthesizerNode] Report built successfully.');
+
+    console.log(`[SynthesizerNode] REPORT:\n`);
+    console.log(`[SynthesizerNode] ---------------------------`);
+    console.log(`[SynthesizerNode] ${JSON.stringify(report)}`);
+    console.log(`[SynthesizerNode] ===========================`);
     return report;
   }
 }
