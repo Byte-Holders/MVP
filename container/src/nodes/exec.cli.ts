@@ -1,14 +1,21 @@
-import { spawn } from 'child_process';
+import { spawn, SpawnOptionsWithoutStdio } from 'child_process';
+
+export type CliCommand = {
+  name: string;
+  args?: string[];
+};
 
 export async function executeCli(
-  command: string,
-  ...args: string[]
+  command: CliCommand,
+  options?: SpawnOptionsWithoutStdio,
 ): Promise<string> {
   return new Promise(
     (resolve: (_: string) => void, reject: (_: Error) => void) => {
-      console.log(`RUNNING COMMAND: ${command} ${args.join(' ')}`);
+      console.log(
+        `RUNNING COMMAND: ${command.name} ${command.args?.join(' ')}`,
+      );
 
-      const process = spawn(command, args);
+      const process = spawn(command.name, command.args, options);
 
       let stdout = '';
       let stderr = '';

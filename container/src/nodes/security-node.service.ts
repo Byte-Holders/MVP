@@ -6,7 +6,7 @@ import { mkdir } from 'fs/promises';
 import { readFile } from 'fs/promises';
 import { VulnerabilityUnit } from '../types';
 import { WorkflowState } from '../orchestrator.service';
-import { executeCli } from './exec.cli';
+import { executeCli, type CliCommand } from './exec.cli';
 
 type SemgrepResult = {
   results: {
@@ -68,21 +68,25 @@ export class SecurityNodeService {
     repoPath: string,
     reportPath: string,
   ): Promise<void> {
-    await executeCli(
-      `semgrep`,
-      `scan`,
-      `${repoPath}`,
-      `--config`,
-      `auto`,
-      `--json`,
-      `--output`,
-      `${reportPath}`,
-      `--exclude=node_modules`,
-      `--exclude=reports`,
-      `--exclude=dist`,
-      `--quiet`,
-      `--no-git-ignore`,
-    );
+    const command: CliCommand = {
+      name: 'semgrep',
+      args: [
+        `scan`,
+        `${repoPath}`,
+        `--config`,
+        `auto`,
+        `--json`,
+        `--output`,
+        `${reportPath}`,
+        `--exclude=node_modules`,
+        `--exclude=reports`,
+        `--exclude=dist`,
+        `--quiet`,
+        `--no-git-ignore`,
+      ],
+    };
+
+    await executeCli(command);
     console.log(`[SecurityNode] Report saved to: ${reportPath}`);
   }
 

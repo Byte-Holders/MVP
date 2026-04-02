@@ -1,21 +1,21 @@
 import { Injectable } from '@nestjs/common';
 import { DepsReport } from '../types';
 import { WorkflowState } from '../orchestrator.service';
-import { executeCli } from './exec.cli';
+import { executeCli, type CliCommand } from './exec.cli';
 
 @Injectable()
 export class DepsNodeService {
-  //Runna syft
   async scan(repoPath: string): Promise<Partial<WorkflowState>> {
     console.log(`[DepsNode] Analyzing dependencies in: ${repoPath}`);
 
     try {
-      const raw = (
-        await executeCli(`syft`, `dir:${repoPath}`, `-o`, `json`, `-q`)
-      )
-        .toString()
-        .trim();
-      console.log(`Syft output: ${raw}`);
+      const command: CliCommand = {
+        name: 'syft',
+        args: [`dir:${repoPath}`, `-o`, `json`, `-q`],
+      };
+
+      const raw = (await executeCli(command)).toString().trim();
+
       const report = JSON.parse(raw) as {
         artifacts: { name: string; version: string }[];
       };
