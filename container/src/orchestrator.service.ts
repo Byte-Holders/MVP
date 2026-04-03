@@ -11,6 +11,7 @@ import {
   DepsReport,
   DocsReport,
   CoverageReport,
+  Report,
 } from './types';
 import { CoverageNodeService } from './nodes/coverage-node.service';
 import { GithubNodeService } from './nodes/github-node.service';
@@ -19,17 +20,19 @@ import { SecurityNodeService } from './nodes/security-node.service';
 import { RemediationNodeService } from './nodes/remediation-node.service';
 import { DepsNodeService } from './nodes/dependency-node.service';
 import { DocsNodeService } from './nodes/docs-node.service';
+import { ReporterNodeService } from './nodes/reporter-node.service';
 
 const WorkflowAnnotation = Annotation.Root({
   target: Annotation<Target>(),
   repoPath: Annotation<string>(),
   startScanTime: Annotation<Date>(),
   vulnerabilitiesReportPath: Annotation<string | undefined>(),
-  languageBreakdown: Annotation<Record<string, number> | undefined>(),
-  depsReport: Annotation<DepsReport | undefined>(),
-  vulnerabilitiesReport: Annotation<VulnerabilitiesReport | undefined>(),
-  docsReport: Annotation<DocsReport | undefined>(),
-  coverageReport: Annotation<CoverageReport | undefined>(),
+  languageBreakdown: Annotation<Record<string, number> | undefined | null>(),
+  depsReport: Annotation<DepsReport | undefined | null>(),
+  vulnerabilitiesReport: Annotation<VulnerabilitiesReport | undefined | null>(),
+  docsReport: Annotation<DocsReport | undefined | null>(),
+  coverageReport: Annotation<CoverageReport | undefined | null>(),
+  finalReport: Annotation<Report | undefined>(),
 });
 
 export type WorkflowState = typeof WorkflowAnnotation.State;
@@ -45,6 +48,7 @@ export class OrchestratorService {
     private readonly dependencyNode: DepsNodeService,
     private readonly docsNode: DocsNodeService,
     private readonly synthesizerNode: SynthesizerNodeService,
+    private readonly sendReportNode: ReporterNodeService,
   ) {}
 
   async execute(target: Target): Promise<WorkflowState | undefined> {
@@ -56,6 +60,27 @@ export class OrchestratorService {
         new Send('security', state.repoPath),
         new Send('docs', state.repoPath),
       ];
+    };
+
+    const checkExecutionEnd = (state: WorkflowState) => {
+      const reports = [
+        state.coverageReport,
+        state.depsReport,
+        state.docsReport,
+        state.languageBreakdown,
+        state.vulnerabilitiesReport,
+      ];
+
+      if (reports.filter((report) => report === undefined).length == 0)
+        return 'synthesizer';
+
+      return END;
+    };
+
+    type NoOpPathResult = '__end__' | 'synthesizer';
+    const noopPaths: Record<string, NoOpPathResult> = {
+      synthesizer: 'synthesizer',
+      [END]: '__end__',
     };
 
     const workflow = new StateGraph(WorkflowAnnotation)
@@ -87,7 +112,10 @@ export class OrchestratorService {
       })
       .addNode('synthesizer', async (state: WorkflowState) => {
         const report = await this.synthesizerNode.summarize(state);
-        return { report };
+        return { finalReport: report };
+      })
+      .addNode('reporter', async (state: WorkflowState) => {
+        return await this.sendReportNode.sendReport(state.finalReport!);
       })
       .addEdge(START, 'orchestrator')
       .addConditionalEdges('orchestrator', assignWorkers, [
@@ -97,13 +125,14 @@ export class OrchestratorService {
         'security',
         'docs',
       ])
-      .addEdge('coverage', 'synthesizer')
-      .addEdge('github', 'synthesizer')
+      .addConditionalEdges('coverage', checkExecutionEnd, noopPaths)
+      .addConditionalEdges('dependencies', checkExecutionEnd, noopPaths)
+      .addConditionalEdges('github', checkExecutionEnd, noopPaths)
+      .addConditionalEdges('remediation', checkExecutionEnd, noopPaths)
+      .addConditionalEdges('docs', checkExecutionEnd, noopPaths)
       .addEdge('security', 'remediation')
-      .addEdge('remediation', 'synthesizer')
-      .addEdge('dependencies', 'synthesizer')
-      .addEdge('docs', 'synthesizer')
-      .addEdge('synthesizer', END);
+      .addEdge('synthesizer', 'reporter')
+      .addEdge('reporter', END);
 
     const app = workflow.compile();
 

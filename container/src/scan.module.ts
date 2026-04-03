@@ -7,9 +7,11 @@ import { SecurityNodeService } from './nodes/security-node.service';
 import { RemediationNodeService } from './nodes/remediation-node.service';
 import { DepsNodeService } from './nodes/dependency-node.service';
 import { DocsNodeService } from './nodes/docs-node.service';
+import { HttpModule } from '@nestjs/axios';
+import { ReporterNodeService } from './nodes/reporter-node.service';
 
 @Module({
-  imports: [],
+  imports: [HttpModule],
   providers: [
     OrchestratorService,
     CoverageNodeService,
@@ -18,6 +20,7 @@ import { DocsNodeService } from './nodes/docs-node.service';
     SecurityNodeService,
     RemediationNodeService,
     DepsNodeService,
+    ReporterNodeService,
     DocsNodeService,
   ],
   exports: [],
