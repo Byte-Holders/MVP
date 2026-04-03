@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { fetchAuthSession } from 'aws-amplify/auth'
-import { NewWorkspaceDialog } from './FormNewWorkspace'
+import { NewWorkspaceDialog } from '../components/NewWorkspaceDialog'
 
 export function WorkspacesPage() {
   const [token, setToken] = useState<string | null>(null)

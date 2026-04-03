@@ -9,6 +9,10 @@ import { Button } from "@/components/ui/button"
 import {Card,CardContent,CardDescription, CardFooter, CardHeader, CardTitle} from "@/components/ui/card"
 import {Field,FieldDescription, FieldError, FieldGroup, FieldLabel} from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
+import {Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger} from "@/components/ui/dialog"
+import { useNavigate } from "@tanstack/react-router"
+import { fetchAuthSession } from 'aws-amplify/auth'
+import { getCurrentUser } from 'aws-amplify/auth'
 
 const formSchema = z.object({
   name: z
@@ -16,97 +20,6 @@ const formSchema = z.object({
     .min(2, "Workspace name must be at least 2 characters.")
     .max(30, "Workspace name must be at most 30 characters."),
 })
-
-export function NewWorkspaceForm() {
-  const form = useForm({
-    defaultValues: {
-      name: "Undefined",
-    },
-    validators: {
-      onSubmit: formSchema,
-    },
-    onSubmit: async ({ value }) => {
-      toast("You submitted the following values:", {
-        description: (
-          <pre className="mt-2 w-[320px] overflow-x-auto rounded-md bg-code p-4 text-code-foreground">
-            <code>{JSON.stringify(value, null, 2)}</code>
-          </pre>
-        ),
-        position: "bottom-right",
-        classNames: {
-          content: "flex flex-col gap-2",
-        },
-        style: {
-          "--border-radius": "calc(var(--radius)  + 4px)",
-        } as React.CSSProperties,
-      })
-    },
-  })
-
-  return (
-    <Card className="w-full sm:max-w-md">
-      <CardHeader>
-        <CardTitle>New Workspace</CardTitle>
-        <CardDescription>
-          Create a new workspace to organize your projects and tasks.
-        </CardDescription>
-      </CardHeader>
-      <CardContent>
-        <form
-          id="new-workspace-form"
-          onSubmit={(e) => {
-            e.preventDefault()
-            form.handleSubmit()
-          }}
-        >
-          <FieldGroup>
-            <form.Field
-              name="name"
-              children={(field) => {
-                const isInvalid =
-                  field.state.meta.isTouched && !field.state.meta.isValid
-                return (
-                  <Field data-invalid={isInvalid}>
-                    <FieldLabel htmlFor={field.name}>Workspace Name</FieldLabel>
-                    <Input
-                      id={field.name}
-                      name={field.name}
-                      value={field.state.value}
-                      onBlur={field.handleBlur}
-                      onChange={(e) => field.handleChange(e.target.value)}
-                      aria-invalid={isInvalid}
-                      placeholder="My New Workspace"
-                      autoComplete="off"
-                    />
-                    {isInvalid && (
-                      <FieldError errors={field.state.meta.errors} />
-                    )}
-                  </Field>
-                )
-              }}
-            />
-          </FieldGroup>
-        </form>
-      </CardContent>
-      <CardFooter>
-        <Field orientation="horizontal">
-            <Button type="submit" form="new-workspace-form">
-                Submit
-            </Button>
-            <Button type="button" variant="outline" onClick={() => form.reset()}>
-                Cancel
-            </Button>
-        </Field>
-      </CardFooter>
-    </Card>
-  )
-}
-
-
-
-import {Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger} from "@/components/ui/dialog"
-import { useNavigate } from "@tanstack/react-router"
-
 
 export function NewWorkspaceDialog() {
     const navigate = useNavigate()
@@ -118,7 +31,7 @@ export function NewWorkspaceDialog() {
     validators: {
       onSubmit: formSchema,
     },
-    onSubmit: async ({ value }) => {
+    /*onSubmit: async ({ value }) => {
       toast("You submitted the following values:", {
         description: (
           <pre className="mt-2 w-[320px] overflow-x-auto rounded-md bg-code p-4 text-code-foreground">
@@ -133,9 +46,11 @@ export function NewWorkspaceDialog() {
           "--border-radius": "calc(var(--radius)  + 4px)",
         } as React.CSSProperties,
       })
-    },
-    /*onSubmit: async ({ value }) => {
+    },*/
+    onSubmit: async ({ value }) => {
       try {
+        const { username } = await getCurrentUser()  // prende username da Cognito
+
         const response = await fetch("/api/workspaces", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -148,20 +63,20 @@ export function NewWorkspaceDialog() {
         if (!response.ok) throw new Error("Errore nella creazione del workspace")
 
         const newWorkspace = await response.json()
+        navigate({ to: "/workspaces"})
 
         // Redirect alla pagina del nuovo workspace
         // Adatta il path alla struttura dei tuoi route
-        navigate({ to: "/workspaces/$workspaceId", params: { workspaceId: newWorkspace.id } })
+        //navigate({ to: "/workspaces/$workspaceId", params: { workspaceId: newWorkspace.id } })
 
       } catch (error) {
         console.error(error)
         // qui puoi aggiungere un toast di errore
       }
-    },*/
+    },
   })
   return (
     <Dialog>
-      
         <DialogTrigger asChild>
           <Button variant="outline">+ New Workspace</Button>
         </DialogTrigger>
