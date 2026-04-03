@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { fetchAuthSession } from 'aws-amplify/auth'
+import { NewWorkspaceDialog } from './FormNewWorkspace'
 
 export function WorkspacesPage() {
   const [token, setToken] = useState<string | null>(null)
@@ -20,7 +21,9 @@ export function WorkspacesPage() {
 
   return (
     <div>
+
       <div>Workspace List</div>
+      <NewWorkspaceDialog />
       <button onClick={printToken}>Stampa token</button>
 
       {token && (
@@ -34,3 +37,5 @@ export function WorkspacesPage() {
     </div>
   )
 }
+
+
