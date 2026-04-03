@@ -6,7 +6,7 @@ import { WorkspaceRepository } from './workspace.repository';
 export class WorkspaceService {
   constructor(private workspaceRepository: WorkspaceRepository) {}
 
-  async createWorkspace(
+  /*async createWorkspace(
     createWorkspaceDto: CreateWorkspaceDto,
     ownerId: string,
   ) {
@@ -14,5 +14,5 @@ export class WorkspaceService {
       createWorkspaceDto,
       ownerId,
     );
-  }
+  }*/
 }

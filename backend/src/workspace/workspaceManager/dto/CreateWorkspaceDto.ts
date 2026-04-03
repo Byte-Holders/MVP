@@ -6,6 +6,6 @@ export class CreateWorkspaceDto {
   @MaxLength(30)  
   name!: string 
 
-  @IsString()
-  createdBy!: string
+  /*@IsString()
+  createdBy!: string*/
 }

@@ -12,17 +12,21 @@ export const newWorkspaceSchema = z.object({
 })
 
 export function useNewWorkspaceForm() {
+  console.log('dentro useNewWorkspaceForm') // Debug log per verificare l'esecuzione del hook
   const navigate = useNavigate()
 
   const form = useForm({
+    
     defaultValues: { name: '' },
     validators: { onSubmit: newWorkspaceSchema },
     onSubmit: async ({ value }) => {
-      try {
+      try {console.log('dentro useForm try') // Debug log per verificare l'esecuzione del hook
         const { username } = await getCurrentUser()
+        console.log('dentro useForm try dopo getCurrentUser', username) // Debug log per verificare l'esecuzione del hook
         const result = await createWorkspace({ name: value.name, createdBy: username })
+        console.log('dentro useForm try dopo createWorkspcace', result)
         console.log('Risposta dal backend:', result) 
-        navigate({ to: '/workspaces' })
+        navigate({ to: '/repository' })
       } catch (error) {
         console.error(error)
         // puoi aggiungere toast di errore qui

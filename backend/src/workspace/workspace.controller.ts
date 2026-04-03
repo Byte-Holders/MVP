@@ -15,9 +15,10 @@ import { User } from '../auth/customDecorators/user.decorator';
 import type { RequestUser } from '../auth/types/requestUser.type';
 
 @Controller('workspace')
+@UseGuards(JwtAuthGuard)
 export class WorkspaceController {
   constructor(private workspaceService: WorkspaceService) {}
-
+/*
   @UseGuards(JwtAuthGuard)
   @Post()
   @UsePipes(new ValidationPipe())
@@ -38,5 +39,5 @@ export class WorkspaceController {
     @Param('userID') userID: string,
   ) {
     return this.workspaceService.createWorkspace(createWorkspaceDto, userID);
-  }
+  }*/
 }

@@ -16,6 +16,9 @@ export type WorkspaceDocument = HydratedDocument<Workspace>;
 @Schema()
 export class Workspace {
   @Prop({ required: true })
+  _id: string;
+
+  @Prop({ required: true })
   name: string;
 
   @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true })

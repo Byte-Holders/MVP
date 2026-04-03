@@ -12,12 +12,22 @@ export class WorkspaceManagerRepository implements IWorkspaceManagerRepository {
     @InjectModel(Workspace.name) private workspaceModel: Model<Workspace>
   ) {}
 
-  async create(dto: CreateWorkspaceDto): Promise<Workspace> {
+  async create(dto: CreateWorkspaceDto, authenticatedUsername: string): Promise<Workspace> {
+    console.log(
+      'Creating workspace with name:',
+      dto.name,
+      'and ownerId:',
+      authenticatedUsername,
+    );
     const workspace = new this.workspaceModel({
       name: dto.name,
-      owner: dto.createdBy,
+      owner: authenticatedUsername,
     })
     return workspace.save()
+  }
+
+  async delete(id: string): Promise<void> {
+    await this.workspaceModel.findByIdAndDelete(id)
   }
 
   async findByOwner(username: string): Promise<Workspace[]> {

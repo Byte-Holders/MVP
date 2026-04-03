@@ -10,7 +10,7 @@ export class WorkspaceRepository {
     @InjectModel(Workspace.name) private workspaceModel: Model<Workspace>,
   ) {}
 
-  async createWorkspace(
+  /*async createWorkspace(
     createWorkspaceDto: CreateWorkspaceDto,
     ownerId: string,
   ) {
@@ -26,5 +26,5 @@ export class WorkspaceRepository {
       creationDate: new Date(),
     });
     return workspace.save();
-  }
+  }*/
 }
