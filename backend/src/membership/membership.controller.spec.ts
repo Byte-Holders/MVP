@@ -7,9 +7,17 @@ describe('MembershipController', () => {
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      controllers: [
+      providers: [
         MembershipController,
-        MembershipRepository
+        {
+          provide: MembershipRepository,
+          useValue: {
+            findPendingInvite: jest.fn(),
+            addInvite: jest.fn(),
+            findPendingInvites: jest.fn(),
+            updateInvite: jest.fn(),
+          },
+        },
       ],
     }).compile();
 

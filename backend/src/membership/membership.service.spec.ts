@@ -9,7 +9,15 @@ describe('MembershipService', () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         MembershipService,
-        MembershipRepository
+        {
+          provide: MembershipRepository,
+          useValue: {
+            findPendingInvite: jest.fn(),
+            addInvite: jest.fn(),
+            findPendingInvites: jest.fn(),
+            updateInvite: jest.fn(),
+          },
+        },
       ],
     }).compile();
 

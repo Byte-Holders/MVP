@@ -1,33 +1,29 @@
 import { Injectable } from '@nestjs/common';
 import { Membership } from './schema/membership.schema';
-import { InviteUserDto, ManageInviteAction } from './dto/membership.dto';
+import { AddInviteDto, ManageInviteAction, ResearchInviteDto, UpdateInviteDto } from './dto/membership.dto';
 import { Model } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose/dist/common/mongoose.decorators';
+import { IMembershipRepository } from './interfaces/IMembershipRepository.interface';
 
 @Injectable()
-export class MembershipRepository {
+export class MembershipRepository implements IMembershipRepository {
   constructor(
     @InjectModel(Membership.name) private membershipModel: Model<Membership>
   ) {}
 
-  async saveInvite(invite: InviteUserDto): Promise<void> {
+  async addInvite(AddInviteDto: AddInviteDto): Promise<void> {
     const newInvite = new this.membershipModel({
-      ...invite,
-      workspaceId: invite.workspace.id,
+      ...AddInviteDto,
       status: 'PENDING'
     });
     await newInvite.save();
   }
 
-  async findByUsername(username: string): Promise<Membership[]> {
-    return this.membershipModel.find({ recipientUsername: username }).exec();
-  }
-
-  async updateStatus(username: string, action: ManageInviteAction): Promise<void> {
-    const newStatus = action === ManageInviteAction.Accept ? 'ACCEPTED' : 'REJECTED';
+  async updateInvite(UpdateInviteDto: UpdateInviteDto): Promise<void> {
+    const newStatus = UpdateInviteDto.action === ManageInviteAction.Accept ? 'ACCEPTED' : 'REJECTED';
 
     const result = await this.membershipModel.updateOne(
-      { recipientUsername: username, status: 'PENDING' },
+      { _id: UpdateInviteDto.membershipId },
       { $set: { status: newStatus } }
     ).exec();
 
@@ -37,10 +33,18 @@ export class MembershipRepository {
     }
   }
 
-  async findPendingInvite(username: string, workspaceId: string): Promise<Membership | null> {
+  async findPendingInvites(recipientId: string): Promise<Membership[]> {
+    return this.membershipModel.find({ 
+      recipientId: recipientId, 
+      status: 'PENDING' 
+    }).exec();
+  }
+
+  // Trova l'unico documento che soddisfa tutti e tre i criteri
+  async findPendingInvite(researchInviteDto: ResearchInviteDto): Promise<Membership | null> {
     return this.membershipModel.findOne({ 
-      recipientUsername: username, 
-      workspaceId: workspaceId, 
+      recipientId: researchInviteDto.userId, 
+      workspaceId: researchInviteDto.workspaceId, 
       status: 'PENDING' 
     }).exec();
   }

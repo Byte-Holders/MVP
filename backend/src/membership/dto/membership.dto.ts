@@ -4,18 +4,35 @@ export enum ManageInviteAction {
 }
 
 export class InviteUserDto {
-  workspace!: any;
-  senderUsername!: string;
-  recipientUsername!: string;
+  workspaceId!: string;
+  senderId!: string;
+  recipientId!: string;
   recipientRole!: string;
 }
 
 export class ManageInviteDto {
-  workspace!: any;
-  username!: string;
+  workspaceId!: string;
+  userId!: string;
   action!: ManageInviteAction;
 }
 
 export class GetInviteDto {
-  username!: string;
+  userId!: string;
+}
+  
+export class AddInviteDto {
+  workspaceId!: string;
+  senderId!: string;
+  recipientId!: string;
+  recipientRole!: string;
+}
+
+export class UpdateInviteDto {
+  membershipId!: string;
+  action!: ManageInviteAction;
+}
+
+export class ResearchInviteDto {
+  workspaceId!: string;
+  userId!: string;
 }
