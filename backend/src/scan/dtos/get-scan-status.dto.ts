@@ -1,8 +1,9 @@
+import { IsString } from 'class-validator';
+
 export class GetScanStatusDto {
-  // TODO tipo
-  repository: {
-    name: string;
-    owner: string;
-  };
+  @IsString()
+  repositoryId: string;
+
+  @IsString()
   branch: string;
 }

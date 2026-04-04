@@ -1,21 +1,21 @@
 import { Prop, Schema } from '@nestjs/mongoose';
-import { type ScanTarget } from '../types/scan-target.type';
-import { type ScanStatus } from '../types/scan-status.type';
+import { ScanTarget } from '../types/scan-target.type';
+import { scanStatus, type ScanStatus } from '../types/scan-status.type';
 
 @Schema()
 export class Scan {
-  @Prop({ required: true })
+  @Prop({ required: true, type: ScanTarget })
   target: ScanTarget;
 
   @Prop({ required: false })
-  callbackToken: string;
+  callbackToken?: string;
 
-  @Prop({ required: true })
+  @Prop({ required: true, type: Date })
   startTime: Date;
 
-  @Prop({ required: false })
+  @Prop({ required: false, type: Date })
   endTime?: Date;
 
-  @Prop({ required: true })
+  @Prop({ required: true, type: scanStatus })
   status: ScanStatus;
 }

@@ -1,15 +1,23 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { IScanStatusService } from './interfaces/iscan-status-service';
 import { GetScanStatusDto } from './dtos/get-scan-status.dto';
-import { SetScanStatusDto } from './dtos/set-scan-status.dto';
-import { type IScanRepository } from './interfaces/iscan.repository';
+import { UpdateScanStatusDto } from './dtos/update-scan-status.dto';
+import {
+  ISCAN_REPOSITORY_TOKEN,
+  type IScanRepository,
+} from './interfaces/iscan.repository';
+import { ScanStatus } from './types/scan-status.type';
 
 @Injectable()
 export class ScanStatusService implements IScanStatusService {
-  getScanStatus(getScanStatusDto: GetScanStatusDto): GetScanStatusDto {
-    throw new Error('Method not implemented.');
+  constructor(
+    @Inject(ISCAN_REPOSITORY_TOKEN)
+    private readonly scanRepository: IScanRepository,
+  ) {}
+  async getScanStatus(getScanStatusDto: GetScanStatusDto): Promise<ScanStatus> {
+    return (await this.scanRepository.get(getScanStatusDto)).status;
   }
-  setScanStatus(setScanStatusDto: SetScanStatusDto): void {
-    throw new Error('Method not implemented.');
+  async setScanStatus(setScanStatusDto: UpdateScanStatusDto): Promise<void> {
+    await this.scanRepository.update(setScanStatusDto);
   }
 }

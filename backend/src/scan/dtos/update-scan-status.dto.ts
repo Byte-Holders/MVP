@@ -1,9 +1,9 @@
 import { IsIn, IsString } from 'class-validator';
 import { scanStatus, type ScanStatus } from '../types/scan-status.type';
 
-export class SetScanStatusDto {
+export class UpdateScanStatusDto {
   @IsString()
-  repository: string;
+  repositoryId: string;
 
   @IsString()
   branch: string;

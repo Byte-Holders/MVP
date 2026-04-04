@@ -13,8 +13,10 @@ import {
   ISCAN_STATUS_SERVICE_TOKEN,
   type IScanStatusService,
 } from './interfaces/iscan-status-service';
-import { type GetScanStatusDto } from './dtos/get-scan-status.dto';
-import type { SetScanStatusDto } from './dtos/set-scan-status.dto';
+import { GetScanStatusDto } from './dtos/get-scan-status.dto';
+import { UpdateScanStatusFromContainerDto } from './dtos/update-scan-status-from-container.dto';
+import { ScanStatus } from './types/scan-status.type';
+import { UpdateScanStatusDto } from './dtos/update-scan-status.dto';
 
 @Controller('/scan/status')
 export class ScanStatusController {
@@ -23,27 +25,23 @@ export class ScanStatusController {
     private readonly scanStatusService: IScanStatusService,
   ) {}
 
-  @Get('/:owner/:name/:branch')
-  getScanStatus(
-    @Param('owner') owner: string,
-    @Param('name') name: string,
-    @Param('branch') branch: string,
-  ): GetScanStatusDto {
-    const dto: GetScanStatusDto = {
-      repository: {
-        name,
-        owner,
-      },
-      branch,
-    };
-    return this.scanStatusService.getScanStatus(dto);
+  @Get('/repositories/:repositoryId/branches/:branch')
+  @UsePipes(new ValidationPipe())
+  async getScanStatus(@Param() dto: GetScanStatusDto): Promise<ScanStatus> {
+    console.log('Called');
+    return await this.scanStatusService.getScanStatus(dto);
   }
 
+  // TODO guardia container
   @Put('/')
   @UsePipes(new ValidationPipe())
-  setScanStatus(@Body() setScanStatusDto: SetScanStatusDto): void {
+  async update(
+    @Body() updateStatusDto: UpdateScanStatusFromContainerDto,
+  ): Promise<void> {
+    const dto: UpdateScanStatusDto = updateStatusDto;
+
     try {
-      return this.scanStatusService.setScanStatus(setScanStatusDto);
+      return await this.scanStatusService.setScanStatus(dto);
     } catch {
       throw new InternalServerErrorException();
     }
