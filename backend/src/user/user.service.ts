@@ -1,26 +1,28 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { IUserService } from './interfaces/IUserService.interface';
-import { FindUserToken } from './interfaces/IfindUser.interface';
-import { CreateUserToken} from './interfaces/ICreateUser.interface';
 import type { ICreateUser } from './interfaces/ICreateUser.interface';
-import type { IFindUser } from './interfaces/IfindUser.interface';
 import { User } from './schemas/user.schema';
+import { IFindUserByUsername } from './interfaces/IfindUserByUsername.interface';
+import { IFindUserBySub } from './interfaces/IfindUserBySub.interface copy';
+import { UserRepositoryToken, type IUserRepository } from './interfaces/IUserRepository.interface';
 
 @Injectable()
-export class UserService implements IUserService {
+export class UserService implements IFindUserBySub, IFindUserByUsername, ICreateUser {
     constructor(
-        @Inject(FindUserToken) private findUser: IFindUser,
-        @Inject(CreateUserToken) private createUser: ICreateUser,
+        @Inject(UserRepositoryToken) private findUser: IUserRepository,
     ) {}
 
-    async find(sub: string): Promise<User | null> {
-        return this.findUser.find(sub);
+    async findBySub(sub: string): Promise<User | null> {
+        return this.findUser.findBySub(sub);
+    }
+
+    async findByUsername(username: string): Promise<User | null> {
+        return this.findUser.findByUsername(username);
     }
 
     async create(sub: string, username: string, email: string): Promise<User> {
-        if (await this.findUser.find(sub)) {
+        if (await this.findUser.findBySub(sub)) {
             throw new Error('Utente con sub ' + sub + ' già esistente');
         }
-        return this.createUser.create(sub, username, email);
+        return this.findUser.create(sub, username, email);
     }
 }

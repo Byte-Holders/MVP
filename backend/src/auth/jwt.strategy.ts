@@ -3,14 +3,14 @@ import { ConfigService } from '@nestjs/config';
 import { PassportStrategy } from '@nestjs/passport';
 import { passportJwtSecret } from 'jwks-rsa';
 import { ExtractJwt, Strategy } from 'passport-jwt';
-import { UserServiceToken, type IUserService } from '../user/interfaces/IUserService.interface';
 import { User } from '../user/schemas/user.schema';
+import { FindUserBySubToken, type IFindUserBySub} from 'src/user/interfaces/IfindUserBySub.interface copy';
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy, "jwt-auth") {
   constructor(
     private configService: ConfigService,
-    @Inject(UserServiceToken) private userService: IUserService,
+    @Inject(FindUserBySubToken) private userService: IFindUserBySub,
   ) {
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
@@ -30,7 +30,7 @@ export class JwtStrategy extends PassportStrategy(Strategy, "jwt-auth") {
   }
 
   async validate(payload: any) {
-    const user: User | null = await this.userService.find(payload.sub);
+    const user: User | null = await this.userService.findBySub(payload.sub);
     if (!user) {
       throw new Error('User con sub ' + payload.sub + ' non presente nel database');
     }

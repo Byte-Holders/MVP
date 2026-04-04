@@ -1,12 +1,12 @@
 import { Controller, Inject, Post, UseGuards } from '@nestjs/common';
-import { type IUserService, UserServiceToken } from './interfaces/IUserService.interface';
 import { JwtRegistrationGuard } from 'src/auth/jwt-registration.guard';
 import { Request } from '@nestjs/common';
+import { CreateUserToken, type ICreateUser } from './interfaces/ICreateUser.interface';
 
 
 @Controller('user')
 export class UserController {
-    constructor(@Inject(UserServiceToken) private userService: IUserService) {}
+    constructor(@Inject(CreateUserToken) private userService: ICreateUser) {}
 
     @UseGuards(JwtRegistrationGuard)
     @Post('/register')
