@@ -1,19 +1,20 @@
-import { ScanStatus, Scan } from './scan.dto';
 import {
+  ScanStatus,
   StartScanDto,
   StopScanDto,
   CreateScanDto,
   UpdateScanDto,
   FindScanDto,
   SetScanStatusDto,
-} from './scan.dto';
+  Scan,
+} from './dto';
 
 
-
-export interface IScanStatusService {
+export interface IScanManagerService {
   startScan(dto: StartScanDto): Promise<Scan>;
   stopScan(dto: StopScanDto): Promise<void>;
 }
+
 
 export interface IScanRepository {
   create(dto: CreateScanDto): Promise<Scan>;
