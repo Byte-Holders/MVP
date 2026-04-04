@@ -1,19 +1,13 @@
-import { Injectable, Logger, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 
-import { IScanRepository } from './scan.interfaces';
-import { ScanSchemaClass, ScanDocument } from './scan.schema';
-import {
-  ScanStatus,
-  CreateScanDto,
-  UpdateScanDto,
-  FindScanDto,
-  SetScanStatusDto,
-  Scan,
-  ScanTarget,
-  Workspace,
-} from './dto';
+import { IScanRepository } from './interfaces/iscan.repository';
+import { ScanSchemaClass, ScanDocument } from './schemas/scan.schema';
+import { Scan } from './entities/scan.entity';
+import { CreateScanDto } from './dtos/create-scan.dto';
+import { FindStatusDto } from './dtos/find-status.dto';
+import { UpdateScanDto } from './dtos/update-scan.dto';
 
 export const SCAN_MODEL = ScanSchemaClass.name;
 
@@ -24,31 +18,28 @@ export class ScanRepository implements IScanRepository {
     private readonly scanModel: Model<ScanDocument>,
   ) {}
 
-  // IScanRepository
-
-  async create(dto: CreateScanDto): Promise<Scan> {
+  async create(dto: CreateScanDto): Promise<void> {
     const doc = await this.scanModel.create({
-      workspace: { id: dto.workspace.id, name: dto.workspace.name },
+      workspaceId: dto.workspaceId,
       target: {
-        repositoryName: dto.repository.name,
+        repositoryId: dto.repositoryId,
         branchName: dto.branch,
       },
-      status: ScanStatus.Started,
+      status: 'started',
+      containerRef: dto.containerRef,
       startTime: new Date(),
       endTime: null,
       callbackToken: null,
     });
 
     console.log(
-      `[ScanRepository] Scan creata — id: ${doc._id}, repo: ${dto.repository.name}@${dto.branch}`,
+      `[ScanRepository] Scan creata — id: ${doc._id.toString()}, repo: ${dto.repositoryId}@${dto.branch}`,
     );
-
-    return this.toEntity(doc);
   }
 
-  async get(dto: FindScanDto): Promise<Scan | null> {
+  async find(dto: FindStatusDto): Promise<Scan | null> {
     const doc = await this.scanModel
-      .findOne(this.buildQuery(dto.repository.name, dto.branch))
+      .findOne(this.buildQuery(dto.repositoryId, dto.branch))
       .sort({ startTime: -1 })
       .lean()
       .exec();
@@ -57,63 +48,41 @@ export class ScanRepository implements IScanRepository {
   }
 
   async update(dto: UpdateScanDto): Promise<void> {
-    const filter = this.buildQuery(dto.repository.name, dto.branch);
+    const filter = this.buildQuery(dto.repositoryId, dto.branch);
 
     const $set: Partial<ScanDocument> = { status: dto.status };
     if (dto.endTime !== undefined) $set.endTime = dto.endTime;
 
     const result = await this.scanModel
       .updateOne(filter, { $set })
-      .sort({ startTime: -1 }) // aggiorna la scan più recente
+      .sort({ startTime: -1 })
       .exec();
 
     if (result.matchedCount === 0) {
       throw new NotFoundException(
-        `Scan non trovata per ${dto.repository.name}@${dto.branch}`,
+        `Scan not found for ${dto.repositoryId}@${dto.branch}`,
       );
     }
 
     console.log(
-      `[ScanRepository] Scan aggiornata — status: ${dto.status}, repo: ${dto.repository.name}@${dto.branch}`,
+      `[ScanRepository] Scan aggiornata — status: ${dto.status}, repo: ${dto.repositoryId}@${dto.branch}`,
     );
   }
 
-  async getScanStatus(dto: SetScanStatusDto): Promise<ScanStatus | null> {
-    const doc = await this.scanModel
-      .findOne(this.buildQuery(dto.repository.name, dto.branch), { status: 1 })
-      .sort({ startTime: -1 })
-      .lean()
-      .exec();
-
-    return (doc as ScanDocument | null)?.status ?? null;
-  }
-
-  private buildQuery(repositoryName: string, branch: string) {
+  private buildQuery(repositoryId: string, branch: string) {
     return {
-      'target.repositoryName': repositoryName,
+      'target.repositoryId': repositoryId,
       'target.branchName': branch,
     };
   }
 
-  /**
-   A quanto pare necessario per isolare mongoose e non rendere il service o controller dipendenti da esso
-   */
   private toEntity(doc: ScanDocument): Scan {
-    const workspace: Workspace = {
-      id: doc.workspace.id,
-      name: doc.workspace.name,
-    };
-
-    const target = new ScanTarget(
-      doc.target.repositoryName,
-      doc.target.branchName,
-    );
-
     return new Scan({
       id: String(doc._id),
-      workspace,
-      target,
+      workspaceId: doc.workspaceId,
+      target: doc.target,
       status: doc.status,
+      containerRef: doc.containerRef,
       startTime: doc.startTime,
       endTime: doc.endTime ?? undefined,
       callbackToken: doc.callbackToken ?? undefined,

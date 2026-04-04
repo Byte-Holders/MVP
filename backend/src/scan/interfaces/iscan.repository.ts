@@ -1,10 +1,12 @@
-import { GetScanStatusDto } from '../dtos/get-scan-status.dto';
-import { UpdateScanStatusDto } from '../dtos/update-scan-status.dto';
-import { Scan } from '../schemas/scan.schema';
+import { CreateScanDto } from '../dtos/create-scan.dto';
+import { FindStatusDto } from '../dtos/find-status.dto';
+import { UpdateScanDto } from '../dtos/update-scan.dto';
+import { Scan } from '../entities/scan.entity';
 
 export interface IScanRepository {
-  get(getScanStatusDto: GetScanStatusDto): Promise<Scan>;
-  update(setScanStatusDto: UpdateScanStatusDto): Promise<void>;
+  create(dto: CreateScanDto): Promise<void>;
+  find(dto: FindStatusDto): Promise<Scan | null>;
+  update(dto: UpdateScanDto): Promise<void>;
 }
 
 export const ISCAN_REPOSITORY_TOKEN = 'IScanRepository';

@@ -1,10 +1,9 @@
-import { Workspace } from './workspace.type';
+import { ScanStatus } from '../scan-status/enums/scan-status.enum';
 import { ScanTarget } from './scan-target.entity';
-import { ScanStatus } from './scan-status.enum';
 
 export class Scan {
   id: string;
-  workspace: Workspace;
+  workspaceId: string;
   target: ScanTarget;
   callbackToken?: string;
 

@@ -12,11 +12,11 @@ import {
 import {
   ISCAN_STATUS_SERVICE_TOKEN,
   type IScanStatusService,
-} from './interfaces/iscan-status-service';
+} from './interfaces/iscan-status.service';
 import { GetScanStatusDto } from './dtos/get-scan-status.dto';
 import { UpdateScanStatusFromContainerDto } from './dtos/update-scan-status-from-container.dto';
-import { ScanStatus } from './types/scan-status.type';
 import { UpdateScanStatusDto } from './dtos/update-scan-status.dto';
+import { ScanStatus } from './enums/scan-status.enum';
 
 @Controller('/scan/status')
 export class ScanStatusController {
@@ -33,12 +33,15 @@ export class ScanStatusController {
   }
 
   // TODO guardia container
+  // UpdateScanStatusFromContainerDto ~ UpdateScanStatusDto
   @Put('/')
   @UsePipes(new ValidationPipe())
   async update(
     @Body() updateStatusDto: UpdateScanStatusFromContainerDto,
   ): Promise<void> {
-    const dto: UpdateScanStatusDto = updateStatusDto;
+    // brutto ma compila
+    const dto: UpdateScanStatusDto =
+      updateStatusDto as unknown as UpdateScanStatusDto;
 
     try {
       return await this.scanStatusService.setScanStatus(dto);

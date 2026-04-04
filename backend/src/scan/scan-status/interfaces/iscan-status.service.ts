@@ -1,6 +1,6 @@
-import { type GetScanStatusDto } from '../dtos/get-scan-status.dto';
+import { GetScanStatusDto } from '../dtos/get-scan-status.dto';
 import { UpdateScanStatusDto } from '../dtos/update-scan-status.dto';
-import { ScanStatus } from '../types/scan-status.type';
+import { ScanStatus } from '../enums/scan-status.enum';
 
 export interface IScanStatusService {
   getScanStatus(getScanStatusDto: GetScanStatusDto): Promise<ScanStatus>;

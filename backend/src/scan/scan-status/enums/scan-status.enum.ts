@@ -2,5 +2,5 @@ export enum ScanStatus {
   Started = 'started',
   Completed = 'completed',
   Stopped = 'stopped',
-  Error = 'error',
+  Err = 'error',
 }
