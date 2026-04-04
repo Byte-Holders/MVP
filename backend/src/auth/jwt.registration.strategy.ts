@@ -1,4 +1,4 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { Injectable, BadRequestException} from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { PassportStrategy } from '@nestjs/passport';
 import { passportJwtSecret } from 'jwks-rsa';
@@ -28,7 +28,7 @@ export class JwtRegistrationStrategy extends PassportStrategy(Strategy, "jwtRegi
 
   async validate(payload: any) {
     if(!payload.token_use || payload.token_use !== 'id') {
-      throw new Error('Access Token non valido, usare ID Token per la registrazione');
+      throw new BadRequestException('Access Token non valido, usare ID Token per la registrazione');
     }
     return { sub: payload.sub, username: payload["cognito:username"], email: payload.email };
   }
