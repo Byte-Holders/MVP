@@ -6,9 +6,6 @@ import { ScanStatus } from '../scan-status/enums/scan-status.enum';
 @Schema({ timestamps: true, collection: 'scans' })
 export class ScanSchemaClass {
   @Prop({ required: true, type: String })
-  scanId: string;
-
-  @Prop({ required: true, type: String })
   workspaceId: string;
 
   @Prop({ required: true, type: ScanTargetSchema })
@@ -39,5 +36,3 @@ ScanSchema.index(
   { 'target.repositoryId': 1, 'target.branchName': 1 },
   { name: 'idx_repo_branch' },
 );
-
-ScanSchema.index({ scanId: 1 }, { unique: true, name: 'idx_scan_id' });
