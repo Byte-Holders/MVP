@@ -11,6 +11,7 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { ISCAN_MANAGER_SERVICE_TOKEN } from './scan-manager/interfaces/iscan-manager.service';
 import { ScanManagerService } from './scan-manager/scan-manager.service';
 import { ScanManagerController } from './scan-manager/scan-manager.controller';
+import { ConfigService } from '@nestjs/config';
 
 @Module({
   imports: [
@@ -32,6 +33,7 @@ import { ScanManagerController } from './scan-manager/scan-manager.controller';
       useClass: ScanManagerService,
     },
     Logger,
+    ConfigService,
   ],
   controllers: [ScanStatusController, ScanManagerController],
 })

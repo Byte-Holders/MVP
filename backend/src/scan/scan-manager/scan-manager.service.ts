@@ -9,6 +9,8 @@ import { StartScanDto } from './dtos/start-scan.dto';
 import { StopScanDto } from './dtos/stop-scan.dto';
 import { CreateScanDto } from '../dtos/create-scan.dto';
 import { ScanStatus } from '../scan-status/enums/scan-status.enum';
+import { ECSClient, RunTaskCommand } from '@aws-sdk/client-ecs';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class ScanManagerService implements IScanManagerService {
@@ -16,6 +18,7 @@ export class ScanManagerService implements IScanManagerService {
     // TODO injection WorkspaceUserService
     @Inject(ISCAN_REPOSITORY_TOKEN)
     private readonly scanRepository: IScanRepository,
+    private readonly configService: ConfigService,
     private readonly logger: Logger,
   ) {}
 
@@ -24,12 +27,38 @@ export class ScanManagerService implements IScanManagerService {
       `Lancio scansione verso workspace ${dto.workspaceId}, repository ${dto.repositoryId}, branch ${dto.branch} `,
     );
     // TODO controllo appartenenza utente a ws
-    // TODO lancio container
-    const containerRef = 'dontLeakMePlease';
+    const client = new ECSClient({
+      region: this.configService.get<string>('CONTAINER_REGION')!,
+    });
+    const command = new RunTaskCommand({
+      cluster: this.configService.get<string>('CONTAINER_CLUSTER')!,
+      taskDefinition: this.configService.get<string>(
+        'CONTAINER_TASK_DEFINITION',
+      )!,
+      launchType: 'FARGATE',
+      networkConfiguration: {
+        awsvpcConfiguration: {
+          subnets: [
+            this.configService.get<string>('CONTAINER_SUBNET_1')!,
+            this.configService.get<string>('CONTAINER_SUBNET_2')!,
+            this.configService.get<string>('CONTAINER_SUBNET_3')!,
+          ],
+          securityGroups: [
+            this.configService.get<string>('CONTAINER_SECGROUP_1')!,
+            this.configService.get<string>('CONTAINER_SECGROUP_2')!,
+          ],
+          assignPublicIp: 'ENABLED',
+        },
+      },
+      count: 1,
+    });
 
+    const result = await client.send(command);
+    // TODO gestione errori
+    const handle = result.tasks!.at(0)!.taskArn!;
     const createScanDto: CreateScanDto = {
       ...dto,
-      containerRef, // da vedere connessione con aws
+      containerRef: handle, // da vedere connessione con aws
     };
     await this.scanRepository.create(createScanDto);
     // placeholder
@@ -44,7 +73,7 @@ export class ScanManagerService implements IScanManagerService {
       startTime: new Date(),
 
       status: ScanStatus.Started,
-      containerRef,
+      containerRef: 'this should not be here',
     };
 
     return scan;
