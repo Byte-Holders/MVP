@@ -1,9 +1,10 @@
-import { Body, Controller, Inject, Post } from '@nestjs/common';
+import { Body, Controller, Inject, Patch, Post } from '@nestjs/common';
 import {
   ISCAN_MANAGER_SERVICE_TOKEN,
   type IScanManagerService,
 } from './interfaces/iscan-manager.service';
 import { StartScanDto } from './dtos/start-scan.dto';
+import { StopScanDto } from './dtos/stop-scan.dto';
 
 @Controller('/scan')
 export class ScanManagerController {
@@ -15,5 +16,10 @@ export class ScanManagerController {
   @Post()
   async startScan(@Body() startScanDto: StartScanDto) {
     await this.scanManagerService.startScan(startScanDto);
+  }
+
+  @Patch()
+  async stopScan(@Body() stopScanDto: StopScanDto) {
+    await this.scanManagerService.stopScan(stopScanDto);
   }
 }

@@ -9,7 +9,12 @@ import { StartScanDto } from './dtos/start-scan.dto';
 import { StopScanDto } from './dtos/stop-scan.dto';
 import { CreateScanDto } from '../dtos/create-scan.dto';
 import { ScanStatus } from '../scan-status/enums/scan-status.enum';
-import { ECSClient, RunTaskCommand } from '@aws-sdk/client-ecs';
+import {
+  ECSClient,
+  RunTaskCommand,
+  StopTaskCommand,
+  StopTaskCommandInput,
+} from '@aws-sdk/client-ecs';
 import { ConfigService } from '@nestjs/config';
 
 @Injectable()
@@ -56,6 +61,7 @@ export class ScanManagerService implements IScanManagerService {
     const result = await client.send(command);
     // TODO gestione errori
     const handle = result.tasks!.at(0)!.taskArn!;
+    this.logger.debug(`Handle: ${handle}`);
     const createScanDto: CreateScanDto = {
       ...dto,
       containerRef: handle, // da vedere connessione con aws
@@ -79,8 +85,20 @@ export class ScanManagerService implements IScanManagerService {
     return scan;
   }
 
-  stopScan(dto: StopScanDto): Promise<void> {
+  async stopScan(dto: StopScanDto): Promise<void> {
     // TODO stop container e aggiornamento stato
-    throw new Error('Method not implemented.');
+    const scan = await this.scanRepository.find(dto);
+    if (dto) {
+      const client = new ECSClient({
+        region: this.configService.get<string>('CONTAINER_REGION')!,
+      });
+      const commandInput: StopTaskCommandInput = {
+        cluster: this.configService.get<string>('CONTAINER_CLUSTER'),
+        task: scan?.containerRef,
+      };
+      this.logger.log(`Stopping: ${commandInput.task}`);
+      await client.send(new StopTaskCommand(commandInput));
+      this.logger.log(`Task stopped`);
+    }
   }
 }
