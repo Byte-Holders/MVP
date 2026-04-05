@@ -1,79 +1,44 @@
-import { Inject, Injectable, UnauthorizedException } from '@nestjs/common';
-import type { RepositoryResponseDto } from '../dtos/RepositoryResponseDto';
+import { Inject, Injectable } from '@nestjs/common';
 import type { IWorkspaceRepositoryService } from '../interfaces/workspaceRepository.service.interface';
-import type { AddRepositoryDto } from '../dtos/AddRepositoryDto';
-import type { GetRepositoriesDto } from '../dtos/GetRepositoriesDto';
-import type { AccessTokenDto } from '../dtos/AccessTokenDto';
-import type { WorkspaceRepoParamsDto } from '../dtos/WorkspaceRepoParamsDto';
-import type { IWorkspaceRepository } from '../interfaces/workspaceRepository.repository.interface';
+import type { IWorkspaceRepositoryRepository } from '../interfaces/workspaceRepository.repository.interface';
 import { WorkspaceRepositoryToken } from '../interfaces/workspaceRepository.repository.interface';
-import { RepositoryRepository } from '../../../repository/repository.repository';
+import type { IRepositoryReader } from '../../../repository/interfaces/repository.reader.interface';
+import { RepositoryReaderToken } from '../../../repository/interfaces/repository.reader.interface';
+import type { IRepositoryWriter } from '../../../repository/interfaces/repository.writer.interface';
+import { RepositoryWriterToken } from '../../../repository/interfaces/repository.writer.interface';
+import type { AddRepositoryDto } from '../../../repository/dtos/AddRepositoryDto';
+import type { AccessTokenDto } from '../dtos/AccessTokenDto';
+import type { RepositoryInfo } from '../../../repository/dtos/RepositoryInfo';
 
 @Injectable()
 export class WorkspaceRepositoryService implements IWorkspaceRepositoryService {
   constructor(
     @Inject(WorkspaceRepositoryToken)
-    private workspaceRepository: IWorkspaceRepository,
-    private repositoryRepository: RepositoryRepository,
+    private workspaceRepositoryRepository: IWorkspaceRepositoryRepository,
+    @Inject(RepositoryReaderToken)
+    private repositoryReader: IRepositoryReader,
+    @Inject(RepositoryWriterToken)
+    private repositoryWriter: IRepositoryWriter,
   ) {}
 
-  async getRepositories(
-    dto: GetRepositoriesDto,
-  ): Promise<RepositoryResponseDto[]> {
-    return this.workspaceRepository.getRepositories(dto.workspaceId);
-  }
-
-  async addRepository(dto: AddRepositoryDto): Promise<void> {
-    const urlParts = dto.repositoryUrl
-      .replace(/https?:\/\/github\.com\//, '')
-      .split('/');
-
-    const [ownerName, repoName] = urlParts;
-
-    if (dto.accessToken) {
-      const response = await fetch(
-        `https://api.github.com/repos/${ownerName}/${repoName}`,
-        {
-          headers: {
-            Authorization: `Bearer ${dto.accessToken}`,
-            Accept: 'application/vnd.github+json',
-          },
-        },
-      );
-      if (response.status === 401) {
-        throw new UnauthorizedException('Il token di accesso non è valido');
-      }
-      if (response.status === 404) {
-        throw new UnauthorizedException(
-          'Il token non ha accesso a questo repository',
-        );
-      }
+  async getRepositories(workspaceId: string, searchInput?: string): Promise<RepositoryInfo[]> {
+    const ids = await this.workspaceRepositoryRepository.getRepositories(workspaceId);
+    if (ids.length === 0) {
+      return [];
     }
-
-    const repository = await this.repositoryRepository.findOrCreate(
-      ownerName,
-      repoName,
-    );
-
-    return this.workspaceRepository.addRepository(
-      dto.workspaceId,
-      repository._id.toString(),
-      dto.accessToken,
-    );
+    return this.repositoryReader.getRepositories(ids, searchInput);
   }
 
-  async removeRepository(params: WorkspaceRepoParamsDto): Promise<void> {
-    return this.workspaceRepository.removeRepository(
-      params.workspaceId,
-      params.repoId,
-    );
+  async addRepository(workspaceId: string, dto: AddRepositoryDto): Promise<void> {
+    const repositoryId = await this.repositoryWriter.addRepository(dto);
+    await this.workspaceRepositoryRepository.addRepository(workspaceId, repositoryId);
   }
 
-  async updateToken(
-    params: WorkspaceRepoParamsDto,
-    dto: AccessTokenDto,
-  ): Promise<void> {
-    // TODO: implementare la logica per aggiornare il token di un repository
-    console.log('updateToken', params, dto);
+  async removeRepository(repositoryId: string, workspaceId: string): Promise<void> {
+    return this.workspaceRepositoryRepository.removeRepository(repositoryId, workspaceId);
+  }
+
+  async updateToken(_repositoryId: string, _workspaceId: string, _dto: AccessTokenDto): Promise<void> {
+    // TODO: implementare logica di aggiornamento token (es. delegare a IRepositoryWriter)
   }
 }

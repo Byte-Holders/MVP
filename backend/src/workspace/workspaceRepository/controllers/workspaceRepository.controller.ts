@@ -7,52 +7,54 @@ import {
   Param,
   Patch,
   Post,
+  Query,
   UsePipes,
   ValidationPipe,
 } from '@nestjs/common';
-import type { RepositoryResponseDto } from '../dtos/RepositoryResponseDto';
-import { AddRepositoryDto } from '../dtos/AddRepositoryDto';
-import { GetRepositoriesDto } from '../dtos/GetRepositoriesDto';
+import { AddRepositoryDto } from '../../../repository/dtos/AddRepositoryDto';
 import { AccessTokenDto } from '../dtos/AccessTokenDto';
-import { WorkspaceRepoParamsDto } from '../dtos/WorkspaceRepoParamsDto';
 import type { IWorkspaceRepositoryService } from '../interfaces/workspaceRepository.service.interface';
 import { WorkspaceRepositoryServiceToken } from '../interfaces/workspaceRepository.service.interface';
+import type { RepositoryInfo } from '../../../repository/dtos/RepositoryInfo';
 
-@Controller('workspace-repository')
+@Controller('workspaces/:workspaceId/repositories')
+@UsePipes(new ValidationPipe())
 export class WorkspaceRepositoryController {
   constructor(
     @Inject(WorkspaceRepositoryServiceToken)
     private workspaceRepositoryService: IWorkspaceRepositoryService,
   ) {}
 
-  @Get(':workspaceId')
-  @UsePipes(new ValidationPipe())
+  @Get()
   async getRepositories(
-    @Param() dto: GetRepositoriesDto,
-  ): Promise<RepositoryResponseDto[]> {
-    return this.workspaceRepositoryService.getRepositories(dto);
+    @Param('workspaceId') workspaceId: string,
+    @Query('searchInput') searchInput?: string,
+  ): Promise<RepositoryInfo[]> {
+    return this.workspaceRepositoryService.getRepositories(workspaceId, searchInput);
   }
 
   @Post()
-  @UsePipes(new ValidationPipe())
-  async addRepository(@Body() dto: AddRepositoryDto): Promise<void> {
-    return this.workspaceRepositoryService.addRepository(dto);
-  }
-
-  @Delete(':workspaceId/:repoId')
-  @UsePipes(new ValidationPipe())
-  async removeRepository(
-    @Param() params: WorkspaceRepoParamsDto,
+  async addRepository(
+    @Param('workspaceId') workspaceId: string,
+    @Body() dto: AddRepositoryDto,
   ): Promise<void> {
-    return this.workspaceRepositoryService.removeRepository(params);
+    return this.workspaceRepositoryService.addRepository(workspaceId, dto);
   }
 
-  @Patch(':workspaceId/:repoId')
-  @UsePipes(new ValidationPipe())
+  @Delete(':repositoryId')
+  async removeRepository(
+    @Param('workspaceId') workspaceId: string,
+    @Param('repositoryId') repositoryId: string,
+  ): Promise<void> {
+    return this.workspaceRepositoryService.removeRepository(repositoryId, workspaceId);
+  }
+
+  @Patch(':repositoryId')
   async updateToken(
-    @Param() params: WorkspaceRepoParamsDto,
+    @Param('workspaceId') workspaceId: string,
+    @Param('repositoryId') repositoryId: string,
     @Body() dto: AccessTokenDto,
   ): Promise<void> {
-    return this.workspaceRepositoryService.updateToken(params, dto);
+    return this.workspaceRepositoryService.updateToken(repositoryId, workspaceId, dto);
   }
 }
