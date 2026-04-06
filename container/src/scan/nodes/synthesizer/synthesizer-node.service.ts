@@ -1,19 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import { SystemMessage, HumanMessage } from '@langchain/core/messages';
-import { ChatBedrockConverse } from '@langchain/aws';
-import { Report, ReportSummary } from '../types';
-import { WorkflowState } from '../orchestrator.service';
+import { Report, ReportSummary } from './synthesizer.types';
+import { WorkflowState } from '../orchestrator/orchestrator.service';
+import { SynthesizerNodeHelper } from './synthesizer-node.helper';
 
 @Injectable()
 export class SynthesizerNodeService {
-  private createModel() {
-    return new ChatBedrockConverse({
-      model: process.env.BEDROCK_MODEL_ID ?? 'deepseek.v3.2',
-      region: process.env.BEDROCK_AWS_REGION ?? 'eu-north-1',
-      temperature: 0,
-      maxTokens: 5000,
-    });
-  }
+  constructor(private readonly helper: SynthesizerNodeHelper) {}
 
   async summarize(state: WorkflowState): Promise<Report> {
     console.log('[SynthesizerNode] Building final report...');
@@ -22,7 +15,6 @@ export class SynthesizerNodeService {
       {
         vulnerabilities: state.vulnerabilitiesReport,
         coverage: state.coverageReport,
-        // dependencies: state.depsReport,
         documentation: state.docsReport,
         languages: state.languageBreakdown,
       },
@@ -33,7 +25,7 @@ export class SynthesizerNodeService {
     let reportSummary: ReportSummary;
 
     try {
-      const response = await this.createModel().invoke([
+      const response = await this.helper.createModel().invoke([
         new SystemMessage(
           `Sei un tech lead esperto. Ricevi i risultati aggregati dell'analisi di una repository (sicurezza, coverage, dipendenze, documentazione).
 Restituisci SOLO un JSON con questa struttura, senza markdown:

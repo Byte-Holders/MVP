@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
-import { DepsReport } from '../types';
-import { WorkflowState } from '../orchestrator.service';
-import { executeCli, type CliCommand } from './exec.cli';
+import { DepsReport } from './deps-report.type';
+import { WorkflowState } from '../orchestrator/orchestrator.service';
+import { executeCli, type CliCommand } from '../../exec.cli';
 
 @Injectable()
 export class DepsNodeService {

@@ -3,29 +3,10 @@ import path from 'path';
 import fs from 'fs';
 import { SystemMessage, HumanMessage } from '@langchain/core/messages';
 import { ChatBedrockConverse } from '@langchain/aws';
-import { DocsReport } from '../types';
-import { WorkflowState } from '../orchestrator.service';
 
 @Injectable()
-export class DocsNodeService {
-  async scan(repoPath: string): Promise<Partial<WorkflowState>> {
-    const { report /*, totalTokens */ } =
-      await this.analyzeRepoDocumentation(repoPath);
-
-    // console.log(
-    //   `[DocsNode] Token totali usati: ${totalTokens.toLocaleString('it-IT')}`,
-    // );
-
-    const docsReport: DocsReport = {
-      readmeReport: { analysis: { analysis: report } },
-      commentReport: [],
-      mark: 5,
-    };
-
-    return { docsReport };
-  }
-
-  private createModel() {
+export class DocsNodeHelper {
+  createModel() {
     return new ChatBedrockConverse({
       model: process.env.BEDROCK_MODEL_ID ?? 'deepseek.v3.2',
       region: process.env.BEDROCK_AWS_REGION ?? 'eu-north-1',
@@ -35,7 +16,7 @@ export class DocsNodeService {
   }
 
   // ─── Analisi completa della repo con batching ────────────────────────────────
-  private async analyzeRepoDocumentation(repoPath: string): Promise<{
+  async analyzeRepoDocumentation(repoPath: string): Promise<{
     report: string;
     // inputTokens: number;
     // outputTokens: number;
@@ -223,7 +204,7 @@ export class DocsNodeService {
   }
 
   // ─── Raccoglie ricorsivamente tutti i file di testo analizzabili ─────────────
-  private collectTextFiles(dirPath: string): string[] {
+  collectTextFiles(dirPath: string): string[] {
     const results: string[] = [];
 
     const walk = (current: string) => {

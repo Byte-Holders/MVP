@@ -1,12 +1,14 @@
 import { Injectable } from '@nestjs/common';
 import { access, readFile } from 'fs/promises';
 import { SystemMessage, HumanMessage } from '@langchain/core/messages';
-import { ChatBedrockConverse } from '@langchain/aws';
-import { VulnerabilityUnit } from '../types';
-import { WorkflowState } from '../orchestrator.service';
+import { VulnerabilityUnit } from '../security/security-report.type';
+import { WorkflowState } from '../orchestrator/orchestrator.service';
+import { RemediationNodeHelper } from './remediation-node.helper';
 
 @Injectable()
 export class RemediationNodeService {
+  constructor(private readonly helper: RemediationNodeHelper) {}
+
   async scan(vulnerabilitiesReport: {
     vulnerabilities?: VulnerabilityUnit[];
     vulnerabilitiesReportPath?: string;
@@ -40,7 +42,7 @@ export class RemediationNodeService {
       return {};
     }
 
-    const model = this.createModel();
+    const model = this.helper.createModel();
     const vulnerabilities: VulnerabilityUnit[] = [
       ...(vulnerabilitiesReport?.vulnerabilities ?? []),
     ];
@@ -109,14 +111,5 @@ export class RemediationNodeService {
     return {
       vulnerabilitiesReport: { vulnerabilities: vulnerabilities },
     };
-  }
-
-  private createModel() {
-    return new ChatBedrockConverse({
-      model: process.env.BEDROCK_MODEL_ID ?? 'deepseek.v3.2',
-      region: process.env.BEDROCK_AWS_REGION ?? 'eu-north-1',
-      temperature: 0,
-      maxTokens: 15000,
-    });
   }
 }

@@ -1,6 +1,6 @@
 import { HttpService } from '@nestjs/axios';
 import { Injectable } from '@nestjs/common';
-import { Report } from 'src/types';
+import { Report } from '../synthesizer/synthesizer.types';
 import * as rx from 'rxjs';
 
 @Injectable()

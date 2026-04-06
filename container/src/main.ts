@@ -1,6 +1,6 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
-import { OrchestratorService } from './orchestrator.service';
+import { OrchestratorService } from './scan/nodes/orchestrator/orchestrator.service';
 import dotenv from 'dotenv';
 dotenv.config();
 

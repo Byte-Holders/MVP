@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import { ScanModule } from './scan.module';
+import { ScanModule } from './scan/scan.module';
 
 @Module({
   imports: [ScanModule],

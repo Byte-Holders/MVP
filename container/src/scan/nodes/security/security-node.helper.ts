@@ -2,11 +2,9 @@ import { Injectable, Logger } from '@nestjs/common';
 import { exec } from 'child_process';
 import { promisify } from 'util';
 import path from 'path';
-import { mkdir } from 'fs/promises';
 import { readFile } from 'fs/promises';
-import { VulnerabilityUnit } from '../types';
-import { WorkflowState } from '../orchestrator.service';
-import { executeCli, type CliCommand } from './exec.cli';
+import { VulnerabilityUnit } from './security-report.type';
+import { executeCli, type CliCommand } from '../../exec.cli';
 
 type SemgrepResult = {
   results: {
@@ -19,40 +17,15 @@ type SemgrepResult = {
 };
 
 @Injectable()
-export class SecurityNodeService {
-  private readonly logger = new Logger(SecurityNodeService.name);
+export class SecurityNodeHelper {
+  private readonly logger = new Logger(SecurityNodeHelper.name);
 
-  async scan(repoPath: string): Promise<Partial<WorkflowState>> {
-    const reportPath = this.buildReportPath(path.basename(repoPath));
-
-    console.log(`[SecurityNode] Starting Semgrep scan on: ${repoPath}`);
-
-    await mkdir(path.dirname(reportPath), { recursive: true });
-
-    if (!(await this.isSemgrepInstalled())) {
-      console.error('[Security Node] Semgrep not installed.');
-      return {};
-    }
-
-    try {
-      await this.executeSemgrep(repoPath, reportPath);
-      const units = await this.parseResults(reportPath);
-      return {
-        vulnerabilitiesReport: { vulnerabilities: units },
-        vulnerabilitiesReportPath: reportPath,
-      };
-    } catch (error) {
-      console.error('[SecurityNode] Semgrep execution failed.', error);
-      return {};
-    }
-  }
-
-  private buildReportPath(repoName: string): string {
+  buildReportPath(repoName: string): string {
     const dateStr = new Date().toISOString().replace(/[:.]/g, '-');
     return path.resolve(`./reports/${repoName}/scan_${dateStr}.json`);
   }
 
-  private async isSemgrepInstalled(): Promise<boolean> {
+  async isSemgrepInstalled(): Promise<boolean> {
     const execAsync = promisify(exec);
     try {
       const { stdout } = await execAsync('semgrep --version');
@@ -64,10 +37,7 @@ export class SecurityNodeService {
     }
   }
 
-  private async executeSemgrep(
-    repoPath: string,
-    reportPath: string,
-  ): Promise<void> {
+  async executeSemgrep(repoPath: string, reportPath: string): Promise<void> {
     const command: CliCommand = {
       name: 'semgrep',
       args: [
@@ -90,7 +60,7 @@ export class SecurityNodeService {
     console.log(`[SecurityNode] Report saved to: ${reportPath}`);
   }
 
-  private async parseResults(reportPath: string): Promise<VulnerabilityUnit[]> {
+  async parseResults(reportPath: string): Promise<VulnerabilityUnit[]> {
     const raw = await readFile(reportPath, 'utf-8');
     const json = JSON.parse(raw) as SemgrepResult;
 
@@ -102,7 +72,7 @@ export class SecurityNodeService {
     }));
   }
 
-  private parseSeverity(raw?: string): number {
+  parseSeverity(raw?: string): number {
     const map: Record<string, number> = { INFO: 1, WARNING: 2, ERROR: 3 };
     return map[raw?.toUpperCase() ?? ''] ?? 0;
   }

@@ -1,26 +1,21 @@
 import { Injectable } from '@nestjs/common';
-import path from 'path';
-import fs from 'fs';
-import git from 'isomorphic-git';
-import http from 'isomorphic-git/http/node';
 import { StateGraph, START, END, Annotation, Send } from '@langchain/langgraph';
 
-import {
-  Target,
-  VulnerabilitiesReport,
-  DepsReport,
-  DocsReport,
-  CoverageReport,
-  Report,
-} from './types';
-import { CoverageNodeService } from './nodes/coverage-node.service';
-import { GithubNodeService } from './nodes/github-node.service';
-import { SynthesizerNodeService } from './nodes/synthesizer-node.service';
-import { SecurityNodeService } from './nodes/security-node.service';
-import { RemediationNodeService } from './nodes/remediation-node.service';
-import { DepsNodeService } from './nodes/dependency-node.service';
-import { DocsNodeService } from './nodes/docs-node.service';
-import { ReporterNodeService } from './nodes/reporter-node.service';
+import { Target } from '../../target.types';
+import { VulnerabilitiesReport } from '../security/security-report.type';
+import { DepsReport } from '../dependency/deps-report.type';
+import { DocsReport } from '../docs/docs-report.type';
+import { CoverageReport } from '../coverage/coverage-report.type';
+import { Report } from '../synthesizer/synthesizer.types';
+import { OrchestratorHelper } from './orchestrator.helper';
+import { CoverageNodeService } from '../coverage/coverage-node.service';
+import { GithubNodeService } from '../github/github-node.service';
+import { SynthesizerNodeService } from '../synthesizer/synthesizer-node.service';
+import { SecurityNodeService } from '../security/security-node.service';
+import { RemediationNodeService } from '../remediation/remediation-node.service';
+import { DepsNodeService } from '../dependency/dependency-node.service';
+import { DocsNodeService } from '../docs/docs-node.service';
+import { ReporterNodeService } from '../reporter/reporter-node.service';
 
 const WorkflowAnnotation = Annotation.Root({
   target: Annotation<Target>(),
@@ -41,6 +36,7 @@ export type WorkflowState = typeof WorkflowAnnotation.State;
 @Injectable()
 export class OrchestratorService {
   constructor(
+    private readonly helper: OrchestratorHelper,
     private readonly coverageNode: CoverageNodeService,
     private readonly githubNode: GithubNodeService,
     private readonly securityNode: SecurityNodeService,
@@ -85,7 +81,7 @@ export class OrchestratorService {
 
     const workflow = new StateGraph(WorkflowAnnotation)
       .addNode('orchestrator', async (state: WorkflowState) => {
-        const repoPath = await this.cloneRepo(state.target);
+        const repoPath = await this.helper.cloneRepo(state.target);
         const startScanTime = new Date();
         return { repoPath, startScanTime };
       })
@@ -142,39 +138,5 @@ export class OrchestratorService {
     }
 
     return finalReport;
-  }
-
-  // ─── Clone repo - identico al PoC ─────────────────────────────────────────
-  private async cloneRepo(target: Target): Promise<string> {
-    const url = `https://github.com/${target.owner}/${target.repository}.git`;
-
-    console.log(`Ricevuto: ${url}`);
-
-    const repoName = target.repository;
-    const clonePath = path.join(
-      process.env.REPOS_ROOT ?? '/usr/src/repos',
-      repoName,
-    );
-
-    console.log(`Esecuzione git clone in ${clonePath}`);
-
-    // Se la cartella esiste già, non clonare di nuovo
-    if (fs.existsSync(clonePath)) {
-      console.log('Repo già presente localmente.');
-      return clonePath;
-    }
-
-    await git.clone({
-      http,
-      fs,
-      dir: clonePath,
-      url,
-      singleBranch: true,
-      depth: 1,
-      ...(target.branch ? { ref: target.branch } : {}),
-    });
-
-    console.log(`Repo clonata con successo in ${clonePath}`);
-    return clonePath;
   }
 }
