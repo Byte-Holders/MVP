@@ -6,6 +6,7 @@ import {
 import { StartScanDto } from './dtos/start-scan.dto';
 import { StopScanDto } from './dtos/stop-scan.dto';
 
+// TODO tutte le guardie
 @Controller('/scan')
 export class ScanManagerController {
   constructor(

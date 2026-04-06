@@ -16,22 +16,26 @@ import {
   StopTaskCommandInput,
 } from '@aws-sdk/client-ecs';
 import { ConfigService } from '@nestjs/config';
+import { JwtService } from '@nestjs/jwt';
 
 @Injectable()
 export class ScanManagerService implements IScanManagerService {
+  private readonly logger = new Logger();
+
   constructor(
-    // TODO injection WorkspaceUserService
     @Inject(ISCAN_REPOSITORY_TOKEN)
     private readonly scanRepository: IScanRepository,
     private readonly configService: ConfigService,
-    private readonly logger: Logger,
+    private readonly jwtService: JwtService,
   ) {}
 
   async startScan(dto: StartScanDto): Promise<Scan> {
+    // TODO fatto il deploy passare l'indirizzo di ritorno
     this.logger.log(
       `Lancio scansione verso workspace ${dto.workspaceId}, repository ${dto.repositoryId}, branch ${dto.branch} `,
     );
-    // TODO controllo appartenenza utente a ws
+
+    const receiver_token = await this.jwtService.signAsync(dto);
     const client = new ECSClient({
       region: this.configService.get<string>('CONTAINER_REGION')!,
     });
@@ -54,6 +58,20 @@ export class ScanManagerService implements IScanManagerService {
           ],
           assignPublicIp: 'ENABLED',
         },
+      },
+      overrides: {
+        containerOverrides: [
+          {
+            name: 'poc-mock',
+            environment: [
+              { name: 'TARGET_OWNER', value: 'TODO_TARGET_OWNER' },
+              { name: 'TARGET_REPOSITORY', value: 'TODO_TARGET_REPOSITORY' },
+              { name: 'TARGET_BRANCH', value: dto.branch },
+              { name: 'RECEIVER_URL', value: 'TODO_RECEIVER_URL' },
+              { name: 'RECEIVER_TOKEN', value: receiver_token },
+            ],
+          },
+        ],
       },
       count: 1,
     });
