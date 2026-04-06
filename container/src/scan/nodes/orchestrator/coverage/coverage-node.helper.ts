@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { CoverageReport } from './coverage-report.type';
-import { CliCommand, executeCli } from '../../exec.cli';
+import { CliCommand, executeCli } from '../../../exec.cli';
 
 @Injectable()
 export class CoverageNodeHelper {

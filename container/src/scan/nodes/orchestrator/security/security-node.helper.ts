@@ -4,7 +4,7 @@ import { promisify } from 'util';
 import path from 'path';
 import { readFile } from 'fs/promises';
 import { VulnerabilityUnit } from './security-report.type';
-import { executeCli, type CliCommand } from '../../exec.cli';
+import { executeCli, type CliCommand } from '../../../exec.cli';
 
 type SemgrepResult = {
   results: {

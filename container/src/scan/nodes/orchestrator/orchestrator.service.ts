@@ -2,21 +2,20 @@ import { Injectable } from '@nestjs/common';
 import { StateGraph, START, END, Annotation, Send } from '@langchain/langgraph';
 
 import { Target } from '../../target.types';
-import { VulnerabilitiesReport } from '../security/security-report.type';
-import { DepsReport } from '../dependency/deps-report.type';
-import { DocsReport } from '../docs/docs-report.type';
-import { CoverageReport } from '../coverage/coverage-report.type';
-import { Report } from '../synthesizer/synthesizer.types';
+import { VulnerabilitiesReport } from './security/security-report.type';
+import { DepsReport } from './dependency/deps-report.type';
+import { DocsReport } from './docs/docs-report.type';
+import { CoverageReport } from './coverage/coverage-report.type';
+import { Report } from './synthesizer/synthesizer.types';
 import { OrchestratorHelper } from './orchestrator.helper';
-import { CoverageNodeService } from '../coverage/coverage-node.service';
-import { GithubNodeService } from '../github/github-node.service';
-import { SynthesizerNodeService } from '../synthesizer/synthesizer-node.service';
-import { SecurityNodeService } from '../security/security-node.service';
-import { RemediationNodeService } from '../remediation/remediation-node.service';
-import { DepsNodeService } from '../dependency/dependency-node.service';
-import { DocsNodeService } from '../docs/docs-node.service';
-import { ReporterNodeService } from '../reporter/reporter-node.service';
-import { ConfigService } from '@nestjs/config';
+import { CoverageNodeService } from './coverage/coverage-node.service';
+import { GithubNodeService } from './github/github-node.service';
+import { SynthesizerNodeService } from './synthesizer/synthesizer-node.service';
+import { SecurityNodeService } from './security/security-node.service';
+import { RemediationNodeService } from './remediation/remediation-node.service';
+import { DepsNodeService } from './dependency/dependency-node.service';
+import { DocsNodeService } from './docs/docs-node.service';
+import { ReporterNodeService } from './reporter/reporter-node.service';
 
 const WorkflowAnnotation = Annotation.Root({
   target: Annotation<Target>(),
@@ -46,7 +45,6 @@ export class OrchestratorService {
     private readonly docsNode: DocsNodeService,
     private readonly synthesizerNode: SynthesizerNodeService,
     private readonly sendReportNode: ReporterNodeService,
-    private readonly configService: ConfigService,
   ) {}
 
   async execute(target: Target): Promise<WorkflowState | undefined> {

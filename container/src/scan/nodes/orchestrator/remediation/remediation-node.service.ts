@@ -5,7 +5,7 @@ import {
   VulnerabilitiesReport,
   VulnerabilityUnit,
 } from '../security/security-report.type';
-import { WorkflowState } from '../orchestrator/orchestrator.service';
+import { WorkflowState } from '../orchestrator.service';
 import { RemediationNodeHelper } from './remediation-node.helper';
 
 @Injectable()

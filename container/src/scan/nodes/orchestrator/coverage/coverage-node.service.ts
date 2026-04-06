@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import * as fs from 'fs';
 import * as path from 'path';
 import { CoverageReport } from './coverage-report.type';
-import { WorkflowState } from '../orchestrator/orchestrator.service';
+import { WorkflowState } from '../orchestrator.service';
 import { CoverageNodeHelper } from './coverage-node.helper';
 
 @Injectable()

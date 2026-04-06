@@ -2,7 +2,7 @@ import { CoverageReport } from '../coverage/coverage-report.type';
 import { DepsReport } from '../dependency/deps-report.type';
 import { DocsReport } from '../docs/docs-report.type';
 import { VulnerabilitiesReport } from '../security/security-report.type';
-import { Target } from '../../target.types';
+import { Target } from '../../../target.types';
 
 export type ReportSummary = {
   summary: string;
