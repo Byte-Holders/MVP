@@ -16,6 +16,7 @@ import { RemediationNodeService } from '../remediation/remediation-node.service'
 import { DepsNodeService } from '../dependency/dependency-node.service';
 import { DocsNodeService } from '../docs/docs-node.service';
 import { ReporterNodeService } from '../reporter/reporter-node.service';
+import { ConfigService } from '@nestjs/config';
 
 const WorkflowAnnotation = Annotation.Root({
   target: Annotation<Target>(),
@@ -45,6 +46,7 @@ export class OrchestratorService {
     private readonly docsNode: DocsNodeService,
     private readonly synthesizerNode: SynthesizerNodeService,
     private readonly sendReportNode: ReporterNodeService,
+    private readonly configService: ConfigService,
   ) {}
 
   async execute(target: Target): Promise<WorkflowState | undefined> {

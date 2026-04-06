@@ -16,10 +16,13 @@ import { DepsNodeService } from './nodes/dependency/dependency-node.service';
 import { ReporterNodeService } from './nodes/reporter/reporter-node.service';
 import { DocsNodeService } from './nodes/docs/docs-node.service';
 import { DocsNodeHelper } from './nodes/docs/docs-node.helper';
+import { ConfigModule } from '@nestjs/config';
+import { ScanService } from './scan.service';
 
 @Module({
-  imports: [HttpModule],
+  imports: [HttpModule, ConfigModule],
   providers: [
+    ScanService,
     OrchestratorService,
     OrchestratorHelper,
     CoverageNodeService,

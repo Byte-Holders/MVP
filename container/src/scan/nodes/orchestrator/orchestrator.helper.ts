@@ -33,7 +33,7 @@ export class OrchestratorHelper {
       url,
       singleBranch: true,
       depth: 1,
-      ...(target.branch ? { ref: target.branch } : {}),
+      ref: target.branch,
     });
 
     console.log(`Repo clonata con successo in ${clonePath}`);
