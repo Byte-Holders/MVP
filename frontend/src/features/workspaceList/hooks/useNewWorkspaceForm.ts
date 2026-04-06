@@ -23,7 +23,7 @@ export function useNewWorkspaceForm() {
       try {console.log('dentro useForm try') // Debug log per verificare l'esecuzione del hook
         const { username } = await getCurrentUser()
         console.log('dentro useForm try dopo getCurrentUser', username) // Debug log per verificare l'esecuzione del hook
-        const result = await createWorkspace({ name: value.name, createdBy: username })
+        const result = await createWorkspace({ name: value.name})
         console.log('dentro useForm try dopo createWorkspcace', result)
         console.log('Risposta dal backend:', result) 
         navigate({ to: '/repository' })

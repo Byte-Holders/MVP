@@ -2,7 +2,6 @@ import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Workspace } from './schemas/workspace.schema';
 import { Model } from 'mongoose';
-import { CreateWorkspaceDto } from './dtos/CreateWorkspaceDto';
 
 @Injectable()
 export class WorkspaceRepository {

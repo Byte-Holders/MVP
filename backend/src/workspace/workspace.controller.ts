@@ -10,7 +10,6 @@ import {
 } from '@nestjs/common';
 import { WorkspaceService } from './workspace.service';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
-import { CreateWorkspaceDto } from './dtos/CreateWorkspaceDto';
 import { User } from '../auth/customDecorators/user.decorator';
 import type { RequestUser } from '../auth/types/requestUser.type';
 

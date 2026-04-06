@@ -15,23 +15,25 @@ export type WorkspaceDocument = HydratedDocument<Workspace>;
 
 @Schema()
 export class Workspace {
-  @Prop({ required: true })
-  _id: string;
+  /*@Prop({ required: true })
+  _id: string; MongoDb will automatically generate an _id field, so we don't need to define it here.*/
 
   @Prop({ required: true })
-  name: string;
+  name!: string;
 
-  @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true })
-  ownerId: User;
+  /*@Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true })
+  ownerId: User;*/
+  @Prop({ required: true, unique: true })
+  ownerSub!: string;
 
   @Prop({ required: true })
-  creationDate: Date;
+  creationDate!: Date;
 
   @Prop({ type: [WorkspaceMemberSchema], default: [] })
-  members: WorkspaceMember[];
+  members!: WorkspaceMember[];
 
   @Prop({ type: [RepositoryOfWorkspaceSchema], default: [] })
-  repositories: RepositoryOfWorkspace[];
+  repositories!: RepositoryOfWorkspace[];
 }
 
 export const WorkspaceSchema = SchemaFactory.createForClass(Workspace);

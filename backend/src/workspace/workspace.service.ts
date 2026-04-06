@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { CreateWorkspaceDto } from './dtos/CreateWorkspaceDto';
+
 import { WorkspaceRepository } from './workspace.repository';
 
 @Injectable()
