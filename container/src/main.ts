@@ -8,8 +8,8 @@ async function bootstrap() {
   const app = await NestFactory.createApplicationContext(AppModule);
   await app
     .get(OrchestratorService)
-    // .execute({ owner: 'OWASP', repository: 'NodeGoat' });
-    .execute({ owner: 'mmendesas', repository: 'jest-nextjs' });
+    .execute({ owner: 'OWASP', repository: 'NodeGoat' });
+  // .execute({ owner: 'mmendesas', repository: 'jest-nextjs' });
   await app.close();
 }
 

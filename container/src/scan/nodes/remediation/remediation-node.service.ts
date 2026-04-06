@@ -1,7 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { access, readFile } from 'fs/promises';
 import { SystemMessage, HumanMessage } from '@langchain/core/messages';
-import { VulnerabilityUnit } from '../security/security-report.type';
+import {
+  VulnerabilitiesReport,
+  VulnerabilityUnit,
+} from '../security/security-report.type';
 import { WorkflowState } from '../orchestrator/orchestrator.service';
 import { RemediationNodeHelper } from './remediation-node.helper';
 
@@ -10,13 +13,13 @@ export class RemediationNodeService {
   constructor(private readonly helper: RemediationNodeHelper) {}
 
   async scan(vulnerabilitiesReport: {
-    vulnerabilities?: VulnerabilityUnit[];
+    vulnerabilities: VulnerabilitiesReport | null | undefined;
     vulnerabilitiesReportPath?: string;
   }): Promise<Partial<WorkflowState>> {
     const semgrepReportPath = vulnerabilitiesReport.vulnerabilitiesReportPath;
 
     console.log(
-      `[RemediationNode] Generating remediations for ${vulnerabilitiesReport.vulnerabilities?.length} vulnerabilities found at ${vulnerabilitiesReport.vulnerabilitiesReportPath}`,
+      `[RemediationNode] Generating remediations for ${vulnerabilitiesReport.vulnerabilities?.vulnerabilities?.length} vulnerabilities found at ${vulnerabilitiesReport.vulnerabilitiesReportPath}`,
     );
 
     if (!semgrepReportPath) {
@@ -39,12 +42,17 @@ export class RemediationNodeService {
 
     if (!rawJson.results?.length) {
       console.log('[RemediationNode] No vulnerabilities to remediate.');
-      return {};
+      return {
+        vulnerabilitiesReport: {
+          vulnerabilities: [],
+          mark: vulnerabilitiesReport.vulnerabilities?.mark ?? 10,
+        },
+      };
     }
 
     const model = this.helper.createModel();
     const vulnerabilities: VulnerabilityUnit[] = [
-      ...(vulnerabilitiesReport?.vulnerabilities ?? []),
+      ...(vulnerabilitiesReport?.vulnerabilities?.vulnerabilities ?? []),
     ];
 
     // Raggruppa i risultati semgrep per file, in poche parole metto in result tutti i file presenti in almeno una vulnerabilita, se un file e' presente in piu di 1 vulnerabilita lo passo cmq 1 sola volta
@@ -109,7 +117,10 @@ export class RemediationNodeService {
     );
 
     return {
-      vulnerabilitiesReport: { vulnerabilities: vulnerabilities },
+      vulnerabilitiesReport: {
+        vulnerabilities: vulnerabilities,
+        mark: vulnerabilitiesReport.vulnerabilities?.mark ?? 10,
+      },
     };
   }
 }

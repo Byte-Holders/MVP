@@ -23,8 +23,10 @@ export class SecurityNodeService {
     try {
       await this.helper.executeSemgrep(repoPath, reportPath);
       const units = await this.helper.parseResults(reportPath);
+      const mark = this.helper.getMark(units);
+      console.log(`[SecurityNode] Voto sicurezza: ${mark}`);
       return {
-        vulnerabilitiesReport: { vulnerabilities: units },
+        vulnerabilitiesReport: { vulnerabilities: units, mark },
         vulnerabilitiesReportPath: reportPath,
       };
     } catch (error) {

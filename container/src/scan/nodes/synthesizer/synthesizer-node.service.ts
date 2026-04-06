@@ -63,6 +63,7 @@ Restituisci SOLO un JSON con questa struttura, senza markdown:
         depsReport: state.depsReport ?? { report: [] },
         vulnerabilitiesReport: state.vulnerabilitiesReport ?? {
           vulnerabilities: [],
+          mark: 10,
         },
         docsReport: state.docsReport ?? {
           readmeReport: { analysis: { analysis: '' } },

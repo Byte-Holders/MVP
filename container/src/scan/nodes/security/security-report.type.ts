@@ -7,5 +7,5 @@ export type VulnerabilityUnit = {
 
 export type VulnerabilitiesReport = {
   vulnerabilities: VulnerabilityUnit[];
-  mark?: number;
+  mark: number;
 };

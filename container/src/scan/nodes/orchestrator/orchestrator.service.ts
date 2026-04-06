@@ -97,7 +97,7 @@ export class OrchestratorService {
       .addNode('remediation', async (state: WorkflowState) => {
         return await this.remediationNode.scan({
           vulnerabilitiesReportPath: state.vulnerabilitiesReportPath,
-          vulnerabilities: state.vulnerabilitiesReport?.vulnerabilities,
+          vulnerabilities: state.vulnerabilitiesReport,
         });
       })
       .addNode('dependencies', async (repoPath: string) => {

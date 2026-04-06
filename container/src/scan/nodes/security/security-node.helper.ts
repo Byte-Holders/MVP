@@ -73,7 +73,33 @@ export class SecurityNodeHelper {
   }
 
   parseSeverity(raw?: string): number {
-    const map: Record<string, number> = { INFO: 1, WARNING: 2, ERROR: 3 };
+    const map: Record<string, number> = { INFO: 1, WARNING: 5, ERROR: 10 };
     return map[raw?.toUpperCase() ?? ''] ?? 0;
+  }
+
+  getMark(vulnerabilities: VulnerabilityUnit[]): number {
+    type MarkInformation = {
+      severity: number;
+      count: number;
+    };
+    const sum = vulnerabilities
+      .map((vuln) => {
+        return { severity: vuln.severity, count: vuln.severity ? 1 : 0 };
+      })
+      .reduce(
+        (prev: MarkInformation, next: MarkInformation) => {
+          return {
+            severity: prev.severity + next.severity,
+            count: prev.count + next.count,
+          };
+        },
+        {
+          severity: 0,
+          count: 0,
+        },
+      );
+
+    if (sum.count != 0) return sum.severity / sum.count;
+    else return 10;
   }
 }
