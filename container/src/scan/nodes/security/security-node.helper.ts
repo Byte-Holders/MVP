@@ -9,11 +9,18 @@ import { executeCli, type CliCommand } from '../../exec.cli';
 type SemgrepResult = {
   results: {
     check_id: string;
-    extra?: {
+    extra: {
       message: string;
       severity: string;
+      metadata: SemgrepMetadata;
     };
   }[];
+};
+
+type SemgrepMetadata = {
+  category: string;
+  cwe: string[];
+  owasp: string[];
 };
 
 @Injectable()
@@ -69,6 +76,9 @@ export class SecurityNodeHelper {
       description: r.extra?.message ?? '',
       remediation: '',
       severity: this.parseSeverity(r.extra?.severity),
+      category: r.extra?.metadata.category,
+      cwe: r.extra?.metadata.cwe,
+      owasp: r.extra?.metadata.owasp,
     }));
   }
 
