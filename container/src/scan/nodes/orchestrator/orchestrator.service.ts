@@ -15,7 +15,6 @@ import { SecurityNodeService } from './security/security-node.service';
 import { RemediationNodeService } from './remediation/remediation-node.service';
 import { DepsNodeService } from './dependency/dependency-node.service';
 import { DocsNodeService } from './docs/docs-node.service';
-import { ReporterNodeService } from './reporter/reporter-node.service';
 
 const WorkflowAnnotation = Annotation.Root({
   target: Annotation<Target>(),
@@ -44,10 +43,9 @@ export class OrchestratorService {
     private readonly dependencyNode: DepsNodeService,
     private readonly docsNode: DocsNodeService,
     private readonly synthesizerNode: SynthesizerNodeService,
-    private readonly sendReportNode: ReporterNodeService,
   ) {}
 
-  async execute(target: Target): Promise<WorkflowState | undefined> {
+  async execute(target: Target): Promise<Report | undefined> {
     const assignWorkers = (state: WorkflowState) => {
       return [
         new Send('coverage', state.repoPath),
@@ -110,9 +108,6 @@ export class OrchestratorService {
         const report = await this.synthesizerNode.summarize(state);
         return { finalReport: report };
       })
-      .addNode('reporter', async (state: WorkflowState) => {
-        return await this.sendReportNode.sendReport(state.finalReport!);
-      })
       .addEdge(START, 'orchestrator')
       .addConditionalEdges('orchestrator', assignWorkers, [
         'coverage',
@@ -127,8 +122,7 @@ export class OrchestratorService {
       .addConditionalEdges('remediation', checkExecutionEnd, noopPaths)
       .addConditionalEdges('docs', checkExecutionEnd, noopPaths)
       .addEdge('security', 'remediation')
-      .addEdge('synthesizer', 'reporter')
-      .addEdge('reporter', END);
+      .addEdge('synthesizer', END);
 
     const app = workflow.compile();
 
@@ -137,6 +131,6 @@ export class OrchestratorService {
       throw new Error('Il synthesizer non ha prodotto un report.');
     }
 
-    return finalReport;
+    return finalReport.finalReport;
   }
 }

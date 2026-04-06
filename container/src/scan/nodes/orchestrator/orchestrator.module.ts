@@ -5,7 +5,6 @@ import { CoverageModule } from './coverage/coverage.module';
 import { DepsModule } from './dependency/dependency.module';
 import { DocsModule } from './docs/docs.module';
 import { RemediationModule } from './remediation/remediation.module';
-import { ReporterModule } from './reporter/reporter.module';
 import { SecurityModule } from './security/security.module';
 import { SynthesizerModule } from './synthesizer/synthesizer.module';
 import { GithubModule } from './github/github.module';
@@ -16,7 +15,6 @@ import { GithubModule } from './github/github.module';
     DocsModule,
     GithubModule,
     RemediationModule,
-    ReporterModule,
     SecurityModule,
     SynthesizerModule,
   ],
