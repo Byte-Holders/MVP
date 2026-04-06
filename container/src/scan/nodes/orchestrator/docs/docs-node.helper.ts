@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import path from 'path';
 import fs from 'fs';
 import { SystemMessage, HumanMessage } from '@langchain/core/messages';
@@ -6,6 +6,8 @@ import { ChatBedrockConverse } from '@langchain/aws';
 
 @Injectable()
 export class DocsNodeHelper {
+  private readonly logger = new Logger(DocsNodeHelper.name);
+
   createModel() {
     return new ChatBedrockConverse({
       model: process.env.BEDROCK_MODEL_ID ?? 'deepseek.v3.2',
@@ -16,24 +18,24 @@ export class DocsNodeHelper {
   }
 
   // ─── Analisi completa della repo con batching ────────────────────────────────
-  async analyzeRepoDocumentation(repoPath: string): Promise<{
+  async analyzeRepoDocumentation(
+    repoPath: string,
+    allFiles: string[],
+  ): Promise<{
     report: string;
     // inputTokens: number;
     // outputTokens: number;
     // totalTokens: number;
   }> {
-    console.log(`\n${'═'.repeat(60)}`);
-    console.log(`[ANALISI REPO] Avvio scansione di: ${repoPath}`);
-    console.log(`${'═'.repeat(60)}`);
-
-    const allFiles = this.collectTextFiles(repoPath);
-    console.log(`[ANALISI REPO] Trovati ${allFiles.length} file analizzabili`);
+    // const allFiles = this.collectTextFiles(repoPath);
+    this.logger.log(`Avvio scansione di ${allFiles.length} file`);
 
     type Section = { header: string; content: string; sizeBytes: number };
     const sections: Section[] = [];
 
     // README sempre per primo
     const readmePath = path.join(repoPath, 'README.md');
+
     if (fs.existsSync(readmePath)) {
       const raw = fs.readFileSync(readmePath, 'utf-8');
       const content = `### README.md\n\`\`\`markdown\n${raw}\n\`\`\``;
@@ -42,7 +44,7 @@ export class DocsNodeHelper {
         content,
         sizeBytes: Buffer.byteLength(content, 'utf-8'),
       });
-      console.log(`[ANALISI REPO] README incluso`);
+      this.logger.log(`README incluso`);
     } else {
       const content = `### README.md\n*(assente nella repository)*`;
       sections.push({
@@ -50,7 +52,7 @@ export class DocsNodeHelper {
         content,
         sizeBytes: Buffer.byteLength(content, 'utf-8'),
       });
-      console.log(`[ANALISI REPO] README non trovato`);
+      this.logger.warn(`README non trovato`);
     }
 
     for (const filePath of allFiles) {
@@ -84,15 +86,15 @@ export class DocsNodeHelper {
     }
     if (currentBatch.length > 0) batches.push(currentBatch);
 
-    console.log(
-      `[ANALISI REPO] Suddiviso in ${batches.length} batch (limite ${BATCH_SIZE_BYTES / 1024 / 1024} MB ciascuno)`,
+    this.logger.debug(
+      `Suddiviso in ${batches.length} batch (limite ${BATCH_SIZE_BYTES / 1024 / 1024} MB ciascuno)`,
     );
     batches.forEach((batch, i) => {
       const batchSizeKB = Math.round(
         batch.reduce((acc, s) => acc + s.sizeBytes, 0) / 1024,
       );
-      console.log(
-        `[ANALISI REPO] Batch ${i + 1}/${batches.length} — ${batch.length} file, ~${batchSizeKB} KB`,
+      this.logger.debug(
+        `Batch ${i + 1}/${batches.length} — ${batch.length} file, ~${batchSizeKB} KB`,
       );
     });
 
@@ -112,8 +114,8 @@ export class DocsNodeHelper {
           // const inputTok: number = usage.input_tokens ?? 0;
           // const outputTok: number = usage.output_tokens ?? 0;
 
-          console.log(
-            `[ANALISI REPO] ✓ Batch ${i + 1}/${batches.length} completato — `,
+          this.logger.debug(
+            `✓ Batch ${i + 1}/${batches.length} completato — `,
             // `input: ${inputTok.toLocaleString('it-IT')} tok | output: ${outputTok.toLocaleString('it-IT')} tok`,
           );
 
@@ -121,7 +123,7 @@ export class DocsNodeHelper {
             report: response.content as string /* , inputTok, outputTok */,
           };
         } catch (err) {
-          console.error(`[ANALISI REPO] Errore nel batch ${i + 1}:`, err);
+          this.logger.error(`Errore nel batch ${i + 1}:`, err);
           return {
             report: `*Errore durante l'analisi del batch ${i + 1}.*`,
             inputTok: 0,
@@ -148,8 +150,8 @@ export class DocsNodeHelper {
     if (batchReports.length === 1) {
       finalReport = batchReports[0];
     } else {
-      console.log(
-        `\n[ANALISI REPO] Avvio sintesi finale di ${batchReports.length} batch...`,
+      this.logger.debug(
+        `\nAvvio sintesi finale di ${batchReports.length} batch...`,
       );
 
       const synthesisPayload = batchReports
@@ -168,14 +170,14 @@ export class DocsNodeHelper {
         // totalInputTokens += inputTok;
         // totalOutputTokens += outputTok;
 
-        console.log(
-          `[ANALISI REPO] Sintesi completata — `,
+        this.logger.log(
+          `Sintesi completata — `,
           // `input: ${inputTok.toLocaleString('it-IT')} tok | output: ${outputTok.toLocaleString('it-IT')} tok`,
         );
 
         finalReport = synthesisResponse.content as string;
       } catch (err) {
-        console.error('[ANALISI REPO] Errore nella sintesi finale:', err);
+        this.logger.error('Errore nella sintesi finale:', err);
         finalReport = batchReports.join('\n\n---\n\n');
       }
     }

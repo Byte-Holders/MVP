@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import path from 'path';
 import fs from 'fs';
 import git from 'isomorphic-git';
@@ -7,10 +7,10 @@ import { Target } from '../../target.types';
 
 @Injectable()
 export class OrchestratorHelper {
+  private readonly logger = new Logger(OrchestratorHelper.name);
+
   async cloneRepo(target: Target): Promise<string> {
     const url = `https://github.com/${target.owner}/${target.repository}.git`;
-
-    console.log(`Ricevuto: ${url}`);
 
     const repoName = target.repository;
     const clonePath = path.join(
@@ -18,11 +18,11 @@ export class OrchestratorHelper {
       repoName,
     );
 
-    console.log(`Esecuzione git clone in ${clonePath}`);
+    this.logger.debug(`Esecuzione \`git clone\` di ${url} in ${clonePath}`);
 
     // Se la cartella esiste già, non clonare di nuovo
     if (fs.existsSync(clonePath)) {
-      console.log('Repo già presente localmente.');
+      this.logger.log('Repo già presente localmente.');
       return clonePath;
     }
 
@@ -36,7 +36,7 @@ export class OrchestratorHelper {
       ref: target.branch,
     });
 
-    console.log(`Repo clonata con successo in ${clonePath}`);
+    this.logger.debug(`Repo clonata con successo in ${clonePath}`);
     return clonePath;
   }
 }

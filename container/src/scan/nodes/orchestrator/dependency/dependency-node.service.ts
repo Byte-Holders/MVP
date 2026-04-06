@@ -1,12 +1,14 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { DepsReport } from './deps-report.type';
 import { WorkflowState } from '../orchestrator.service';
 import { executeCli, type CliCommand } from '../../../exec.cli';
 
 @Injectable()
 export class DepsNodeService {
+  private readonly logger = new Logger(DepsNodeService.name);
+
   async scan(repoPath: string): Promise<Partial<WorkflowState>> {
-    console.log(`[DepsNode] Analyzing dependencies in: ${repoPath}`);
+    this.logger.log(`Inizio analsi delle dipendenze in: ${repoPath}`);
 
     try {
       const command: CliCommand = {
@@ -27,11 +29,12 @@ export class DepsNodeService {
         })),
       };
 
-      console.log(`[DepsNode] Found ${report.artifacts.length} dependencies.`);
+      this.logger.log(`Trovate ${report.artifacts.length} dipendenze.`);
+
       return { depsReport };
     } catch (error: unknown) {
-      console.error(
-        `[DepsNode] Syft analysis failed. ${(error as Error).message}`,
+      this.logger.error(
+        `Analisi delle dipendenze fallita. ${(error as Error).message}`,
       );
       return { depsReport: { report: [] } };
     }

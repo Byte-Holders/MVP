@@ -46,6 +46,19 @@ export class OrchestratorService {
   ) {}
 
   async execute(target: Target): Promise<Report | undefined> {
+    const workflow = this.buildWorkflow();
+
+    const app = workflow.compile();
+
+    const finalReport = await app.invoke({ target });
+    if (!finalReport) {
+      throw new Error('Il synthesizer non ha prodotto un report.');
+    }
+
+    return finalReport.finalReport;
+  }
+
+  private buildWorkflow() {
     const assignWorkers = (state: WorkflowState) => {
       return [
         new Send('coverage', state.repoPath),
@@ -124,13 +137,6 @@ export class OrchestratorService {
       .addEdge('security', 'remediation')
       .addEdge('synthesizer', END);
 
-    const app = workflow.compile();
-
-    const finalReport = await app.invoke({ target });
-    if (!finalReport) {
-      throw new Error('Il synthesizer non ha prodotto un report.');
-    }
-
-    return finalReport.finalReport;
+    return workflow;
   }
 }

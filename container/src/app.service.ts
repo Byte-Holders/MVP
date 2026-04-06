@@ -34,6 +34,7 @@ export class AppService {
       repository,
       branch,
     };
+
     const report = await this.scanService.scan(target);
     if (!report) throw new Error('Non è stato generato alcun report');
 

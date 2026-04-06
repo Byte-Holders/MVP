@@ -4,32 +4,21 @@ import { CliCommand, executeCli } from '../../../exec.cli';
 
 @Injectable()
 export class CoverageNodeHelper {
-  async runCoverageTool(targetPath: string): Promise<CoverageReport> {
-    try {
-      const command: CliCommand = {
-        name: 'sh',
-        args: [
-          '-c',
-          `cd "${targetPath}" && npm install --silent && npx jest --coverage --coverageReporters="text-summary" 2>&1 | grep -E "Statements|Branches|Functions|Lines"`,
-        ],
-      };
+  async runCoverageTool(targetPath: string): Promise<string> {
+    const command: CliCommand = {
+      name: 'sh',
+      args: [
+        '-c',
+        `cd "${targetPath}" && npm install --silent && npx jest --coverage --coverageReporters="text-summary" 2>&1 | grep -E "Statements|Branches|Functions|Lines"`,
+      ],
+    };
 
-      const executionResult = await executeCli(command);
-      console.log(
-        `[CoverageNode] Esecuzione comando: ${command.name} ${command.args?.join(' ')}}`,
-      );
+    const executionResult = await executeCli(command);
 
-      return this.parseOutput(executionResult);
-    } catch (err: unknown) {
-      throw new Error(
-        `Errore durante esecuzione coverage: ${(err as Error).message})`,
-      );
-    }
+    return executionResult;
   }
 
-  parseOutput(output: string): CoverageReport {
-    const split: string[] = this.splitResult(output);
-
+  parseOutput(split: string[]): CoverageReport {
     const report: CoverageReport = {
       statements: parseFloat(split[0]),
       branches: parseFloat(split[1]),

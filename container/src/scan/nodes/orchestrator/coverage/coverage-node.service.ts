@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import * as fs from 'fs';
 import * as path from 'path';
 import { CoverageReport } from './coverage-report.type';
@@ -7,10 +7,14 @@ import { CoverageNodeHelper } from './coverage-node.helper';
 
 @Injectable()
 export class CoverageNodeService {
+  private readonly logger = new Logger(CoverageNodeService.name);
+
   constructor(private readonly helper: CoverageNodeHelper) {}
 
   async scan(repoPath: string): Promise<Partial<WorkflowState>> {
-    console.log(`[CoverageNode] Starting test coverage in: ${repoPath}`);
+    this.logger.log(
+      `[CoverageNode] Inizio analisi coverage (percorso: ${repoPath})`,
+    );
 
     let report: CoverageReport = {
       statements: 0,
@@ -20,13 +24,18 @@ export class CoverageNodeService {
     };
 
     try {
-      if (fs.existsSync(path.join(repoPath, 'package.json')))
-        report = await this.helper.runCoverageTool(repoPath);
+      if (fs.existsSync(path.join(repoPath, 'package.json'))) {
+        const output = await this.helper.runCoverageTool(repoPath);
+        const split = this.helper.splitResult(output);
+        report = this.helper.parseOutput(split);
+        this.logger.log('Terminata coverage');
+        this.logger.debug(JSON.stringify(report, null, 2));
+      }
     } catch (err: unknown) {
       if (err instanceof Error) {
-        console.error(`[CoverageNode] Coverage failed: ${err.message}`);
+        this.logger.error(`Fallimento coverage: ${err.message}`);
       } else {
-        console.error('[CoverageNode] Coverage failed, continuing anyway.');
+        this.logger.error('Fallimento coverage, tipo di errore sconosciuto.');
       }
     }
     return { coverageReport: report };

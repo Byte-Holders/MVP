@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { SystemMessage, HumanMessage } from '@langchain/core/messages';
 import { Report, ReportSummary } from './synthesizer.types';
 import { WorkflowState } from '../orchestrator.service';
@@ -6,10 +6,12 @@ import { SynthesizerNodeHelper } from './synthesizer-node.helper';
 
 @Injectable()
 export class SynthesizerNodeService {
+  private readonly logger = new Logger(SynthesizerNodeService.name);
+
   constructor(private readonly helper: SynthesizerNodeHelper) {}
 
   async summarize(state: WorkflowState): Promise<Report> {
-    console.log('[SynthesizerNode] Building final report...');
+    this.logger.log('Inizio costruzione report finale');
 
     const context = JSON.stringify(
       {
@@ -42,18 +44,12 @@ Restituisci SOLO un JSON con questa struttura, senza markdown:
         .trim();
       reportSummary = JSON.parse(raw) as ReportSummary;
 
-      console.log(
-        `[SynthesizerNode] Summary generated. Summary: ${reportSummary.summary}\nMark: ${reportSummary.mark}/10`,
-      );
+      this.logger.debug(`Generato riassunto. Voto: ${reportSummary.mark}/10`);
     } catch (error) {
-      console.error(
-        '[SynthesizerNode] AI summary failed, using fallback.',
-        error,
-      );
+      this.logger.error(`Errore durante riassunzione report. Piano B.`, error);
       reportSummary = {
-        summary:
-          'Analisi completata. Consultare i dati dettagliati per i risultati completi.',
-        mark: 5,
+        summary: `C'è stato un errore durante la generazione del riassunto del report generato.`,
+        mark: 1,
       };
     }
 
@@ -84,12 +80,7 @@ Restituisci SOLO un JSON con questa struttura, senza markdown:
       },
     };
 
-    console.log('[SynthesizerNode] Report built successfully.');
-
-    console.log(`[SynthesizerNode] REPORT:\n`);
-    console.log(`[SynthesizerNode] ---------------------------`);
-    console.log(`[SynthesizerNode] ${JSON.stringify(report)}`);
-    console.log(`[SynthesizerNode] ===========================`);
+    this.logger.log('Terminata costruzione del report');
     return report;
   }
 }

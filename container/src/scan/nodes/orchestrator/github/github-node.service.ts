@@ -1,16 +1,18 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { Target } from '../../../target.types';
 import { WorkflowState } from '../orchestrator.service';
 import { GithubNodeHelper } from './github-node.helper';
 
 @Injectable()
 export class GithubNodeService {
+  private readonly logger = new Logger(GithubNodeService.name);
+
   constructor(private readonly helper: GithubNodeHelper) {}
 
   async scan(target: Target): Promise<Partial<WorkflowState>> {
     const { owner, repository } = target;
 
-    console.log(`[GithubNode] Fetching languages for ${owner}/${repository}`);
+    this.logger.log(`Ottenimento linguaggi per ${owner}/${repository}`);
 
     try {
       const languageData = await this.helper.getLanguages({
@@ -20,12 +22,11 @@ export class GithubNodeService {
 
       const normalized = this.helper.normalizeData(languageData);
 
-      console.log(
-        `[GithubNode] Languages found: ${Object.entries(normalized).join(',\n')}`,
-      );
+      this.logger.log(`Linguaggi: ${Object.entries(normalized).join(', ')}`);
+
       return { languageBreakdown: normalized };
     } catch (error) {
-      console.error('[GithubNode] Failed to fetch languages.', error);
+      this.logger.error('[GithubNode] Failed to fetch languages.', error);
       return { languageBreakdown: {} };
     }
   }

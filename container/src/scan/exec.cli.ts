@@ -1,4 +1,7 @@
+import { Logger } from '@nestjs/common';
 import { spawn, SpawnOptionsWithoutStdio } from 'child_process';
+
+const logger = new Logger('ExecuteCli');
 
 export type CliCommand = {
   name: string;
@@ -11,9 +14,7 @@ export async function executeCli(
 ): Promise<string> {
   return new Promise(
     (resolve: (_: string) => void, reject: (_: Error) => void) => {
-      console.log(
-        `RUNNING COMMAND: ${command.name} ${command.args?.join(' ')}`,
-      );
+      logger.log(`${command.name} ${command.args?.join(' ')}`);
 
       const process = spawn(command.name, command.args, options);
 

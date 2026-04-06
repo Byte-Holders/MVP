@@ -5,6 +5,7 @@ type LanguageBreakdown = Record<string, number>;
 
 @Injectable()
 export class GithubNodeHelper {
+  // TODO GITHUB TOKEN
   private readonly octokit = new Octokit({ auth: process.env.GITHUB_TOKEN });
 
   async getLanguages({

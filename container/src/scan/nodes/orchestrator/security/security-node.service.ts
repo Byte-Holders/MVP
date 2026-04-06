@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import path from 'path';
 import { mkdir } from 'fs/promises';
 import { WorkflowState } from '../orchestrator.service';
@@ -6,17 +6,19 @@ import { SecurityNodeHelper } from './security-node.helper';
 
 @Injectable()
 export class SecurityNodeService {
+  private readonly logger = new Logger(SecurityNodeService.name);
+
   constructor(private readonly helper: SecurityNodeHelper) {}
 
   async scan(repoPath: string): Promise<Partial<WorkflowState>> {
     const reportPath = this.helper.buildReportPath(path.basename(repoPath));
 
-    console.log(`[SecurityNode] Starting Semgrep scan on: ${repoPath}`);
+    this.logger.log(`Inizio analisi sulla sicurezza: ${repoPath}`);
 
     await mkdir(path.dirname(reportPath), { recursive: true });
 
     if (!(await this.helper.isSemgrepInstalled())) {
-      console.error('[Security Node] Semgrep not installed.');
+      this.logger.error('Semgrep non è stato installato.');
       return {};
     }
 
@@ -24,13 +26,13 @@ export class SecurityNodeService {
       await this.helper.executeSemgrep(repoPath, reportPath);
       const units = await this.helper.parseResults(reportPath);
       const mark = this.helper.getMark(units);
-      console.log(`[SecurityNode] Voto sicurezza: ${mark}`);
+      this.logger.log(`Analisi della sicurezza terminato. Voto: ${mark}`);
       return {
         vulnerabilitiesReport: { vulnerabilities: units, mark },
         vulnerabilitiesReportPath: reportPath,
       };
     } catch (error) {
-      console.error('[SecurityNode] Semgrep execution failed.', error);
+      this.logger.error(`Errore durante esecuzione semgrep: ${error}`);
       return {};
     }
   }

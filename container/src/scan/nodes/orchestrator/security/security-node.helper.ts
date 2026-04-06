@@ -36,10 +36,10 @@ export class SecurityNodeHelper {
     const execAsync = promisify(exec);
     try {
       const { stdout } = await execAsync('semgrep --version');
-      console.log(`[SecurityNode] Semgrep version: ${stdout.trim()}`);
+      this.logger.debug(`Versione semgrep: ${stdout.trim()}`);
       return true;
     } catch {
-      console.error('[SecurityNode] Semgrep not found in PATH.');
+      this.logger.error('Semgrep non è stato trovato in PATH');
       return false;
     }
   }
@@ -64,7 +64,7 @@ export class SecurityNodeHelper {
     };
 
     await executeCli(command);
-    console.log(`[SecurityNode] Report saved to: ${reportPath}`);
+    this.logger.debug(`[SecurityNode] Report saved to: ${reportPath}`);
   }
 
   async parseResults(reportPath: string): Promise<VulnerabilityUnit[]> {

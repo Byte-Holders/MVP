@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { access, readFile } from 'fs/promises';
 import { SystemMessage, HumanMessage } from '@langchain/core/messages';
 import {
@@ -10,6 +10,8 @@ import { RemediationNodeHelper } from './remediation-node.helper';
 
 @Injectable()
 export class RemediationNodeService {
+  private readonly logger = new Logger(RemediationNodeService.name);
+
   constructor(private readonly helper: RemediationNodeHelper) {}
 
   async scan(vulnerabilitiesReport: {
@@ -18,20 +20,20 @@ export class RemediationNodeService {
   }): Promise<Partial<WorkflowState>> {
     const semgrepReportPath = vulnerabilitiesReport.vulnerabilitiesReportPath;
 
-    console.log(
-      `[RemediationNode] Generating remediations for ${vulnerabilitiesReport.vulnerabilities?.vulnerabilities?.length} vulnerabilities found at ${vulnerabilitiesReport.vulnerabilitiesReportPath}`,
-    );
-
     if (!semgrepReportPath) {
-      console.warn('[RemediationNode] No Semgrep report found, skipping.');
+      this.logger.warn('Non è stato generato un report da semgrep');
       return {};
     }
+
+    this.logger.log(
+      `Generazione remediation per ${vulnerabilitiesReport.vulnerabilities?.vulnerabilities?.length} vulneraibilità`,
+    );
 
     try {
       await access(semgrepReportPath);
     } catch (e: unknown) {
-      console.warn(
-        `[RemediationNode] Error accessing semgrep report: ${(e as Error).message}.`,
+      this.logger.error(
+        `Errore accesso a report di semgrep: ${(e as Error).message}`,
       );
       return {};
     }
@@ -41,7 +43,7 @@ export class RemediationNodeService {
     };
 
     if (!rawJson.results?.length) {
-      console.log('[RemediationNode] No vulnerabilities to remediate.');
+      this.logger.log('Nessuna vulnerabilità da risolvere');
       return {
         vulnerabilitiesReport: {
           vulnerabilities: [],
@@ -72,9 +74,7 @@ export class RemediationNodeService {
         try {
           fileContent = await readFile(filePath, 'utf-8');
         } catch {
-          console.warn(
-            `[RemediationNode] Cannot read file: ${filePath}, skipping.`,
-          );
+          this.logger.warn(`Errore lettura file: ${filePath}`);
           return;
         }
 
@@ -104,12 +104,12 @@ export class RemediationNodeService {
             if (unit) unit.remediation = fix.remediation;
           }
 
-          console.log(
-            `[RemediationNode] Remediated ${parsed.length} vulnerabilities in ${filePath}`,
+          this.logger.log(
+            `Risolte ${parsed.length} vulnerabilità in ${filePath}`,
           );
         } catch (error) {
-          console.error(
-            `[RemediationNode] AI remediation failed for ${filePath}`,
+          this.logger.error(
+            `Errore risoluzione vulnerabilità in ${filePath}`,
             error,
           );
         }
