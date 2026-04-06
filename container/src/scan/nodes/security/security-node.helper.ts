@@ -83,7 +83,7 @@ export class SecurityNodeHelper {
   }
 
   parseSeverity(raw?: string): number {
-    const map: Record<string, number> = { INFO: 1, WARNING: 5, ERROR: 10 };
+    const map: Record<string, number> = { INFO: 10, WARNING: 5, ERROR: 0 };
     return map[raw?.toUpperCase() ?? ''] ?? 0;
   }
 
