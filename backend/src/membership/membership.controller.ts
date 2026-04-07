@@ -5,7 +5,7 @@ import { InviteUserDto, ManageInviteDto, GetInviteDto } from './dto/membership.d
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 
 import { User } from '../auth/customDecorators/user.decorator'; 
-import { RequestUser } from '../auth/types/requestUser.type'; 
+import type { RequestUser } from '../auth/types/requestUser.type'; 
 
 @UseGuards(JwtAuthGuard)
 @Controller('membership')
@@ -14,29 +14,34 @@ export class MembershipController {
 
   @Post('invite')
   async inviteUser(
-    @Body() dto: InviteUserDto,
+    @Body() inviteUserDto: InviteUserDto,
     @User() user: RequestUser
   ): Promise<void> {
     // mittente sovrascritto con l'utente realmente loggato per sicurezza
-    dto.senderId = user.username; 
-    return this.membershipService.inviteUser(dto);
+    inviteUserDto.senderId = user.id; 
+    return this.membershipService.inviteUser(inviteUserDto);
   }
 
   @Get('invites')
   async getInvites(
-    @Query() dto: GetInviteDto,
+    @Query() getInviteDto: GetInviteDto,
     @User() user: RequestUser
   ): Promise<any[]> {
     // un utente può vedere solo i propri inviti
-    dto.userId = user.username; 
-    return this.membershipService.getInvites(dto);
+    getInviteDto.userId = user.id; 
+
+    //console.log("ID dal Token:", user.id);
+    //console.log("ID dalla Query URL:", getInviteDto.userId);
+
+    return this.membershipService.getInvites(getInviteDto);
   }
 
   @Post('manage')
   async manageInvite(
-    @Body() dto: ManageInviteDto,
+    @Body() manageInviteDto: ManageInviteDto,
     @User() user: RequestUser
   ): Promise<void> {
-    return this.membershipService.manageInvite(dto);
+    manageInviteDto.userId = user.id; // un utente può gestire solo i propri inviti
+    return this.membershipService.manageInvite(manageInviteDto);
   }
 }
