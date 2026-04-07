@@ -2,6 +2,7 @@ ARG NODE_VERSION=24.11.1
 FROM node:${NODE_VERSION}-alpine
 
 COPY --from=anchore/syft:latest /syft /usr/local/bin/syft
+COPY --from=anchore/grype:latest /grype /usr/local/bin/grype
 
 WORKDIR /usr/src/app
 
