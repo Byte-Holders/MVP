@@ -19,20 +19,3 @@ export class ManageInviteDto {
 export class GetInviteDto {
   userId!: string;
 }
-  
-export class AddInviteDto {
-  workspaceId!: string;
-  senderId!: string;
-  recipientId!: string;
-  recipientRole!: string;
-}
-
-export class UpdateInviteDto {
-  membershipId!: string;
-  action!: ManageInviteAction;
-}
-
-export class ResearchInviteDto {
-  workspaceId!: string;
-  userId!: string;
-}
