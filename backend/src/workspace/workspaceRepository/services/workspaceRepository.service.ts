@@ -6,9 +6,7 @@ import type { IRepositoryReader } from '../../../repository/interfaces/repositor
 import { RepositoryReaderToken } from '../../../repository/interfaces/repository.reader.interface';
 import type { IRepositoryWriter } from '../../../repository/interfaces/repository.writer.interface';
 import { RepositoryWriterToken } from '../../../repository/interfaces/repository.writer.interface';
-import type { AddRepositoryDto } from '../../../repository/dtos/AddRepositoryDto';
-import type { AccessTokenDto } from '../dtos/AccessTokenDto';
-import type { RepositoryInfo } from '../../../repository/dtos/RepositoryInfo';
+import type { RepositoryInfo } from '../../../repository/types/repository-info';
 
 @Injectable()
 export class WorkspaceRepositoryService implements IWorkspaceRepositoryService {
@@ -29,8 +27,8 @@ export class WorkspaceRepositoryService implements IWorkspaceRepositoryService {
     return this.repositoryReader.getRepositories(ids, searchInput);
   }
 
-  async addRepository(workspaceId: string, dto: AddRepositoryDto): Promise<void> {
-    const repositoryId = await this.repositoryWriter.addRepository(dto);
+  async addRepository(workspaceId: string, repositoryUrl: string, accessToken?: string): Promise<void> {
+    const repositoryId = await this.repositoryWriter.addRepository(repositoryUrl, accessToken);
     await this.workspaceRepositoryRepository.addRepository(workspaceId, repositoryId);
   }
 
@@ -38,7 +36,7 @@ export class WorkspaceRepositoryService implements IWorkspaceRepositoryService {
     return this.workspaceRepositoryRepository.removeRepository(repositoryId, workspaceId);
   }
 
-  async updateToken(_repositoryId: string, _workspaceId: string, _dto: AccessTokenDto): Promise<void> {
-    // TODO: implementare logica di aggiornamento token (es. delegare a IRepositoryWriter)
+  async updateToken(_repositoryId: string, _workspaceId: string, _accessToken: string): Promise<void> {
+    // TODO: implementare logica di aggiornamento token
   }
 }

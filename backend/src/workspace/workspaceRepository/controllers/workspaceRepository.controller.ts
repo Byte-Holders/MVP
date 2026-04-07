@@ -11,11 +11,12 @@ import {
   UsePipes,
   ValidationPipe,
 } from '@nestjs/common';
-import { AddRepositoryDto } from '../../../repository/dtos/AddRepositoryDto';
-import { AccessTokenDto } from '../dtos/AccessTokenDto';
+import { AddRepositoryDto } from '../../../repository/dtos/add-repository.dto';
+import { AccessTokenDto } from '../dtos/access-token.dto';
+import { GetRepositoriesQueryDto } from '../dtos/get-repositories-query.dto';
 import type { IWorkspaceRepositoryService } from '../interfaces/workspaceRepository.service.interface';
 import { WorkspaceRepositoryServiceToken } from '../interfaces/workspaceRepository.service.interface';
-import type { RepositoryInfo } from '../../../repository/dtos/RepositoryInfo';
+import type { RepositoryInfo } from '../../../repository/types/repository-info';
 
 @Controller('workspaces/:workspaceId/repositories')
 @UsePipes(new ValidationPipe())
@@ -28,9 +29,9 @@ export class WorkspaceRepositoryController {
   @Get()
   async getRepositories(
     @Param('workspaceId') workspaceId: string,
-    @Query('searchInput') searchInput?: string,
+    @Query() query: GetRepositoriesQueryDto,
   ): Promise<RepositoryInfo[]> {
-    return this.workspaceRepositoryService.getRepositories(workspaceId, searchInput);
+    return this.workspaceRepositoryService.getRepositories(workspaceId, query.searchInput);
   }
 
   @Post()
@@ -38,7 +39,7 @@ export class WorkspaceRepositoryController {
     @Param('workspaceId') workspaceId: string,
     @Body() dto: AddRepositoryDto,
   ): Promise<void> {
-    return this.workspaceRepositoryService.addRepository(workspaceId, dto);
+    return this.workspaceRepositoryService.addRepository(workspaceId, dto.repositoryUrl, dto.accessToken);
   }
 
   @Delete(':repositoryId')
@@ -55,6 +56,6 @@ export class WorkspaceRepositoryController {
     @Param('repositoryId') repositoryId: string,
     @Body() dto: AccessTokenDto,
   ): Promise<void> {
-    return this.workspaceRepositoryService.updateToken(repositoryId, workspaceId, dto);
+    return this.workspaceRepositoryService.updateToken(repositoryId, workspaceId, dto.accessToken);
   }
 }

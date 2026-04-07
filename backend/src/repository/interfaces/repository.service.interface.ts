@@ -1,4 +1,4 @@
-import type { RepositoryInfo } from '../dtos/RepositoryInfo';
+import type { RepositoryInfo } from '../types/repository-info';
 
 export interface IRepositoryService {
   getRepository(repositoryId: string): Promise<RepositoryInfo>;

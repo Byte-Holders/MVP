@@ -1,4 +1,4 @@
-import type { RepositoryInfo } from '../dtos/RepositoryInfo';
+import type { RepositoryInfo } from '../types/repository-info';
 
 export interface IRepositoryReader {
   getRepositories(repositoryIds: string[], searchInput?: string): Promise<RepositoryInfo[]>;

@@ -1,16 +1,10 @@
-import type { AccessTokenDto } from '../dtos/AccessTokenDto';
-import type { AddRepositoryDto } from '../../../repository/dtos/AddRepositoryDto';
-import type { RepositoryInfo } from '../../../repository/dtos/RepositoryInfo';
+import type { RepositoryInfo } from '../../../repository/types/repository-info';
 
 export interface IWorkspaceRepositoryService {
   getRepositories(workspaceId: string, searchInput?: string): Promise<RepositoryInfo[]>;
-  addRepository(workspaceId: string, dto: AddRepositoryDto): Promise<void>;
+  addRepository(workspaceId: string, repositoryUrl: string, accessToken?: string): Promise<void>;
   removeRepository(repositoryId: string, workspaceId: string): Promise<void>;
-  updateToken(
-    repositoryId: string,
-    workspaceId: string,
-    dto: AccessTokenDto,
-  ): Promise<void>;
+  updateToken(repositoryId: string, workspaceId: string, accessToken: string): Promise<void>;
 }
 
 export const WorkspaceRepositoryServiceToken = 'WORKSPACE_REPOSITORY_SERVICE';

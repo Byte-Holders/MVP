@@ -1,6 +1,5 @@
-export interface RepositoryInfo {
+export type RepositoryInfo = {
   repositoryId: string;
-  repoId: string; // formato owner/repo
   ownerName: string;
   name: string;
   branches: string[];
@@ -8,4 +7,4 @@ export interface RepositoryInfo {
   documentationScore?: number;
   codeCoverage?: number;
   cvss?: number;
-}
+};

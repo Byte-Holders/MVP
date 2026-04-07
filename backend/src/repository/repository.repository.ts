@@ -6,8 +6,7 @@ import {
   RepositoryDocument,
 } from '../workspace/schemas/repository.schema';
 import type { IRepositoryRepository } from './interfaces/repository.repository.interface';
-import type { AddRepositoryDto } from './dtos/AddRepositoryDto';
-import type { RepositoryInfo } from './dtos/RepositoryInfo';
+import type { RepositoryInfo } from './types/repository-info';
 
 @Injectable()
 export class RepositoryRepository implements IRepositoryRepository {
@@ -41,8 +40,8 @@ export class RepositoryRepository implements IRepositoryRepository {
     return repository.branches;
   }
 
-  async addRepository(dto: AddRepositoryDto): Promise<string> {
-    const urlParts = dto.repositoryUrl
+  async addRepository(repositoryUrl: string, _accessToken?: string): Promise<string> {
+    const urlParts = repositoryUrl
       .replace(/https?:\/\/github\.com\//, '')
       .split('/');
     const [ownerName, name] = urlParts;
@@ -84,7 +83,6 @@ export class RepositoryRepository implements IRepositoryRepository {
   private toRepositoryInfo(r: RepositoryDocument): RepositoryInfo {
     return {
       repositoryId: r._id.toString(),
-      repoId: r.repoId,
       ownerName: r.ownerName,
       name: r.name,
       branches: r.branches,

@@ -1,7 +1,7 @@
 import { Controller, Get, Inject, Param } from '@nestjs/common';
 import type { IRepositoryService } from '../interfaces/repository.service.interface';
 import { RepositoryServiceToken } from '../interfaces/repository.service.interface';
-import type { RepositoryInfo } from '../dtos/RepositoryInfo';
+import type { RepositoryInfo } from '../types/repository-info';
 
 @Controller('repository')
 export class RepositoryController {

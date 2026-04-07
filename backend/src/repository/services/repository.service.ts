@@ -4,8 +4,7 @@ import type { IRepositoryReader } from '../interfaces/repository.reader.interfac
 import type { IRepositoryWriter } from '../interfaces/repository.writer.interface';
 import type { IRepositoryRepository } from '../interfaces/repository.repository.interface';
 import { RepositoryRepositoryToken } from '../interfaces/repository.repository.interface';
-import type { AddRepositoryDto } from '../dtos/AddRepositoryDto';
-import type { RepositoryInfo } from '../dtos/RepositoryInfo';
+import type { RepositoryInfo } from '../types/repository-info';
 
 @Injectable()
 export class RepositoryService implements IRepositoryService, IRepositoryReader, IRepositoryWriter {
@@ -26,7 +25,7 @@ export class RepositoryService implements IRepositoryService, IRepositoryReader,
     return this.repositoryRepository.getRepositories(repositoryIds, searchInput);
   }
 
-  async addRepository(dto: AddRepositoryDto): Promise<string> {
-    return this.repositoryRepository.addRepository(dto);
+  async addRepository(repositoryUrl: string, accessToken?: string): Promise<string> {
+    return this.repositoryRepository.addRepository(repositoryUrl, accessToken);
   }
 }
