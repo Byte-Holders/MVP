@@ -7,7 +7,7 @@ import { UserService } from './user.service';
 import { CreateUserToken } from './interfaces/ICreateUser.interface';
 import { UserRepositoryToken } from './interfaces/IUserRepository.interface';
 import { UserController } from './user.controller';
-import { FindUserBySubToken } from './interfaces/IfindUserBySub.interface copy';
+import { FindUserBySubToken } from './interfaces/IfindUserBySub.interface';
 
 @Module({
   imports: [

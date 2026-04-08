@@ -6,8 +6,8 @@ import { ExtractJwt, Strategy } from 'passport-jwt';
 import {
   FindUserBySubToken,
   type IFindUserBySub,
-} from 'src/user/interfaces/IfindUserBySub.interface copy';
-import { UserInfo } from 'src/user/types/user.type';
+} from '../user/interfaces/IfindUserBySub.interface';
+import { UserInfo } from '../user/types/user.type';
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy, 'jwt-auth') {

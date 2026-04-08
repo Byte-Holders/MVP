@@ -1,5 +1,5 @@
 import { Controller, Inject, Post, UseGuards } from '@nestjs/common';
-import { JwtRegistrationGuard } from 'src/auth/jwt-registration.guard';
+import { JwtRegistrationGuard } from '../auth/jwt-registration.guard';
 import { Request } from '@nestjs/common';
 import {
   CreateUserToken,
