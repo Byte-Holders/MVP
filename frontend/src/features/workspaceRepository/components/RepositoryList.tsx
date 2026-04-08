@@ -7,7 +7,11 @@ interface Props {
 }
 
 export function RepositoryList({ workspaceId }: Props) {
-  const { data: repositories, isLoading, error } = useGetRepositories(workspaceId)
+  const {
+    data: repositories,
+    isLoading,
+    error,
+  } = useGetRepositories(workspaceId)
 
   return (
     <div className="flex flex-col gap-4">

@@ -45,7 +45,13 @@ function CvssBadge({ cvss }: { cvss?: number }) {
           : 'bg-red-100 text-red-700'
 
   const label =
-    cvss <= 3.9 ? 'Low' : cvss <= 6.9 ? 'Medium' : cvss <= 8.9 ? 'High' : 'Critical'
+    cvss <= 3.9
+      ? 'Low'
+      : cvss <= 6.9
+        ? 'Medium'
+        : cvss <= 8.9
+          ? 'High'
+          : 'Critical'
 
   return (
     <span className={`rounded-full px-2 py-0.5 text-xs font-semibold ${color}`}>
@@ -74,8 +80,12 @@ export default function RepositoryCard({
     <div className="flex flex-col gap-4 rounded-2xl border border-[var(--chip-line)] bg-[var(--chip-bg)] p-5 shadow-[0_8px_22px_rgba(30,90,72,0.08)] transition hover:-translate-y-0.5">
       <div className="flex items-start justify-between gap-2">
         <div>
-          <p className="text-xs text-[var(--sea-ink)] opacity-60">{ownerName}</p>
-          <h3 className="text-base font-semibold text-[var(--sea-ink)]">{name}</h3>
+          <p className="text-xs text-[var(--sea-ink)] opacity-60">
+            {ownerName}
+          </p>
+          <h3 className="text-base font-semibold text-[var(--sea-ink)]">
+            {name}
+          </h3>
         </div>
         <div className="flex flex-col items-end gap-1">
           <span className="text-xs text-[var(--sea-ink)] opacity-50">CVSS</span>

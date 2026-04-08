@@ -8,7 +8,11 @@ interface Props {
 export function AddRepositoryForm({ workspaceId }: Props) {
   const [url, setUrl] = useState('')
   const [token, setToken] = useState('')
-  const { mutate: addRepository, isPending, error } = useAddRepository(workspaceId)
+  const {
+    mutate: addRepository,
+    isPending,
+    error,
+  } = useAddRepository(workspaceId)
 
   function handleSubmit(e: React.SyntheticEvent<HTMLFormElement>) {
     e.preventDefault()
@@ -25,8 +29,13 @@ export function AddRepositoryForm({ workspaceId }: Props) {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="island-shell p-5 flex flex-col gap-3">
-      <h3 className="font-semibold text-sm island-kicker">Aggiungi repository</h3>
+    <form
+      onSubmit={handleSubmit}
+      className="island-shell p-5 flex flex-col gap-3"
+    >
+      <h3 className="font-semibold text-sm island-kicker">
+        Aggiungi repository
+      </h3>
       <input
         type="url"
         placeholder="URL repository (es. https://github.com/owner/repo)"
