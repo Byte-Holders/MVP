@@ -1,4 +1,3 @@
 export class StopScanDto {
-  repositoryId: string;
-  branch: string;
+  scanId: string;
 }

@@ -15,18 +15,16 @@ export class ScanStatusService implements IScanStatusService {
     private readonly scanRepository: IScanRepository,
   ) {}
 
-  async getScanStatus(getScanStatusDto: GetScanStatusDto): Promise<ScanStatus> {
-    const scan = await this.scanRepository.find(getScanStatusDto);
+  async getScanStatus(dto: GetScanStatusDto): Promise<ScanStatus> {
+    const scan = await this.scanRepository.find(dto.scanId);
     if (!scan) {
       // TODO forse conviene restituire `null`
-      throw new Error(
-        `Non sono state trovate scansioni in ${getScanStatusDto.repositoryId}/${getScanStatusDto.branch}`,
-      );
+      throw new Error(`Non sono state trovate scansioni in ${dto.scanId}`);
     }
     return scan.status;
   }
 
-  async setScanStatus(setScanStatusDto: UpdateScanStatusDto): Promise<void> {
-    await this.scanRepository.update(setScanStatusDto);
+  async setScanStatus(dto: UpdateScanStatusDto): Promise<void> {
+    await this.scanRepository.update(dto.scanId, { status: dto.status });
   }
 }

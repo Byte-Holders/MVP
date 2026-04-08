@@ -5,6 +5,7 @@ import {
 } from './interfaces/iscan-manager.service';
 import { StartScanDto } from './dtos/start-scan.dto';
 import { StopScanDto } from './dtos/stop-scan.dto';
+import { StartScanResponseDto } from './dtos/start-scan-response.dto';
 
 // TODO tutte le guardie
 @Controller('/scan')
@@ -15,8 +16,11 @@ export class ScanManagerController {
   ) {}
 
   @Post()
-  async startScan(@Body() startScanDto: StartScanDto) {
-    await this.scanManagerService.startScan(startScanDto);
+  async startScan(
+    @Body() startScanDto: StartScanDto,
+  ): Promise<StartScanResponseDto> {
+    const scan = await this.scanManagerService.startScan(startScanDto);
+    return { scanId: scan.id };
   }
 
   @Patch()

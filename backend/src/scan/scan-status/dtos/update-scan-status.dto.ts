@@ -3,10 +3,7 @@ import { ScanStatus } from '../enums/scan-status.enum';
 
 export class UpdateScanStatusDto {
   @IsString()
-  repositoryId: string;
-
-  @IsString()
-  branch: string;
+  scanId: string;
 
   @IsEnum(ScanStatus)
   status: ScanStatus;

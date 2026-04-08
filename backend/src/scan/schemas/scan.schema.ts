@@ -6,6 +6,9 @@ import { ScanStatus } from '../scan-status/enums/scan-status.enum';
 @Schema({ timestamps: true, collection: 'scans' })
 export class ScanSchemaClass {
   @Prop({ required: true, type: String })
+  id: string;
+
+  @Prop({ required: true, type: String })
   workspaceId: string;
 
   @Prop({ required: true, type: ScanTargetSchema })
@@ -20,11 +23,11 @@ export class ScanSchemaClass {
   @Prop({ required: true, type: Date })
   startTime: Date;
 
-  @Prop({ required: false, type: Date, default: null })
-  endTime: Date | null;
+  @Prop({ required: false, type: Date, default: undefined })
+  endTime?: Date;
 
-  @Prop({ required: false, type: String, default: null })
-  callbackToken: string | null;
+  @Prop({ required: true, type: String })
+  callbackToken: string;
 }
 
 export type ScanDocument = ScanSchemaClass & Document;
