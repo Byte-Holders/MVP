@@ -25,6 +25,6 @@ export class ScanManagerController {
 
   @Patch()
   async stopScan(@Body() stopScanDto: StopScanDto) {
-    await this.scanManagerService.stopScan(stopScanDto);
+    await this.scanManagerService.stopScan(stopScanDto.scanId);
   }
 }

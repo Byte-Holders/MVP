@@ -3,10 +3,11 @@ import {
   ISCAN_REPOSITORY_TOKEN,
   type IScanRepository,
 } from '../interfaces/iscan.repository';
-import { IScanManagerService } from './interfaces/iscan-manager.service';
+import {
+  IScanManagerService,
+  StartScanInfo,
+} from './interfaces/iscan-manager.service';
 import { Scan } from '../entities/scan.entity';
-import { StartScanDto } from './dtos/start-scan.dto';
-import { StopScanDto } from './dtos/stop-scan.dto';
 import { ScanStatus } from '../scan-status/enums/scan-status.enum';
 import {
   ECSClient,
@@ -29,12 +30,12 @@ export class ScanManagerService implements IScanManagerService {
     private readonly jwtService: JwtService,
   ) {}
 
-  async startScan(dto: StartScanDto): Promise<Scan> {
+  async startScan(info: StartScanInfo): Promise<Scan> {
     this.logger.log(
-      `Lancio scansione verso workspace ${dto.workspaceId}, repository ${dto.repositoryId}, branch ${dto.branch} `,
+      `Lancio scansione verso workspace ${info.workspaceId}, repository ${info.repositoryId}, branch ${info.branch} `,
     );
 
-    const receiver_token = await this.jwtService.signAsync(dto);
+    const receiver_token = await this.jwtService.signAsync(info);
     const client = new ECSClient({
       region: this.configService.get<string>('CONTAINER_REGION')!,
     });
@@ -66,7 +67,7 @@ export class ScanManagerService implements IScanManagerService {
             environment: [
               { name: 'TARGET_OWNER', value: 'TODO_TARGET_OWNER' },
               { name: 'TARGET_REPOSITORY', value: 'TODO_TARGET_REPOSITORY' },
-              { name: 'TARGET_BRANCH', value: dto.branch },
+              { name: 'TARGET_BRANCH', value: info.branch },
               { name: 'RECEIVER_URL', value: 'TODO_RECEIVER_URL' },
               { name: 'RECEIVER_TOKEN', value: receiver_token },
             ],
@@ -83,10 +84,10 @@ export class ScanManagerService implements IScanManagerService {
 
     const scan: Scan = {
       id: randomUUID(),
-      workspaceId: dto.workspaceId,
+      workspaceId: info.workspaceId,
       target: {
-        repositoryId: dto.repositoryId,
-        branchName: dto.branch,
+        repositoryId: info.repositoryId,
+        branchName: info.branch,
       },
       callbackToken: receiver_token,
       startTime: new Date(),
@@ -99,13 +100,13 @@ export class ScanManagerService implements IScanManagerService {
     return scan;
   }
 
-  async stopScan(dto: StopScanDto): Promise<void> {
-    const scan = await this.scanRepository.find(dto.scanId); // TODO id
+  async stopScan(scanId: string): Promise<void> {
+    const scan = await this.scanRepository.find(scanId); // TODO id
     if (!scan) {
-      throw new NotFoundException(`Scan ${dto.scanId} non trovato`);
+      throw new NotFoundException(`Scan ${scanId} non trovato`);
     }
     if (scan.status != ScanStatus.Started) {
-      throw new Error(`Scan ${dto.scanId} non in corso.`);
+      throw new Error(`Scan ${scanId} non in corso.`);
     }
 
     const client = new ECSClient({
@@ -124,6 +125,6 @@ export class ScanManagerService implements IScanManagerService {
       status: ScanStatus.Stopped,
     };
 
-    await this.scanRepository.update(dto.scanId, updated);
+    await this.scanRepository.update(scanId, updated);
   }
 }

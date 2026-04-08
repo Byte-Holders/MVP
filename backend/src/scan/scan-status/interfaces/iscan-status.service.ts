@@ -1,10 +1,8 @@
-import { GetScanStatusDto } from '../dtos/get-scan-status.dto';
-import { UpdateScanStatusDto } from '../dtos/update-scan-status.dto';
 import { ScanStatus } from '../enums/scan-status.enum';
 
 export interface IScanStatusService {
-  getScanStatus(getScanStatusDto: GetScanStatusDto): Promise<ScanStatus>;
-  setScanStatus(setScanStatusDto: UpdateScanStatusDto): Promise<void>;
+  getScanStatus(scanId: string): Promise<ScanStatus>;
+  setScanStatus(scanId: string, scanStatus: ScanStatus): Promise<void>;
 }
 
 export const ISCAN_STATUS_SERVICE_TOKEN = 'IScanStatusService';

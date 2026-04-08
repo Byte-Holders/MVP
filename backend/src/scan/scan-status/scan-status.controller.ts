@@ -29,7 +29,7 @@ export class ScanStatusController {
   @UsePipes(new ValidationPipe())
   async getScanStatus(@Param() dto: GetScanStatusDto): Promise<ScanStatus> {
     console.log('Called');
-    return await this.scanStatusService.getScanStatus(dto);
+    return await this.scanStatusService.getScanStatus(dto.scanId);
   }
 
   // TODO guardia container
@@ -44,7 +44,7 @@ export class ScanStatusController {
       updateStatusDto as unknown as UpdateScanStatusDto;
 
     try {
-      return await this.scanStatusService.setScanStatus(dto);
+      return await this.scanStatusService.setScanStatus(dto.scanId, dto.status);
     } catch {
       throw new InternalServerErrorException();
     }
