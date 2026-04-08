@@ -1,23 +1,27 @@
-import { InviteElement } from './InviteElement';
-import { useGetInvites } from '../hooks/UseGetInvite';
+import { InviteElement } from './InviteElement'
+import { useGetInvites } from '../hooks/UseGetInvite'
 
 export function InviteList() {
-  const { invites, loading, refresh } = useGetInvites();
+  const { invites, loading, refresh } = useGetInvites()
 
   if (loading) {
     return (
       <div className="flex items-center justify-center py-12">
-        <div className="text-[var(--text-secondary)]">Caricamento inviti...</div>
+        <div className="text-[var(--text-secondary)]">
+          Caricamento inviti...
+        </div>
       </div>
-    );
+    )
   }
 
   if (invites.length === 0) {
     return (
       <div className="flex items-center justify-center py-12">
-        <div className="text-[var(--text-secondary)]">Nessun invito pendente</div>
+        <div className="text-[var(--text-secondary)]">
+          Nessun invito pendente
+        </div>
       </div>
-    );
+    )
   }
 
   return (
@@ -26,5 +30,5 @@ export function InviteList() {
         <InviteElement key={index} invite={invite} onAction={refresh} />
       ))}
     </div>
-  );
+  )
 }

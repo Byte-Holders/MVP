@@ -11,7 +11,8 @@ export function InvitePage() {
           Gestione inviti ricevuti
         </h1>
         <p className="mb-8 max-w-2xl text-base text-[var(--sea-ink-soft)] sm:text-lg">
-          Gestisci i tuoi inviti ai workspace: accetta o rifiuta le richieste pendenti.
+          Gestisci i tuoi inviti ai workspace: accetta o rifiuta le richieste
+          pendenti.
         </p>
       </section>
 
