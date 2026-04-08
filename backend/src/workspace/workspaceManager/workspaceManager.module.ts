@@ -11,12 +11,18 @@ import { Workspace, WorkspaceSchema } from '../schemas/workspace.schema'
   ],
   controllers: [WorkspaceManagerController],
   //providers: [WorkspaceManagerService, WorkspaceManagerRepository],
-  providers: [
+    providers: [
     {
-      provide: 'IWorkspaceManagerRepository',  // token stringa
-      useClass: WorkspaceManagerRepository,     // implementazione concreta
+      provide: 'IWorkspaceManagerService',      // token che usa il controller
+      useClass: WorkspaceManagerService,
     },
-    WorkspaceManagerService,
+    {
+      provide: 'IWorkspaceManagerRepository',   // token che usa il service
+      useClass: WorkspaceManagerRepository,
+    },
+  ],
+  exports: [
+    'IWorkspaceManagerService',  // esportato per altri moduli che lo iniettano
   ],
 })
 export class WorkspaceManagerModule {}

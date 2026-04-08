@@ -8,5 +8,5 @@ export class CreateWorkspaceResponseDto {
   name!: string
 
   @IsString()
-  createdBy!: string
+  ownerUsername!: string
 }

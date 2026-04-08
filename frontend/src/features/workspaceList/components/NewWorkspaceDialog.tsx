@@ -5,7 +5,7 @@ import { Input } from '@/components/ui/input'
 import { useNewWorkspaceForm } from '../hooks/useNewWorkspaceForm'
 
 export function NewWorkspaceDialog() {
-  const { form } = useNewWorkspaceForm()
+  const { form, serverError } = useNewWorkspaceForm()
 
   return (
     <Dialog>
@@ -45,10 +45,15 @@ export function NewWorkspaceDialog() {
                       autoComplete="off"
                     />
                     {isInvalid && <FieldError errors={field.state.meta.errors} />}
+                    
                   </Field>
                 )
               }}
             />
+            {/* errore server — mostrato sotto il campo, fuori da form.Field */}
+            {serverError && (
+              <p className="text-sm text-red-500 mt-1">{serverError}</p>
+            )}
           </FieldGroup>
           <DialogFooter>
             <DialogClose asChild>

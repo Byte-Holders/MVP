@@ -14,8 +14,15 @@ export async function createWorkspace(data: CreateWorkspaceRequest): Promise<Wor
     },
     body: JSON.stringify(data),
   })
+  console.log('Status HTTP:', response.status)           // deve essere 409
+  console.log('Headers:', response.headers.get('content-type'))
   console.log('Risposta raw dal backend:', response) // Debug log per verificare la risposta
-  if (!response.ok) throw new Error('Errore nella creazione del workspace')
+  if (!response.ok) {
+    // Leggi il messaggio di errore dal backend
+    const errorBody = await response.json().catch(() => ({}))
+    const message   = errorBody?.message ?? 'Errore nella creazione del workspace'
+    throw new Error(message)   // il messaggio arriva dal ConflictException
+  }
 
   return response.json()
 }
