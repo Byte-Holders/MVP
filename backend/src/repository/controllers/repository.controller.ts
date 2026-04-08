@@ -11,13 +11,17 @@ export class RepositoryController {
   ) {}
 
   @Get(':repositoryId')
-  async getRepository(@Param('repositoryId') repositoryId: string): Promise<RepositoryResponseDto> {
+  async getRepository(
+    @Param('repositoryId') repositoryId: string,
+  ): Promise<RepositoryResponseDto> {
     const info = await this.repositoryService.getRepository(repositoryId);
     return { ...info };
   }
 
   @Get(':repositoryId/branches')
-  async getBranches(@Param('repositoryId') repositoryId: string): Promise<string[]> {
+  async getBranches(
+    @Param('repositoryId') repositoryId: string,
+  ): Promise<string[]> {
     return this.repositoryService.getBranches(repositoryId);
   }
 }

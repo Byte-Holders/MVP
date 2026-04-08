@@ -14,7 +14,10 @@ export class RepositoryRepository implements IRepositoryRepository {
     @InjectModel(Repository.name) private repositoryModel: Model<Repository>,
   ) {}
 
-  async getRepositories(repositoryIds: string[], searchInput?: string): Promise<RepositoryEntity[]> {
+  async getRepositories(
+    repositoryIds: string[],
+    searchInput?: string,
+  ): Promise<RepositoryEntity[]> {
     const objectIds = repositoryIds.map((id) => new Types.ObjectId(id));
     const filter: Record<string, unknown> = { _id: { $in: objectIds } };
     if (searchInput) {
@@ -40,7 +43,10 @@ export class RepositoryRepository implements IRepositoryRepository {
     return repository.branches;
   }
 
-  async addRepository(repositoryUrl: string, _accessToken?: string): Promise<string> {
+  async addRepository(
+    repositoryUrl: string,
+    _accessToken?: string,
+  ): Promise<string> {
     const urlParts = repositoryUrl
       .replace(/https?:\/\/github\.com\//, '')
       .split('/');
@@ -67,7 +73,10 @@ export class RepositoryRepository implements IRepositoryRepository {
     return repository;
   }
 
-  async findOrCreate(ownerName: string, name: string): Promise<RepositoryDocument> {
+  async findOrCreate(
+    ownerName: string,
+    name: string,
+  ): Promise<RepositoryDocument> {
     let repository = await this.repositoryModel.findOne({ ownerName, name });
     if (!repository) {
       repository = await this.repositoryModel.create({

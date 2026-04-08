@@ -10,7 +10,9 @@ import { RepositoryModule } from '../../repository/repository.module';
 
 @Module({
   imports: [
-    MongooseModule.forFeature([{ name: Workspace.name, schema: WorkspaceSchema }]),
+    MongooseModule.forFeature([
+      { name: Workspace.name, schema: WorkspaceSchema },
+    ]),
     RepositoryModule,
   ],
   controllers: [WorkspaceRepositoryController],

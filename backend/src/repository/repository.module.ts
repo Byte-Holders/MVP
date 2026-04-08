@@ -1,6 +1,9 @@
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
-import { Repository, RepositorySchema } from '../workspace/schemas/repository.schema';
+import {
+  Repository,
+  RepositorySchema,
+} from '../workspace/schemas/repository.schema';
 import { RepositoryRepository } from './repository.repository';
 import { RepositoryService } from './services/repository.service';
 import { RepositoryController } from './controllers/repository.controller';
@@ -34,9 +37,6 @@ import { RepositoryWriterToken } from './interfaces/repository.writer.interface'
       useClass: RepositoryService,
     },
   ],
-  exports: [
-    RepositoryReaderToken,
-    RepositoryWriterToken,
-  ],
+  exports: [RepositoryReaderToken, RepositoryWriterToken],
 })
 export class RepositoryModule {}

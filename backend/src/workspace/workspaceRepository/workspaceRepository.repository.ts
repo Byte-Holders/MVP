@@ -18,7 +18,10 @@ export class WorkspaceRepositoryRepository implements IWorkspaceRepositoryReposi
     return workspace.repositories.map((r) => r.repoId.toString());
   }
 
-  async addRepository(workspaceId: string, repositoryId: string): Promise<void> {
+  async addRepository(
+    workspaceId: string,
+    repositoryId: string,
+  ): Promise<void> {
     const result = await this.workspaceModel.updateOne(
       { _id: workspaceId },
       { $push: { repositories: { repoId: new Types.ObjectId(repositoryId) } } },
@@ -28,7 +31,10 @@ export class WorkspaceRepositoryRepository implements IWorkspaceRepositoryReposi
     }
   }
 
-  async removeRepository(repositoryId: string, workspaceId: string): Promise<void> {
+  async removeRepository(
+    repositoryId: string,
+    workspaceId: string,
+  ): Promise<void> {
     const result = await this.workspaceModel.updateOne(
       { _id: workspaceId },
       { $pull: { repositories: { repoId: new Types.ObjectId(repositoryId) } } },

@@ -8,7 +8,9 @@ import type { RepositoryEntity } from '../entities/repository.entity';
 import type { RepositoryInfo } from '../types/repository-info';
 
 @Injectable()
-export class RepositoryService implements IRepositoryService, IRepositoryReader, IRepositoryWriter {
+export class RepositoryService
+  implements IRepositoryService, IRepositoryReader, IRepositoryWriter
+{
   constructor(
     @Inject(RepositoryRepositoryToken)
     private repositoryRepository: IRepositoryRepository,
@@ -23,12 +25,21 @@ export class RepositoryService implements IRepositoryService, IRepositoryReader,
     return this.repositoryRepository.getBranches(repositoryId);
   }
 
-  async getRepositories(repositoryIds: string[], searchInput?: string): Promise<RepositoryInfo[]> {
-    const entities = await this.repositoryRepository.getRepositories(repositoryIds, searchInput);
+  async getRepositories(
+    repositoryIds: string[],
+    searchInput?: string,
+  ): Promise<RepositoryInfo[]> {
+    const entities = await this.repositoryRepository.getRepositories(
+      repositoryIds,
+      searchInput,
+    );
     return entities.map((e) => this.toRepositoryInfo(e));
   }
 
-  async addRepository(repositoryUrl: string, accessToken?: string): Promise<string> {
+  async addRepository(
+    repositoryUrl: string,
+    accessToken?: string,
+  ): Promise<string> {
     return this.repositoryRepository.addRepository(repositoryUrl, accessToken);
   }
 

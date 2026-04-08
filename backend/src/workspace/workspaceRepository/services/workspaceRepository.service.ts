@@ -19,24 +19,48 @@ export class WorkspaceRepositoryService implements IWorkspaceRepositoryService {
     private repositoryWriter: IRepositoryWriter,
   ) {}
 
-  async getRepositories(workspaceId: string, searchInput?: string): Promise<RepositoryInfo[]> {
-    const ids = await this.workspaceRepositoryRepository.getRepositories(workspaceId);
+  async getRepositories(
+    workspaceId: string,
+    searchInput?: string,
+  ): Promise<RepositoryInfo[]> {
+    const ids =
+      await this.workspaceRepositoryRepository.getRepositories(workspaceId);
     if (ids.length === 0) {
       return [];
     }
     return this.repositoryReader.getRepositories(ids, searchInput);
   }
 
-  async addRepository(workspaceId: string, repositoryUrl: string, accessToken?: string): Promise<void> {
-    const repositoryId = await this.repositoryWriter.addRepository(repositoryUrl, accessToken);
-    await this.workspaceRepositoryRepository.addRepository(workspaceId, repositoryId);
+  async addRepository(
+    workspaceId: string,
+    repositoryUrl: string,
+    accessToken?: string,
+  ): Promise<void> {
+    const repositoryId = await this.repositoryWriter.addRepository(
+      repositoryUrl,
+      accessToken,
+    );
+    await this.workspaceRepositoryRepository.addRepository(
+      workspaceId,
+      repositoryId,
+    );
   }
 
-  async removeRepository(repositoryId: string, workspaceId: string): Promise<void> {
-    return this.workspaceRepositoryRepository.removeRepository(repositoryId, workspaceId);
+  async removeRepository(
+    repositoryId: string,
+    workspaceId: string,
+  ): Promise<void> {
+    return this.workspaceRepositoryRepository.removeRepository(
+      repositoryId,
+      workspaceId,
+    );
   }
 
-  async updateToken(_repositoryId: string, _workspaceId: string, _accessToken: string): Promise<void> {
+  async updateToken(
+    _repositoryId: string,
+    _workspaceId: string,
+    _accessToken: string,
+  ): Promise<void> {
     // TODO: implementare logica di aggiornamento token
   }
 }

@@ -31,7 +31,10 @@ export class WorkspaceRepositoryController {
     @Param('workspaceId') workspaceId: string,
     @Query() query: GetRepositoriesQueryDto,
   ): Promise<RepositoryResponseDto[]> {
-    const repositories = await this.workspaceRepositoryService.getRepositories(workspaceId, query.searchInput);
+    const repositories = await this.workspaceRepositoryService.getRepositories(
+      workspaceId,
+      query.searchInput,
+    );
     return repositories.map((r) => ({ ...r }));
   }
 
@@ -40,7 +43,11 @@ export class WorkspaceRepositoryController {
     @Param('workspaceId') workspaceId: string,
     @Body() dto: AddRepositoryDto,
   ): Promise<void> {
-    return this.workspaceRepositoryService.addRepository(workspaceId, dto.repositoryUrl, dto.accessToken);
+    return this.workspaceRepositoryService.addRepository(
+      workspaceId,
+      dto.repositoryUrl,
+      dto.accessToken,
+    );
   }
 
   @Delete(':repositoryId')
@@ -48,7 +55,10 @@ export class WorkspaceRepositoryController {
     @Param('workspaceId') workspaceId: string,
     @Param('repositoryId') repositoryId: string,
   ): Promise<void> {
-    return this.workspaceRepositoryService.removeRepository(repositoryId, workspaceId);
+    return this.workspaceRepositoryService.removeRepository(
+      repositoryId,
+      workspaceId,
+    );
   }
 
   @Patch(':repositoryId')
@@ -57,6 +67,10 @@ export class WorkspaceRepositoryController {
     @Param('repositoryId') repositoryId: string,
     @Body() dto: AccessTokenDto,
   ): Promise<void> {
-    return this.workspaceRepositoryService.updateToken(repositoryId, workspaceId, dto.accessToken);
+    return this.workspaceRepositoryService.updateToken(
+      repositoryId,
+      workspaceId,
+      dto.accessToken,
+    );
   }
 }
