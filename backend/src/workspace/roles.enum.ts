@@ -1,9 +1,9 @@
 // roles.enum.ts — condiviso tra tutti i moduli
 export enum WorkspaceRole {
   //OWNER = 'owner',           // non assegnabile via invito
-  PROJECT_MANAGER = 'project_manager',
-  TECH_LEAD = 'tech_lead',
-  DEVELOPER = 'developer'
+  PROJECT_MANAGER = 'Project Manager',
+  TECH_LEAD = 'Tech Lead',
+  DEVELOPER = 'Developer'
 }
 
 // Ruoli che possono essere assegnati tramite invito

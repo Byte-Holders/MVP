@@ -1,10 +1,10 @@
 import { RequestUser } from 'src/auth/types/requestUser.type'
 import { Workspace } from '../../schemas/workspace.schema'
-import { CreateWorkspaceDto } from '../dto/CreateWorkspaceDto'
-import { CreateWorkspaceResponseDto } from '../dto/CreateWorkspaceResponseDto'
-import { CreateWorkspaceBo } from '../bo/CreateWorkspaceBo'
-import { WorkspaceBo } from '../bo/WorkspaceBo'
-import { WorkspaceListItemBo } from '../bo/WorkspaceListItemBo'
+import { CreateWorkspaceDto } from '../dtos/CreateWorkspaceDto'
+import { CreateWorkspaceResponseDto } from '../dtos/CreateWorkspaceResponseDto'
+import { CreateWorkspaceBo } from '../types/CreateWorkspaceType'
+import { WorkspaceBo } from '../types/WorkspaceType'
+import { WorkspaceListItemBo } from '../types/WorkspaceListItemType'
 
 export interface IWorkspaceManagerService {
   createWorkspace(data: CreateWorkspaceBo): Promise<WorkspaceBo> 

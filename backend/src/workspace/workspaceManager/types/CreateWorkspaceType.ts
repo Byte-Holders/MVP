@@ -1,5 +1,5 @@
 import { IsString} from 'class-validator'
-import { MemberBo } from './MemberBo';
+import { MemberBo } from './MemberType';
 
 export class CreateWorkspaceBo {
   name!: string

@@ -1,12 +1,12 @@
-import { CreateWorkspaceBo } from './bo/CreateWorkspaceBo';
-import { MemberBo } from './bo/MemberBo';
-import { WorkspaceBo } from './bo/WorkspaceBo';
-import { CreateWorkspaceDto } from './dto/CreateWorkspaceDto';
-import { CreateWorkspaceResponseDto } from './dto/CreateWorkspaceResponseDto';
-import { WorkspaceResponseDto } from './dto/WorkspaceResponseDto';
+import { CreateWorkspaceBo } from './types/CreateWorkspaceType';
+import { MemberBo } from './types/MemberType';
+import { WorkspaceBo } from './types/WorkspaceType';
+import { CreateWorkspaceDto } from './dtos/CreateWorkspaceDto';
+import { CreateWorkspaceResponseDto } from './dtos/CreateWorkspaceResponseDto';
+import { WorkspaceResponseDto } from './dtos/WorkspaceResponseDto';
 import type { RequestUser } from 'src/auth/types/requestUser.type'
 import { WorkspaceDocument } from '../schemas/workspace.schema'
-import {WorkspaceListItemBo} from './bo/WorkspaceListItemBo'
+import {WorkspaceListItemBo} from './types/WorkspaceListItemType'
 
 // WorkspaceMapper.ts — tra Controller e Service
 export class WorkspaceMapper {
@@ -35,6 +35,7 @@ export class WorkspaceMapper {
     dto.id             = bo.id
     dto.name           = bo.name
     dto.owner  = bo.owner
+    dto.role   = bo.role
     return dto
   }
 }
@@ -48,7 +49,6 @@ export class WorkspaceDocumentMapper {
     bo.name         = doc.name
     bo.ownerId      = doc.ownerId
     bo.creationDate = doc.creationDate
-    bo.ownerUsername = doc.members.find(m => m.userId === doc.ownerId)?.userUsername ?? ''
     bo.members = doc.members.map(m => {
       const member    = new MemberBo()
       member.userId   = m.userId
@@ -56,6 +56,7 @@ export class WorkspaceDocumentMapper {
       member.role     = m.role
       return member
     })
+    bo.ownerUsername = bo.members.find(m => m.userId === doc.ownerId)?.username ?? ''
     bo.repositoryIds = doc.repositories.map(r => r.repoId)
     return bo
   }
@@ -66,6 +67,7 @@ export class WorkspaceDocumentMapper {
     bo.id           = doc._id.toString()
     bo.name         = doc.name
     bo.owner = doc.members.find(m => m.userId === doc.ownerId)?.userUsername ?? ''
+    bo.role  = doc.members.find(m => m.userId === requesterId)?.role ?? 'viewer' // se non trova il membro, assegna ruolo viewer (caso raro, ma meglio gestirlo)
     return bo
   }
 }

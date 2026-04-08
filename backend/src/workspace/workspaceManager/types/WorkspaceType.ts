@@ -1,5 +1,5 @@
 import { IsString} from 'class-validator'
-import { MemberBo } from './MemberBo';
+import { MemberBo } from './MemberType';
 
 // Questo è il contratto di risposta tra Service e Controller
 export class WorkspaceBo {

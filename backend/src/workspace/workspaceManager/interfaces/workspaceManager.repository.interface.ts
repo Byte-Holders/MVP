@@ -1,7 +1,7 @@
-import { CreateWorkspaceDto } from '../dto/CreateWorkspaceDto'
+import { CreateWorkspaceDto } from '../dtos/CreateWorkspaceDto'
 import { HydratedDocument } from 'mongoose'
 import { Workspace } from '../../schemas/workspace.schema'
-import { CreateWorkspaceData } from '../document/CreateWorkspaceData'
+import { CreateWorkspaceData } from '../entity/CreateWorkspaceData'
 
 export interface IWorkspaceManagerRepository {
   create(data: CreateWorkspaceData): Promise<HydratedDocument<Workspace>>

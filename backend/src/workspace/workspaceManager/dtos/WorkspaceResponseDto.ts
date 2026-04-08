@@ -7,6 +7,6 @@ export class WorkspaceResponseDto {
     name!: string;
     @IsString()
     owner!: string;        // username, non userId
- /* creationDate: Date;
-  memberCount: number;*/
+    @IsString()
+    role!: string;         // ruolo del requester (owner, editor, viewer)
 }

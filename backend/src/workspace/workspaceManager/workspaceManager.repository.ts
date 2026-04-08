@@ -1,22 +1,21 @@
 import { Injectable } from '@nestjs/common'
 import { InjectModel } from '@nestjs/mongoose'
 import { HydratedDocument, Model } from 'mongoose'
-import { Workspace, WorkspaceDocument } from '../schemas/workspace.schema'
-import { CreateWorkspaceDto } from './dto/CreateWorkspaceDto'
+import { Workspace } from '../schemas/workspace.schema'
+import { CreateWorkspaceDto } from './dtos/CreateWorkspaceDto'
 import type { IWorkspaceManagerRepository } from './interfaces/workspaceManager.repository.interface'
-import { CreateWorkspaceData } from './document/CreateWorkspaceData'
+import { CreateWorkspaceData } from './entity/CreateWorkspaceData'
 
 @Injectable()
 export class WorkspaceManagerRepository implements IWorkspaceManagerRepository {
   constructor(
     @InjectModel(Workspace.name)
-    private readonly workspaceModel: Model<WorkspaceDocument>
+    private readonly workspaceModel: Model<Workspace>
   ) {}
 
   async create(data: CreateWorkspaceData):Promise<HydratedDocument<Workspace>> {
     // Il repository costruisce il Document dal tipo di dati che gli appartiene
     // Non conosce BO, non conosce DTO
-    console.log('Repository riceve questi dati per creare il workspace:', data) // log per debug
     const workspace = new this.workspaceModel({
       name: data.name,
       ownerId: data.ownerId,
@@ -28,15 +27,10 @@ export class WorkspaceManagerRepository implements IWorkspaceManagerRepository {
       })),
       repositories: []  // array vuoto — nessuna repo al momento della creazione
     })
-    console.log('Repository: documento costruito:', JSON.stringify(workspace.toObject()))
-  console.log('Repository: errori di validazione:', workspace.validateSync())
-    //return workspace.save()
     try {
     const saved = await workspace.save()
-    console.log('Repository: save completato:', saved._id)
     return saved
   } catch (err) {
-    console.error('Repository: save fallito con errore:', err)
     throw err
   }
   }
