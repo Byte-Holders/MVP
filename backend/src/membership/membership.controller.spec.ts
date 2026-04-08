@@ -1,28 +1,27 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { MembershipController } from './membership.controller';
-import { MembershipRepository } from './membership.repository';
+import { MembershipService } from './membership.service';
 
 describe('MembershipController', () => {
   let controller: MembershipController;
 
   beforeEach(async () => {
-    const module: TestingModule = await Test.createTestingModule({
-      providers: [
-        MembershipController,
-        {
-          provide: MembershipRepository,
-          useValue: {
-            findPendingInvite: jest.fn(),
-            addInvite: jest.fn(),
-            findPendingInvites: jest.fn(),
-            updateInvite: jest.fn(),
-          },
+  const module: TestingModule = await Test.createTestingModule({
+    controllers: [MembershipController],
+    providers: [
+      {
+        provide: MembershipService,
+        useValue: {
+          inviteUser: jest.fn(),
+          getInvites: jest.fn(),
+          manageInvite: jest.fn(),
         },
-      ],
-    }).compile();
+      },
+    ],
+  }).compile();
 
-    controller = module.get<MembershipController>(MembershipController);
-  });
+  controller = module.get<MembershipController>(MembershipController);
+});
 
   it('should be defined', () => {
     expect(controller).toBeDefined();
