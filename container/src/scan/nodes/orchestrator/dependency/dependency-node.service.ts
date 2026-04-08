@@ -50,13 +50,17 @@ export class DepsNodeService {
         const grypeRaw = (await executeCli(grypeCommand)).toString().trim();
         const grypeReport = JSON.parse(grypeRaw) as {
           matches: {
-            vulnerability: { id: string; severity: string; fix?: { versions: string[] } };
+            vulnerability: {
+              id: string;
+              severity: string;
+              fix?: { versions: string[] };
+            };
             artifact: { name: string; version: string };
           }[];
         };
 
         this.logger.log(
-            `Grype: trovate ${grypeReport.matches.length} vulnerabilità totali.`,
+          `Grype: trovate ${grypeReport.matches.length} vulnerabilità totali.`,
         );
 
         depsReport.vulnerabilities = grypeReport.matches.map((m) => ({
@@ -68,7 +72,7 @@ export class DepsNodeService {
         }));
       } catch (grypeError: unknown) {
         this.logger.error(
-            `Analisi Grype fallita: ${(grypeError as Error).message}`,
+          `Analisi Grype fallita: ${(grypeError as Error).message}`,
         );
         // Se grype fallisce restituisco comunque il report di syft
       } finally {
@@ -80,10 +84,9 @@ export class DepsNodeService {
       return { depsReport };
     } catch (error: unknown) {
       this.logger.error(
-          `Analisi delle dipendenze fallita: ${(error as Error).message}`,
+        `Analisi delle dipendenze fallita: ${(error as Error).message}`,
       );
       return { depsReport: { report: [] } };
     }
   }
 }
-
