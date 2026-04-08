@@ -16,8 +16,18 @@ export class Repository {
 
   @Prop({ type: [String], default: [] })
   branches!: string[];
-  //da sistemare questo se abbiamo detto che salviamo i report qua
-  //pensavo di fare un array di oggetti, ognuno con un branchName e un array di report
+
+  @Prop()
+  dateScan?: Date;
+
+  @Prop({ type: Number })
+  documentationScore?: number;
+
+  @Prop({ type: Number })
+  codeCoverage?: number;
+
+  @Prop({ type: Number })
+  cvss?: number;
 }
 
 export const RepositorySchema = SchemaFactory.createForClass(Repository);
