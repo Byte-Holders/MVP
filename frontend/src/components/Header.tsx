@@ -29,7 +29,7 @@ export default function Header() {
       `}</style>
 
       <nav className="flex items-center h-[72px] px-4 gap-2">
-      <div className="flex items-center gap-1 flex-shrink-0">
+        <div className="flex items-center gap-1 flex-shrink-0">
           <div
             className="w-[3px] h-[26px] rounded-full mr-2 flex-shrink-0"
             style={{ background: 'var(--h-bar)' }}
@@ -39,10 +39,10 @@ export default function Header() {
             to="/"
             className="nav-btn"
             activeProps={{
-              style: { 
-                border: '0.5px solid var(--h-bar)', 
-                background: 'var(--h-accent)'
-              }
+              style: {
+                border: '0.5px solid var(--h-bar)',
+                background: 'var(--h-accent)',
+              },
             }}
             style={{
               fontSize: '15px',
@@ -64,10 +64,10 @@ export default function Header() {
             to="/membership"
             className="nav-btn"
             activeProps={{
-              style: { 
-                border: '0.5px solid var(--h-bar)', 
-                background: 'var(--h-accent)'
-              }
+              style: {
+                border: '0.5px solid var(--h-bar)',
+                background: 'var(--h-accent)',
+              },
             }}
             style={{
               fontSize: '15px',

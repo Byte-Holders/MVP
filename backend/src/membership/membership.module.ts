@@ -7,9 +7,11 @@ import { Membership, MembershipSchema } from './schema/membership.schema';
 
 @Module({
   imports: [
-    MongooseModule.forFeature([{ name: Membership.name, schema: MembershipSchema }])
+    MongooseModule.forFeature([
+      { name: Membership.name, schema: MembershipSchema },
+    ]),
   ],
   providers: [MembershipService, MembershipRepository],
-  controllers: [MembershipController]
+  controllers: [MembershipController],
 })
 export class MembershipModule {}

@@ -7,22 +7,26 @@ import { IMembershipRepository } from './interfaces/IMembershipRepository.interf
 @Injectable()
 export class MembershipRepository implements IMembershipRepository {
   constructor(
-    @InjectModel(Membership.name) private membershipModel: Model<Membership>
+    @InjectModel(Membership.name) private membershipModel: Model<Membership>,
   ) {}
 
-  async addInvite(inviteData: { workspaceId: string; senderId: string; recipientId: string; recipientRole: string }): Promise<void> {
+  async addInvite(inviteData: {
+    workspaceId: string;
+    senderId: string;
+    recipientId: string;
+    recipientRole: string;
+  }): Promise<void> {
     const newInvite = new this.membershipModel({
       ...inviteData,
-      status: 'PENDING'
+      status: 'PENDING',
     });
     await newInvite.save();
   }
 
   async updateInvite(membershipId: string, status: string): Promise<void> {
-    const result = await this.membershipModel.updateOne(
-      { _id: membershipId },
-      { $set: { status: status } }
-    ).exec();
+    const result = await this.membershipModel
+      .updateOne({ _id: membershipId }, { $set: { status: status } })
+      .exec();
 
     if (result.matchedCount === 0) {
       throw new Error('Nessun invito pendente trovato per questo utente');
@@ -30,17 +34,24 @@ export class MembershipRepository implements IMembershipRepository {
   }
 
   async findPendingInvites(recipientId: string): Promise<Membership[]> {
-    return this.membershipModel.find({ 
-      recipientId: recipientId, 
-      status: 'PENDING' 
-    }).exec();
+    return this.membershipModel
+      .find({
+        recipientId: recipientId,
+        status: 'PENDING',
+      })
+      .exec();
   }
 
-  async findPendingInvite(recipientId: string, workspaceId: string): Promise<Membership | null> {
-    return this.membershipModel.findOne({ 
-      recipientId: recipientId, 
-      workspaceId: workspaceId, 
-      status: 'PENDING' 
-    }).exec();
+  async findPendingInvite(
+    recipientId: string,
+    workspaceId: string,
+  ): Promise<Membership | null> {
+    return this.membershipModel
+      .findOne({
+        recipientId: recipientId,
+        workspaceId: workspaceId,
+        status: 'PENDING',
+      })
+      .exec();
   }
 }
