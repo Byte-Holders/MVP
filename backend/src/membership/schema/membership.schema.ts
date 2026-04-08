@@ -4,7 +4,7 @@ import { Document } from 'mongoose';
 @Schema({ timestamps: true })
 export class Membership extends Document {
   @Prop({ required: true, ref: 'Workspace' })
-  workspaceId!: string; 
+  workspaceId!: string;
 
   @Prop({ required: true, ref: 'User' })
   senderId!: string;
