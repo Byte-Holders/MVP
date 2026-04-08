@@ -1,4 +1,4 @@
-import { UserInfo } from "../types/user.type";
+import { UserInfo } from '../types/user.type';
 
 export interface IFindUserBySub {
   findBySub(sub: string): Promise<UserInfo | null>;

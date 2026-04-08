@@ -8,8 +8,13 @@ import { JwtRegistrationStrategy } from './jwt.registration.strategy';
 
 @Global()
 @Module({
-  imports: [PassportModule.register({ defaultStrategy: 'jwt' }),UserModule],
-  providers: [JwtStrategy, JwtAuthGuard, JwtRegistrationStrategy, JwtRegistrationGuard],
+  imports: [PassportModule.register({ defaultStrategy: 'jwt' }), UserModule],
+  providers: [
+    JwtStrategy,
+    JwtAuthGuard,
+    JwtRegistrationStrategy,
+    JwtRegistrationGuard,
+  ],
   exports: [PassportModule, JwtAuthGuard, JwtRegistrationGuard],
 })
 export class AuthModule {}

@@ -29,7 +29,7 @@ import { FindUserBySubToken } from './interfaces/IfindUserBySub.interface copy';
     {
       provide: UserRepositoryToken,
       useClass: UserRepository,
-    }
+    },
   ],
   exports: [FindUserBySubToken, FindUserByUsernameToken, CreateUserToken],
   controllers: [UserController],

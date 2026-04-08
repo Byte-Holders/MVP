@@ -1,6 +1,5 @@
 import { UserEntity } from '../entity/user.entity';
 
-
 export interface IUserRepository {
   findBySub(sub: string): Promise<UserEntity | null>;
   findByUsername(username: string): Promise<UserEntity | null>;
