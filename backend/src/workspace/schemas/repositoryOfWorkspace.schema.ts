@@ -16,10 +16,10 @@ export class RepositoryOfWorkspace {
   repoId: Repository;
 
   @Prop()
-  defaultBranch: string;
+  defaultBranch?: string;
 
-  @Prop({ required: true })
-  gitHubUserToken: string;
+  @Prop()
+  gitHubUserToken?: string;
 }
 
 export const RepositoryOfWorkspaceSchema = SchemaFactory.createForClass(

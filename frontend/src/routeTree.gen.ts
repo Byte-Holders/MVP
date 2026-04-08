@@ -15,6 +15,7 @@ import { Route as MembershipRouteImport } from './routes/membership'
 import { Route as CallbackRouteImport } from './routes/callback'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as WorkspacesWorkspaceIdRepositoriesRouteImport } from './routes/workspaces.$workspaceId.repositories'
 
 const WorkspacesRoute = WorkspacesRouteImport.update({
   id: '/workspaces',
@@ -46,6 +47,12 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const WorkspacesWorkspaceIdRepositoriesRoute =
+  WorkspacesWorkspaceIdRepositoriesRouteImport.update({
+    id: '/$workspaceId/repositories',
+    path: '/$workspaceId/repositories',
+    getParentRoute: () => WorkspacesRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -53,7 +60,8 @@ export interface FileRoutesByFullPath {
   '/callback': typeof CallbackRoute
   '/membership': typeof MembershipRoute
   '/repository': typeof RepositoryRoute
-  '/workspaces': typeof WorkspacesRoute
+  '/workspaces': typeof WorkspacesRouteWithChildren
+  '/workspaces/$workspaceId/repositories': typeof WorkspacesWorkspaceIdRepositoriesRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -61,7 +69,8 @@ export interface FileRoutesByTo {
   '/callback': typeof CallbackRoute
   '/membership': typeof MembershipRoute
   '/repository': typeof RepositoryRoute
-  '/workspaces': typeof WorkspacesRoute
+  '/workspaces': typeof WorkspacesRouteWithChildren
+  '/workspaces/$workspaceId/repositories': typeof WorkspacesWorkspaceIdRepositoriesRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -70,7 +79,8 @@ export interface FileRoutesById {
   '/callback': typeof CallbackRoute
   '/membership': typeof MembershipRoute
   '/repository': typeof RepositoryRoute
-  '/workspaces': typeof WorkspacesRoute
+  '/workspaces': typeof WorkspacesRouteWithChildren
+  '/workspaces/$workspaceId/repositories': typeof WorkspacesWorkspaceIdRepositoriesRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -78,15 +88,17 @@ export interface FileRouteTypes {
     | '/'
     | '/about'
     | '/callback'
-    | '/membership'
     | '/repository'
     | '/workspaces'
+    | '/workspaces/$workspaceId/repositories'
+    | '/membership'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/about'
     | '/callback'
     | '/membership'
+    | '/workspaces/$workspaceId/repositories'
     | '/repository'
     | '/workspaces'
   id:
@@ -94,8 +106,9 @@ export interface FileRouteTypes {
     | '/'
     | '/about'
     | '/callback'
-    | '/membership'
     | '/repository'
+    | '/workspaces/$workspaceId/repositories'
+    | '/membership'
     | '/workspaces'
   fileRoutesById: FileRoutesById
 }
@@ -105,7 +118,7 @@ export interface RootRouteChildren {
   CallbackRoute: typeof CallbackRoute
   MembershipRoute: typeof MembershipRoute
   RepositoryRoute: typeof RepositoryRoute
-  WorkspacesRoute: typeof WorkspacesRoute
+  WorkspacesRoute: typeof WorkspacesRouteWithChildren
 }
 
 declare module '@tanstack/react-router' {
@@ -152,8 +165,28 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/workspaces/$workspaceId/repositories': {
+      id: '/workspaces/$workspaceId/repositories'
+      path: '/$workspaceId/repositories'
+      fullPath: '/workspaces/$workspaceId/repositories'
+      preLoaderRoute: typeof WorkspacesWorkspaceIdRepositoriesRouteImport
+      parentRoute: typeof WorkspacesRoute
+    }
   }
 }
+
+interface WorkspacesRouteChildren {
+  WorkspacesWorkspaceIdRepositoriesRoute: typeof WorkspacesWorkspaceIdRepositoriesRoute
+}
+
+const WorkspacesRouteChildren: WorkspacesRouteChildren = {
+  WorkspacesWorkspaceIdRepositoriesRoute:
+    WorkspacesWorkspaceIdRepositoriesRoute,
+}
+
+const WorkspacesRouteWithChildren = WorkspacesRoute._addFileChildren(
+  WorkspacesRouteChildren,
+)
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
@@ -161,7 +194,7 @@ const rootRouteChildren: RootRouteChildren = {
   CallbackRoute: CallbackRoute,
   MembershipRoute: MembershipRoute,
   RepositoryRoute: RepositoryRoute,
-  WorkspacesRoute: WorkspacesRoute,
+  WorkspacesRoute: WorkspacesRouteWithChildren,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
