@@ -7,6 +7,7 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { UserModule } from './user/user.module';
 import { AuthModule } from './auth/auth.module';
 import { WorkspaceRepositoryModule } from './workspace/workspaceRepository/workspaceRepository.module';
+import { MembershipModule } from './membership/membership.module';
 
 @Module({
   imports: [
@@ -24,6 +25,7 @@ import { WorkspaceRepositoryModule } from './workspace/workspaceRepository/works
     UserModule,
     AuthModule,
     WorkspaceRepositoryModule,
+    MembershipModule,
   ],
   controllers: [AppController],
   providers: [AppService],

@@ -38,6 +38,12 @@ export default function Header() {
           <Link
             to="/"
             className="nav-btn"
+            activeProps={{
+              style: {
+                border: '0.5px solid var(--h-bar)',
+                background: 'var(--h-accent)',
+              },
+            }}
             style={{
               fontSize: '15px',
               fontWeight: 600,
@@ -53,10 +59,16 @@ export default function Header() {
           >
             Workspace
           </Link>
-          {/*}
+
           <Link
-            to="/inviti"
+            to="/membership"
             className="nav-btn"
+            activeProps={{
+              style: {
+                border: '0.5px solid var(--h-bar)',
+                background: 'var(--h-accent)',
+              },
+            }}
             style={{
               fontSize: '15px',
               fontWeight: 600,
@@ -71,7 +83,7 @@ export default function Header() {
             }}
           >
             Inviti
-          </Link>*/}
+          </Link>
         </div>
 
         {/* ── CENTER: logo placeholder ── */}
