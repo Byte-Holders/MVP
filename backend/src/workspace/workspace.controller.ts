@@ -17,7 +17,7 @@ import type { RequestUser } from '../auth/types/requestUser.type';
 @UseGuards(JwtAuthGuard)
 export class WorkspaceController {
   constructor(private workspaceService: WorkspaceService) {}
-/*
+  /*
   @UseGuards(JwtAuthGuard)
   @Post()
   @UsePipes(new ValidationPipe())

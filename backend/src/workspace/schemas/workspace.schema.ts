@@ -23,7 +23,7 @@ export class Workspace {
 
   /*@Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'User', required:c true })
   ownerId: User;*/
-  @Prop({ required: true})
+  @Prop({ required: true })
   ownerId!: string;
 
   @Prop({ required: true })
@@ -39,4 +39,4 @@ export class Workspace {
 export const WorkspaceSchema = SchemaFactory.createForClass(Workspace);
 
 // Indice composto: stesso utente non può avere due workspace con stesso nome
-WorkspaceSchema.index({ ownerId: 1, name: 1 }, { unique: true })
+WorkspaceSchema.index({ ownerId: 1, name: 1 }, { unique: true });

@@ -3,7 +3,7 @@ export enum WorkspaceRole {
   //OWNER = 'owner',           // non assegnabile via invito
   PROJECT_MANAGER = 'Project Manager',
   TECH_LEAD = 'Tech Lead',
-  DEVELOPER = 'Developer'
+  DEVELOPER = 'Developer',
 }
 
 // Ruoli che possono essere assegnati tramite invito

@@ -1,12 +1,12 @@
-import { IsString} from 'class-validator'
+import { IsString } from 'class-validator';
 
 export class CreateWorkspaceResponseDto {
   @IsString()
-  id!: string
+  id!: string;
 
   @IsString()
-  name!: string
+  name!: string;
 
   @IsString()
-  ownerUsername!: string
+  ownerUsername!: string;
 }
