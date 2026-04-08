@@ -2,16 +2,20 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import * as mongoose from 'mongoose';
 import { HydratedDocument } from 'mongoose';
 import { User } from '../../user/schemas/user.schema';
+import { WorkspaceRole } from '../roles.enum';
 
 export type WorkspaceMemberDocument = HydratedDocument<WorkspaceMember>;
 
 @Schema()
 export class WorkspaceMember {
-  @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true })
-  userId: User;
+  @Prop({ type: String, required: true })
+  userId!: string;
 
   @Prop({ required: true })
-  role: string;
+  userUsername!: string;
+
+  @Prop({ type: String, enum: WorkspaceRole, required: true })
+  role!: WorkspaceRole;
 }
 
 export const WorkspaceMemberSchema =

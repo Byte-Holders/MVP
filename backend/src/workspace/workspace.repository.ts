@@ -2,7 +2,6 @@ import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Workspace } from './schemas/workspace.schema';
 import { Model } from 'mongoose';
-import { CreateWorkspaceDto } from './dtos/CreateWorkspaceDto';
 
 @Injectable()
 export class WorkspaceRepository {
@@ -10,7 +9,7 @@ export class WorkspaceRepository {
     @InjectModel(Workspace.name) private workspaceModel: Model<Workspace>,
   ) {}
 
-  async createWorkspace(
+  /*async createWorkspace(
     createWorkspaceDto: CreateWorkspaceDto,
     ownerId: string,
   ) {
@@ -26,5 +25,5 @@ export class WorkspaceRepository {
       creationDate: new Date(),
     });
     return workspace.save();
-  }
+  }*/
 }

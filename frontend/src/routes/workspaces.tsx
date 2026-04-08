@@ -1,6 +1,6 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { ProtectedRoute } from '@/features/auth/components/ProtectedRoute'
-import { WorkspacesPage } from '@/features/workspaceList/pages/Workspaces'
+import { WorkspacesPage } from '@/features/workspaceList/pages/WorkspacesPage'
 
 export const Route = createFileRoute('/workspaces')({
   component: () => (

@@ -4,12 +4,14 @@ import { WorkspaceService } from './workspace.service';
 import { WorkspaceRepository } from './workspace.repository';
 import { Workspace, WorkspaceSchema } from './schemas/workspace.schema';
 import { MongooseModule } from '@nestjs/mongoose';
+import { WorkspaceManagerModule } from './workspaceManager/workspaceManager.module';
 
 @Module({
   imports: [
     MongooseModule.forFeature([
       { name: Workspace.name, schema: WorkspaceSchema },
     ]),
+    WorkspaceManagerModule,
   ],
   controllers: [WorkspaceController],
   providers: [WorkspaceService, WorkspaceRepository],

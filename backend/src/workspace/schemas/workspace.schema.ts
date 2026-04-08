@@ -15,20 +15,28 @@ export type WorkspaceDocument = HydratedDocument<Workspace>;
 
 @Schema()
 export class Workspace {
-  @Prop({ required: true })
-  name: string;
-
-  @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true })
-  ownerId: User;
+  /*@Prop({ required: true })
+  _id: string; MongoDb will automatically generate an _id field, so we don't need to define it here.*/
 
   @Prop({ required: true })
-  creationDate: Date;
+  name!: string;
+
+  /*@Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'User', required:c true })
+  ownerId: User;*/
+  @Prop({ required: true})
+  ownerId!: string;
+
+  @Prop({ required: true })
+  creationDate!: Date;
 
   @Prop({ type: [WorkspaceMemberSchema], default: [] })
-  members: WorkspaceMember[];
+  members!: WorkspaceMember[];
 
   @Prop({ type: [RepositoryOfWorkspaceSchema], default: [] })
-  repositories: RepositoryOfWorkspace[];
+  repositories!: RepositoryOfWorkspace[];
 }
 
 export const WorkspaceSchema = SchemaFactory.createForClass(Workspace);
+
+// Indice composto: stesso utente non può avere due workspace con stesso nome
+WorkspaceSchema.index({ ownerId: 1, name: 1 }, { unique: true })

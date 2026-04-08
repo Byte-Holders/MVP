@@ -28,7 +28,7 @@ export function useAuth() {
         isLoading: false,
         user: { username: user.username },
       })
-    } catch {
+  } catch {
       setAuthState({ isAuthenticated: false, isLoading: false, user: null })
     }
   }
