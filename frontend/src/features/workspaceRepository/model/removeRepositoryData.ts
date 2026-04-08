@@ -5,7 +5,7 @@ export async function removeRepositoryData(
   repoId: string,
 ): Promise<void> {
   const response = await fetch(
-    `${BASE_URL}/workspace-repository/${workspaceId}/${repoId}`,
+    `${BASE_URL}/workspaces/${workspaceId}/repositories/${repoId}`,
     { method: 'DELETE' },
   )
   if (!response.ok) throw new Error('Errore nella rimozione del repository')

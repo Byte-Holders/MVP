@@ -1,12 +1,15 @@
 export interface RepositoryInWorkspace {
-  repoId: string
+  repositoryId: string
   name: string
-  owner: string
-  apiToken: string
+  ownerName: string
+  branches: string[]
+  dateScan?: string
+  documentationScore?: number
+  codeCoverage?: number
+  cvss?: number
 }
 
 export interface AddRepositoryRequest {
   repositoryUrl: string
-  githubUserToken: string[]
-  workspaceId: string
+  accessToken?: string
 }

@@ -1,8 +1,8 @@
-import type { RepositoryInfo } from '../types/repository-info';
+import type { RepositoryEntity } from '../entities/repository.entity';
 
 export interface IRepositoryRepository {
-  getRepositories(repositoryIds: string[], searchInput?: string): Promise<RepositoryInfo[]>;
-  getRepository(repositoryId: string): Promise<RepositoryInfo>;
+  getRepositories(repositoryIds: string[], searchInput?: string): Promise<RepositoryEntity[]>;
+  getRepository(repositoryId: string): Promise<RepositoryEntity>;
   getBranches(repositoryId: string): Promise<string[]>;
   addRepository(repositoryUrl: string, accessToken?: string): Promise<string>;
 }

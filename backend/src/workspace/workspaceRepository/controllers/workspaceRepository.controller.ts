@@ -14,9 +14,9 @@ import {
 import { AddRepositoryDto } from '../../../repository/dtos/add-repository.dto';
 import { AccessTokenDto } from '../dtos/access-token.dto';
 import { GetRepositoriesQueryDto } from '../dtos/get-repositories-query.dto';
+import { RepositoryResponseDto } from '../../../repository/dtos/repository-response.dto';
 import type { IWorkspaceRepositoryService } from '../interfaces/workspaceRepository.service.interface';
 import { WorkspaceRepositoryServiceToken } from '../interfaces/workspaceRepository.service.interface';
-import type { RepositoryInfo } from '../../../repository/types/repository-info';
 
 @Controller('workspaces/:workspaceId/repositories')
 @UsePipes(new ValidationPipe())
@@ -30,8 +30,9 @@ export class WorkspaceRepositoryController {
   async getRepositories(
     @Param('workspaceId') workspaceId: string,
     @Query() query: GetRepositoriesQueryDto,
-  ): Promise<RepositoryInfo[]> {
-    return this.workspaceRepositoryService.getRepositories(workspaceId, query.searchInput);
+  ): Promise<RepositoryResponseDto[]> {
+    const repositories = await this.workspaceRepositoryService.getRepositories(workspaceId, query.searchInput);
+    return repositories.map((r) => ({ ...r }));
   }
 
   @Post()

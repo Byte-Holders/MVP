@@ -5,8 +5,8 @@ export function useRemoveRepository(workspaceId: string) {
   const queryClient = useQueryClient()
 
   return useMutation({
-    mutationFn: ({ repoId }: { repoId: string }) =>
-      removeRepositoryData(workspaceId, repoId),
+    mutationFn: ({ repositoryId }: { repositoryId: string }) =>
+      removeRepositoryData(workspaceId, repositoryId),
     onSuccess: () => {
       void queryClient.invalidateQueries({
         queryKey: ['repositories', workspaceId],

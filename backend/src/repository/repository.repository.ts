@@ -6,7 +6,7 @@ import {
   RepositoryDocument,
 } from '../workspace/schemas/repository.schema';
 import type { IRepositoryRepository } from './interfaces/repository.repository.interface';
-import type { RepositoryInfo } from './types/repository-info';
+import { RepositoryEntity } from './entities/repository.entity';
 
 @Injectable()
 export class RepositoryRepository implements IRepositoryRepository {
@@ -14,22 +14,22 @@ export class RepositoryRepository implements IRepositoryRepository {
     @InjectModel(Repository.name) private repositoryModel: Model<Repository>,
   ) {}
 
-  async getRepositories(repositoryIds: string[], searchInput?: string): Promise<RepositoryInfo[]> {
+  async getRepositories(repositoryIds: string[], searchInput?: string): Promise<RepositoryEntity[]> {
     const objectIds = repositoryIds.map((id) => new Types.ObjectId(id));
     const filter: Record<string, unknown> = { _id: { $in: objectIds } };
     if (searchInput) {
       filter['name'] = { $regex: searchInput, $options: 'i' };
     }
     const repositories = await this.repositoryModel.find(filter);
-    return repositories.map((r) => this.toRepositoryInfo(r));
+    return repositories.map((r) => this.toRepositoryEntity(r));
   }
 
-  async getRepository(repositoryId: string): Promise<RepositoryInfo> {
+  async getRepository(repositoryId: string): Promise<RepositoryEntity> {
     const repository = await this.repositoryModel.findById(repositoryId);
     if (!repository) {
       throw new NotFoundException('Repository non trovata');
     }
-    return this.toRepositoryInfo(repository);
+    return this.toRepositoryEntity(repository);
   }
 
   async getBranches(repositoryId: string): Promise<string[]> {
@@ -80,13 +80,13 @@ export class RepositoryRepository implements IRepositoryRepository {
     return repository;
   }
 
-  private toRepositoryInfo(r: RepositoryDocument): RepositoryInfo {
+  private toRepositoryEntity(r: RepositoryDocument): RepositoryEntity {
     return {
       repositoryId: r._id.toString(),
       ownerName: r.ownerName,
       name: r.name,
       branches: r.branches,
-      dateScan: r.dateScan?.toISOString(),
+      dateScan: r.dateScan,
       documentationScore: r.documentationScore,
       codeCoverage: r.codeCoverage,
       cvss: r.cvss,

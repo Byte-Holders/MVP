@@ -6,7 +6,7 @@ export function useAddRepository(workspaceId: string) {
   const queryClient = useQueryClient()
 
   return useMutation({
-    mutationFn: (data: AddRepositoryRequest) => addRepositoryData(data),
+    mutationFn: (data: AddRepositoryRequest) => addRepositoryData(workspaceId, data),
     onSuccess: () => {
       void queryClient.invalidateQueries({
         queryKey: ['repositories', workspaceId],

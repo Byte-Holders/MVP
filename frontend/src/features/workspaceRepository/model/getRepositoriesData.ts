@@ -6,7 +6,7 @@ export async function getRepositoriesData(
   workspaceId: string,
 ): Promise<RepositoryInWorkspace[]> {
   const response = await fetch(
-    `${BASE_URL}/workspace-repository/${workspaceId}`,
+    `${BASE_URL}/workspaces/${workspaceId}/repositories`,
   )
   if (!response.ok) throw new Error('Errore nel recupero dei repository')
   return response.json() as Promise<RepositoryInWorkspace[]>

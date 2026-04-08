@@ -10,11 +10,11 @@ export function AddRepositoryForm({ workspaceId }: Props) {
   const [token, setToken] = useState('')
   const { mutate: addRepository, isPending, error } = useAddRepository(workspaceId)
 
-  function handleSubmit(e: React.FormEvent) {
+  function handleSubmit(e: React.SyntheticEvent<HTMLFormElement>) {
     e.preventDefault()
-    if (!url.trim() || !token.trim()) return
+    if (!url.trim()) return
     addRepository(
-      { repositoryUrl: url, githubUserToken: [token], workspaceId },
+      { repositoryUrl: url, accessToken: token.trim() || undefined },
       {
         onSuccess: () => {
           setUrl('')

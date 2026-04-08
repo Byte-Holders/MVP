@@ -1,7 +1,7 @@
 import { Controller, Get, Inject, Param } from '@nestjs/common';
 import type { IRepositoryService } from '../interfaces/repository.service.interface';
 import { RepositoryServiceToken } from '../interfaces/repository.service.interface';
-import type { RepositoryInfo } from '../types/repository-info';
+import { RepositoryResponseDto } from '../dtos/repository-response.dto';
 
 @Controller('repository')
 export class RepositoryController {
@@ -11,8 +11,9 @@ export class RepositoryController {
   ) {}
 
   @Get(':repositoryId')
-  async getRepository(@Param('repositoryId') repositoryId: string): Promise<RepositoryInfo> {
-    return this.repositoryService.getRepository(repositoryId);
+  async getRepository(@Param('repositoryId') repositoryId: string): Promise<RepositoryResponseDto> {
+    const info = await this.repositoryService.getRepository(repositoryId);
+    return { ...info };
   }
 
   @Get(':repositoryId/branches')
