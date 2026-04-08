@@ -1,20 +1,15 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { Injectable, BadRequestException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { PassportStrategy } from '@nestjs/passport';
 import { passportJwtSecret } from 'jwks-rsa';
 import { ExtractJwt, Strategy } from 'passport-jwt';
-import {
-  FindUserBySubToken,
-  type IFindUserBySub,
-} from 'src/user/interfaces/IfindUserBySub.interface copy';
-import { UserInfo } from 'src/user/types/user.type';
 
 @Injectable()
-export class JwtStrategy extends PassportStrategy(Strategy, 'jwt-auth') {
-  constructor(
-    private configService: ConfigService,
-    @Inject(FindUserBySubToken) private userService: IFindUserBySub,
-  ) {
+export class JwtRegistrationStrategy extends PassportStrategy(
+  Strategy,
+  'jwtRegistration',
+) {
+  constructor(private configService: ConfigService) {
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
       ignoreExpiration: false,
@@ -32,16 +27,15 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt-auth') {
   }
 
   async validate(payload: any) {
-    const user: UserInfo | null = await this.userService.findBySub(payload.sub);
-    if (!user) {
-      throw new Error(
-        'User con sub ' + payload.sub + ' non presente nel database',
+    if (!payload.token_use || payload.token_use !== 'id') {
+      throw new BadRequestException(
+        'Access Token non valido, usare ID Token per la registrazione',
       );
     }
     return {
       sub: payload.sub,
-      username: payload.username,
-      userId: user._id.toString(),
+      username: payload['cognito:username'],
+      email: payload.email,
     };
   }
 }
