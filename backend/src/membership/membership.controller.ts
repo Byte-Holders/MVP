@@ -22,7 +22,7 @@ export class MembershipController {
     @User() user: RequestUser,
   ): Promise<void> {
     // mittente sovrascritto con l'utente realmente loggato per sicurezza
-    inviteUserDto.senderId = user.id;
+    inviteUserDto.senderId = user.userId;
     return this.membershipService.inviteUser(inviteUserDto);
   }
 
@@ -32,9 +32,9 @@ export class MembershipController {
     @User() user: RequestUser,
   ): Promise<any[]> {
     // un utente può vedere solo i propri inviti
-    getInviteDto.userId = user.id;
+    getInviteDto.userId = user.userId;
 
-    //console.log("ID dal Token:", user.id);
+    //console.log("ID dal Token:", user.userId);
     //console.log("ID dalla Query URL:", getInviteDto.userId);
 
     return this.membershipService.getInvites(getInviteDto);
@@ -45,7 +45,7 @@ export class MembershipController {
     @Body() manageInviteDto: ManageInviteDto,
     @User() user: RequestUser,
   ): Promise<void> {
-    manageInviteDto.userId = user.id; // un utente può gestire solo i propri inviti
+    manageInviteDto.userId = user.userId; // un utente può gestire solo i propri inviti
     return this.membershipService.manageInvite(manageInviteDto);
   }
 }

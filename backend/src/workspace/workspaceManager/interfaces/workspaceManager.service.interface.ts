@@ -1,4 +1,4 @@
-import { RequestUser } from 'src/auth/types/requestUser.type'
+import { RequestUser } from '../../../auth/types/requestUser.type'
 import { Workspace } from '../../schemas/workspace.schema'
 import { CreateWorkspaceDto } from '../dtos/CreateWorkspaceDto'
 import { CreateWorkspaceResponseDto } from '../dtos/CreateWorkspaceResponseDto'

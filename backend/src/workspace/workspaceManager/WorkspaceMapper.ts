@@ -4,7 +4,7 @@ import { WorkspaceBo } from './types/WorkspaceType';
 import { CreateWorkspaceDto } from './dtos/CreateWorkspaceDto';
 import { CreateWorkspaceResponseDto } from './dtos/CreateWorkspaceResponseDto';
 import { WorkspaceResponseDto } from './dtos/WorkspaceResponseDto';
-import type { RequestUser } from 'src/auth/types/requestUser.type'
+import type { RequestUser } from '../../auth/types/requestUser.type'
 import { WorkspaceDocument } from '../schemas/workspace.schema'
 import {WorkspaceListItemBo} from './types/WorkspaceListItemType'
 

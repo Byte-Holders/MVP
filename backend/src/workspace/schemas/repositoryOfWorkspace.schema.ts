@@ -18,7 +18,7 @@ export class RepositoryOfWorkspace {
   repoId!: string   
 
   @Prop()
-  defaultBranch?!: string;
+  defaultBranch?: string;
 
   @Prop()
   gitHubUserToken?: string;
