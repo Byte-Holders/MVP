@@ -8,6 +8,7 @@ import {
   Patch,
   Post,
   Query,
+  UseGuards,
   UsePipes,
   ValidationPipe,
 } from '@nestjs/common';
@@ -17,8 +18,10 @@ import { GetRepositoriesQueryDto } from '../dtos/get-repositories-query.dto';
 import { RepositoryResponseDto } from '../../../repository/dtos/repository-response.dto';
 import type { IWorkspaceRepositoryService } from '../interfaces/workspaceRepository.service.interface';
 import { WorkspaceRepositoryServiceToken } from '../interfaces/workspaceRepository.service.interface';
+import { JwtAuthGuard } from '../../../auth/jwt-auth.guard';
 
 @Controller('workspaces/:workspaceId/repositories')
+@UseGuards(JwtAuthGuard)
 @UsePipes(new ValidationPipe())
 export class WorkspaceRepositoryController {
   constructor(
