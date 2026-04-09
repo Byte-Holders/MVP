@@ -25,6 +25,9 @@ export class Repository {
 
   @Prop({ type: Number })
   cvss?: number;
+
+  @Prop()
+  accessToken?: string;
 }
 
 export const RepositorySchema = SchemaFactory.createForClass(Repository);

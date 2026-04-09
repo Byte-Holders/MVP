@@ -4,6 +4,8 @@ import type { IRepositoryReader } from '../interfaces/repository.reader.interfac
 import type { IRepositoryWriter } from '../interfaces/repository.writer.interface';
 import type { IRepositoryRepository } from '../interfaces/repository.repository.interface';
 import { RepositoryRepositoryToken } from '../interfaces/repository.repository.interface';
+import type { IGitHubRepository } from '../interfaces/github.repository.interface';
+import { GitHubRepositoryToken } from '../interfaces/github.repository.interface';
 import type { RepositoryEntity } from '../entities/repository.entity';
 import type { RepositoryInfo } from '../types/repository-info';
 
@@ -14,6 +16,8 @@ export class RepositoryService
   constructor(
     @Inject(RepositoryRepositoryToken)
     private repositoryRepository: IRepositoryRepository,
+    @Inject(GitHubRepositoryToken)
+    private gitHubRepository: IGitHubRepository,
   ) {}
 
   async getRepository(repositoryId: string): Promise<RepositoryInfo> {
@@ -23,15 +27,7 @@ export class RepositoryService
 
   async getBranches(repositoryId: string): Promise<string[]> {
     const entity = await this.repositoryRepository.getRepository(repositoryId);
-    const url = `https://api.github.com/repos/${entity.ownerName}/${entity.name}/branches`;
-    const response = await fetch(url, {
-      headers: { Accept: 'application/vnd.github+json' },
-    });
-    if (!response.ok) {
-      throw new Error(`GitHub API error: ${response.status}`);
-    }
-    const data = (await response.json()) as { name: string }[];
-    return data.map((b) => b.name);
+    return this.gitHubRepository.getBranches(entity.ownerName, entity.name);
   }
 
   async getRepositories(
@@ -49,7 +45,19 @@ export class RepositoryService
     repositoryUrl: string,
     accessToken?: string,
   ): Promise<string> {
+    if (accessToken) {
+      const [ownerName, name] = repositoryUrl
+        .replace(/https?:\/\/github\.com\//, '')
+        .split('/');
+      await this.gitHubRepository.verifyAccess(ownerName, name, accessToken);
+    }
     return this.repositoryRepository.addRepository(repositoryUrl, accessToken);
+  }
+
+  async updateToken(repositoryId: string, accessToken: string): Promise<void> {
+    const entity = await this.repositoryRepository.getRepository(repositoryId);
+    await this.gitHubRepository.verifyAccess(entity.ownerName, entity.name, accessToken);
+    return this.repositoryRepository.updateToken(repositoryId, accessToken);
   }
 
   toRepositoryInfo(entity: RepositoryEntity): RepositoryInfo {
