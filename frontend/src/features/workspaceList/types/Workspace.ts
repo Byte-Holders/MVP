@@ -1,4 +1,4 @@
-export interface WorkspaceListItem  {
+export interface WorkspaceListItem {
   id: string
   name: string
   owner: string

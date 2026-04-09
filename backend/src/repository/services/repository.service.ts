@@ -22,7 +22,16 @@ export class RepositoryService
   }
 
   async getBranches(repositoryId: string): Promise<string[]> {
-    return this.repositoryRepository.getBranches(repositoryId);
+    const entity = await this.repositoryRepository.getRepository(repositoryId);
+    const url = `https://api.github.com/repos/${entity.ownerName}/${entity.name}/branches`;
+    const response = await fetch(url, {
+      headers: { Accept: 'application/vnd.github+json' },
+    });
+    if (!response.ok) {
+      throw new Error(`GitHub API error: ${response.status}`);
+    }
+    const data = (await response.json()) as { name: string }[];
+    return data.map((b) => b.name);
   }
 
   async getRepositories(
@@ -48,7 +57,6 @@ export class RepositoryService
       repositoryId: entity.repositoryId,
       ownerName: entity.ownerName,
       name: entity.name,
-      branches: entity.branches,
       dateScan: entity.dateScan?.toISOString(),
       documentationScore: entity.documentationScore,
       codeCoverage: entity.codeCoverage,

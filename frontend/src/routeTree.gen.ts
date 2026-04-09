@@ -15,6 +15,7 @@ import { Route as MembershipRouteImport } from './routes/membership'
 import { Route as CallbackRouteImport } from './routes/callback'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as WorkspacesIndexRouteImport } from './routes/workspaces.index'
 import { Route as WorkspacesWorkspaceIdRepositoriesRouteImport } from './routes/workspaces.$workspaceId.repositories'
 
 const WorkspacesRoute = WorkspacesRouteImport.update({
@@ -47,6 +48,11 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const WorkspacesIndexRoute = WorkspacesIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => WorkspacesRoute,
+} as any)
 const WorkspacesWorkspaceIdRepositoriesRoute =
   WorkspacesWorkspaceIdRepositoriesRouteImport.update({
     id: '/$workspaceId/repositories',
@@ -61,6 +67,7 @@ export interface FileRoutesByFullPath {
   '/membership': typeof MembershipRoute
   '/repository': typeof RepositoryRoute
   '/workspaces': typeof WorkspacesRouteWithChildren
+  '/workspaces/': typeof WorkspacesIndexRoute
   '/workspaces/$workspaceId/repositories': typeof WorkspacesWorkspaceIdRepositoriesRoute
 }
 export interface FileRoutesByTo {
@@ -69,7 +76,7 @@ export interface FileRoutesByTo {
   '/callback': typeof CallbackRoute
   '/membership': typeof MembershipRoute
   '/repository': typeof RepositoryRoute
-  '/workspaces': typeof WorkspacesRouteWithChildren
+  '/workspaces': typeof WorkspacesIndexRoute
   '/workspaces/$workspaceId/repositories': typeof WorkspacesWorkspaceIdRepositoriesRoute
 }
 export interface FileRoutesById {
@@ -80,6 +87,7 @@ export interface FileRoutesById {
   '/membership': typeof MembershipRoute
   '/repository': typeof RepositoryRoute
   '/workspaces': typeof WorkspacesRouteWithChildren
+  '/workspaces/': typeof WorkspacesIndexRoute
   '/workspaces/$workspaceId/repositories': typeof WorkspacesWorkspaceIdRepositoriesRoute
 }
 export interface FileRouteTypes {
@@ -88,28 +96,30 @@ export interface FileRouteTypes {
     | '/'
     | '/about'
     | '/callback'
+    | '/membership'
     | '/repository'
     | '/workspaces'
+    | '/workspaces/'
     | '/workspaces/$workspaceId/repositories'
-    | '/membership'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/about'
     | '/callback'
     | '/membership'
-    | '/workspaces/$workspaceId/repositories'
     | '/repository'
     | '/workspaces'
+    | '/workspaces/$workspaceId/repositories'
   id:
     | '__root__'
     | '/'
     | '/about'
     | '/callback'
-    | '/repository'
-    | '/workspaces/$workspaceId/repositories'
     | '/membership'
+    | '/repository'
     | '/workspaces'
+    | '/workspaces/'
+    | '/workspaces/$workspaceId/repositories'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -165,6 +175,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/workspaces/': {
+      id: '/workspaces/'
+      path: '/'
+      fullPath: '/workspaces/'
+      preLoaderRoute: typeof WorkspacesIndexRouteImport
+      parentRoute: typeof WorkspacesRoute
+    }
     '/workspaces/$workspaceId/repositories': {
       id: '/workspaces/$workspaceId/repositories'
       path: '/$workspaceId/repositories'
@@ -176,10 +193,12 @@ declare module '@tanstack/react-router' {
 }
 
 interface WorkspacesRouteChildren {
+  WorkspacesIndexRoute: typeof WorkspacesIndexRoute
   WorkspacesWorkspaceIdRepositoriesRoute: typeof WorkspacesWorkspaceIdRepositoriesRoute
 }
 
 const WorkspacesRouteChildren: WorkspacesRouteChildren = {
+  WorkspacesIndexRoute: WorkspacesIndexRoute,
   WorkspacesWorkspaceIdRepositoriesRoute:
     WorkspacesWorkspaceIdRepositoriesRoute,
 }
@@ -199,12 +218,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { createStart } from '@tanstack/react-start'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-  }
-}

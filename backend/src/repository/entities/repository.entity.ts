@@ -1,8 +1,7 @@
 export class RepositoryEntity {
-  repositoryId: string;
-  ownerName: string;
-  name: string;
-  branches: string[];
+  repositoryId!: string;
+  ownerName!: string;
+  name!: string;
   dateScan?: Date;
   documentationScore?: number;
   codeCoverage?: number;

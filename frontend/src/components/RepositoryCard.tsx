@@ -5,6 +5,8 @@ type RepositoryCardProps = {
   documentationScore?: number
   codeCoverage?: number
   cvss?: number
+  onRemove?: () => void
+  isRemoving?: boolean
 }
 
 function ScoreBar({ label, value }: { label: string; value?: number }) {
@@ -67,6 +69,8 @@ export default function RepositoryCard({
   documentationScore,
   codeCoverage,
   cvss,
+  onRemove,
+  isRemoving,
 }: RepositoryCardProps) {
   const formattedDate = dateScan
     ? new Date(dateScan).toLocaleDateString('it-IT', {
@@ -87,15 +91,24 @@ export default function RepositoryCard({
             {name}
           </h3>
         </div>
-        <div className="flex flex-col items-end gap-1">
-          <span className="text-xs text-[var(--sea-ink)] opacity-50">CVSS</span>
-          <CvssBadge cvss={cvss} />
-        </div>
+        {onRemove && (
+          <button
+            onClick={onRemove}
+            disabled={isRemoving}
+            className="rounded-lg border border-[var(--destructive)] px-3 py-1.5 text-xs font-medium text-[var(--destructive)] transition-opacity hover:opacity-70 disabled:opacity-40"
+          >
+            {isRemoving ? 'Rimozione...' : 'Rimuovi'}
+          </button>
+        )}
       </div>
 
       <div className="flex flex-col gap-2">
         <ScoreBar label="Documentation" value={documentationScore} />
         <ScoreBar label="Code Coverage" value={codeCoverage} />
+        <div className="flex justify-between items-center text-xs text-[var(--sea-ink)] opacity-70">
+          <span>CVSS</span>
+          <CvssBadge cvss={cvss} />
+        </div>
       </div>
 
       {formattedDate && (

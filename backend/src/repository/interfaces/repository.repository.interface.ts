@@ -6,7 +6,6 @@ export interface IRepositoryRepository {
     searchInput?: string,
   ): Promise<RepositoryEntity[]>;
   getRepository(repositoryId: string): Promise<RepositoryEntity>;
-  getBranches(repositoryId: string): Promise<string[]>;
   addRepository(repositoryUrl: string, accessToken?: string): Promise<string>;
 }
 

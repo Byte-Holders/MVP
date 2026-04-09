@@ -5,6 +5,7 @@ import { WorkspaceRepository } from './workspace.repository';
 import { Workspace, WorkspaceSchema } from './schemas/workspace.schema';
 import { MongooseModule } from '@nestjs/mongoose';
 import { WorkspaceManagerModule } from './workspaceManager/workspaceManager.module';
+import { WorkspaceRepositoryModule } from './workspaceRepository/workspaceRepository.module';
 
 @Module({
   imports: [
@@ -12,6 +13,7 @@ import { WorkspaceManagerModule } from './workspaceManager/workspaceManager.modu
       { name: Workspace.name, schema: WorkspaceSchema },
     ]),
     WorkspaceManagerModule,
+    WorkspaceRepositoryModule,
   ],
   controllers: [WorkspaceController],
   providers: [WorkspaceService, WorkspaceRepository],

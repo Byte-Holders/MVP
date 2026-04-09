@@ -14,9 +14,6 @@ export class Repository {
   @Prop({ required: true })
   name!: string;
 
-  @Prop({ type: [String], default: [] })
-  branches!: string[];
-
   @Prop()
   dateScan?: Date;
 

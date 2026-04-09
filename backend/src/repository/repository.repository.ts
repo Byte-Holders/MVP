@@ -35,14 +35,6 @@ export class RepositoryRepository implements IRepositoryRepository {
     return this.toRepositoryEntity(repository);
   }
 
-  async getBranches(repositoryId: string): Promise<string[]> {
-    const repository = await this.repositoryModel.findById(repositoryId);
-    if (!repository) {
-      throw new NotFoundException('Repository non trovata');
-    }
-    return repository.branches;
-  }
-
   async addRepository(
     repositoryUrl: string,
     _accessToken?: string,
@@ -57,7 +49,6 @@ export class RepositoryRepository implements IRepositoryRepository {
         repoId: `${ownerName}/${name}`,
         ownerName,
         name,
-        branches: [],
       });
     }
     return repository._id.toString();
@@ -83,7 +74,6 @@ export class RepositoryRepository implements IRepositoryRepository {
         repoId: `${ownerName}/${name}`,
         ownerName,
         name,
-        branches: [],
       });
     }
     return repository;
@@ -94,7 +84,6 @@ export class RepositoryRepository implements IRepositoryRepository {
       repositoryId: r._id.toString(),
       ownerName: r.ownerName,
       name: r.name,
-      branches: r.branches,
       dateScan: r.dateScan,
       documentationScore: r.documentationScore,
       codeCoverage: r.codeCoverage,
