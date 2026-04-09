@@ -4,8 +4,8 @@ import { RepositoryPage } from '@/features/repo/Repository'
 
 export const Route = createFileRoute('/repository')({
   component: () => (
-    // <ProtectedRoute>
-    <RepositoryPage />
-    // </ProtectedRoute>
+    <ProtectedRoute>
+      <RepositoryPage />
+    </ProtectedRoute>
   ),
 })

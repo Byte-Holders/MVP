@@ -1,17 +1,18 @@
 import { useEffect } from 'react'
 import { useNavigate } from '@tanstack/react-router'
 import { getCurrentUser } from 'aws-amplify/auth'
+import { useRegister } from '../hooks/useRegister'
 
 export function CallbackPage() {
   const navigate = useNavigate()
+  const { register } = useRegister()
 
   useEffect(() => {
     async function handleCallback() {
       try {
-        // Amplify gestisce automaticamente il code exchange
         await getCurrentUser()
+        await register()
 
-        // Controlla se c'era una destinazione salvata
         const redirectTo = sessionStorage.getItem('auth_redirect')
         sessionStorage.removeItem('auth_redirect')
 

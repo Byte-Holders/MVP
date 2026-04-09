@@ -37,7 +37,7 @@ export default function Header() {
           />
 
           <Link
-            to="/"
+            to="/workspaces"
             className="nav-btn"
             activeProps={{
               style: {
@@ -89,59 +89,49 @@ export default function Header() {
 
         {/* ── CENTER: logo placeholder ── */}
         <div className="flex-1 flex justify-center items-center">
-          {
+          <Link to="/">
             <img
               src="/logo_codeguardian.png"
               alt="Logo"
-              className="h-15 w-auto"
+              className="h-15 w-auto cursor-pointer"
             />
-          }
+          </Link>
         </div>
 
         {/* ── RIGHT: notifications + access + theme ── */}
         <div className="flex items-center gap-2 flex-shrink-0">
-          {/* Notification bell */}
-          <button
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: '7px',
-              fontSize: '15px',
-              fontWeight: 600,
-              padding: '8px 14px',
-              borderRadius: '8px',
-              border: '0.5px solid var(--h-accent-border)',
-              background: 'var(--h-accent)',
-              color: 'var(--h-cta-text)',
-              cursor: 'pointer',
-              transition: 'background 150ms',
-              whiteSpace: 'nowrap',
-            }}
-          >
-            <svg
-              viewBox="0 0 16 16"
-              width="13"
-              height="13"
-              fill="currentColor"
-              aria-hidden="true"
-            >
-              <path d="M8 16a2 2 0 0 0 2-2H6a2 2 0 0 0 2 2zm.995-14.901a1 1 0 1 0-1.99 0A5.002 5.002 0 0 0 3 6c0 1.098-.5 6-2 7h14c-1.5-1-2-5.902-2-7a5.002 5.002 0 0 0-3.005-4.901z" />
-            </svg>
-            Notifiche
-          </button>
-
           {!isLoading &&
             (isAuthenticated ? (
               <>
-              <button
-                onClick={logout}
-                className="inline-flex items-center gap-2 rounded-full border border-[var(--chip-line)] bg-[var(--chip-bg)] px-3 py-1.5 text-sm text-[var(--sea-ink)] no-underline shadow-[0_8px_24px_rgba(30,90,72,0.08)] sm:px-4 sm:py-2"
-              >
-                Logout
-              </button>
-              <div className="flex items-center gap-3">
-              <NewWorkspaceDialog />
-              </div>
+                <NewWorkspaceDialog />
+                <button
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '7px',
+                    fontSize: '15px',
+                    fontWeight: 600,
+                    padding: '8px 14px',
+                    borderRadius: '8px',
+                    border: '0.5px solid var(--h-accent-border)',
+                    background: 'var(--h-accent)',
+                    color: 'var(--h-cta-text)',
+                    cursor: 'pointer',
+                    transition: 'background 150ms',
+                    whiteSpace: 'nowrap',
+                  }}
+                >
+                  <svg viewBox="0 0 16 16" width="13" height="13" fill="currentColor" aria-hidden="true">
+                    <path d="M8 16a2 2 0 0 0 2-2H6a2 2 0 0 0 2 2zm.995-14.901a1 1 0 1 0-1.99 0A5.002 5.002 0 0 0 3 6c0 1.098-.5 6-2 7h14c-1.5-1-2-5.902-2-7a5.002 5.002 0 0 0-3.005-4.901z" />
+                  </svg>
+                  Notifiche
+                </button>
+                <button
+                  onClick={logout}
+                  className="inline-flex items-center gap-2 rounded-full border border-[var(--chip-line)] bg-[var(--chip-bg)] px-3 py-1.5 text-sm text-[var(--sea-ink)] no-underline shadow-[0_8px_24px_rgba(30,90,72,0.08)] sm:px-4 sm:py-2"
+                >
+                  Logout
+                </button>
               </>
             ) : (
               <button
@@ -151,25 +141,6 @@ export default function Header() {
                 Accedi
               </button>
             ))}
-          {/* Access / login *
-          <Link
-            to="/login"
-            style={{
-              fontSize: '15px',
-              fontWeight: 600,
-              padding: '8px 16px',
-              borderRadius: '8px',
-              border: '0.5px solid var(--h-btn-border)',
-              background: 'var(--h-btn-bg)',
-              color: 'var(--h-text)',
-              textDecoration: 'none',
-              transition: 'background 150ms',
-              whiteSpace: 'nowrap',
-            }}
-          >
-            Accesso
-          </Link>*/}
-
           <ThemeToggle />
         </div>
       </nav>

@@ -8,7 +8,7 @@ export function NewWorkspaceDialog() {
   const { form, serverError } = useNewWorkspaceForm()
 
   return (
-    <Dialog> //bottone New Workspace che apre il form dialog per la creazione del workspace
+    <Dialog>
       <DialogTrigger asChild>
         <Button variant="outline">+ New Workspace</Button>
       </DialogTrigger>

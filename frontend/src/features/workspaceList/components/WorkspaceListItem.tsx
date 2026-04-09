@@ -1,14 +1,13 @@
 import type { WorkspaceListItem } from '../types/Workspace'
 import { Card, CardContent } from '@/components/ui/card'
-import { useNavigate } from '@tanstack/react-router'
+import { Link } from '@tanstack/react-router'
 
 type Props = { workspace: WorkspaceListItem }
 
-export function WorkspaceListItem({ workspace }: Props) { //visalizzazizone singolo workspace nella lista, con nome, owner e ruolo del richiedente. Cliccando si va alla pagina del workspace
-  const navigate = useNavigate()
-
+export function WorkspaceListItem({ workspace }: Props) {
   return (
-      <Card className="hover:shadow-md transition-all cursor-pointer"  onClick={() => navigate({ to: `/workspace/${workspace.id}` })}>
+    <Link to="/workspaces/$workspaceId/repositories" params={{ workspaceId: workspace.id }}>
+      <Card className="hover:shadow-md transition-all cursor-pointer">
       <CardContent className="flex items-center justify-between p-4">
 
         {/* LEFT */}
@@ -37,5 +36,6 @@ export function WorkspaceListItem({ workspace }: Props) { //visalizzazizone sing
 
       </CardContent>
     </Card>
+    </Link>
   )
 }
