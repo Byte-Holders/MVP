@@ -4,7 +4,7 @@ import { Model, Types } from 'mongoose';
 import {
   Repository,
   RepositoryDocument,
-} from '../workspace/schemas/repository.schema';
+} from './schemas/repository.schema';
 import type { IRepositoryRepository } from './interfaces/repository.repository.interface';
 import { RepositoryEntity } from './entities/repository.entity';
 

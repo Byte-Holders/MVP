@@ -3,7 +3,7 @@ import { MongooseModule } from '@nestjs/mongoose';
 import {
   Repository,
   RepositorySchema,
-} from '../workspace/schemas/repository.schema';
+} from './schemas/repository.schema';
 import { RepositoryRepository } from './repository.repository';
 import { GitHubRepository } from './github.repository';
 import { RepositoryService } from './services/repository.service';
