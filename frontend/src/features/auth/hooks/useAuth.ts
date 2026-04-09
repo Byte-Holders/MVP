@@ -43,7 +43,6 @@ export function useAuth() {
 
   async function logout() {
     await logOut()
-    setAuthState({ isAuthenticated: false, isLoading: false, user: null })
   }
 
   return { ...authState, login, logout, checkAuth }
