@@ -29,7 +29,8 @@ function App() {
           CodeGuardian
         </h1>
         <p className="mb-8 max-w-2xl text-base text-[var(--sea-ink-soft)] sm:text-lg">
-          Analizza la qualità del tuo codice, monitora la sicurezza e tieni sotto controllo la copertura dei test.
+          Analizza la qualità del tuo codice, monitora la sicurezza e tieni
+          sotto controllo la copertura dei test.
         </p>
       </section>
     </main>

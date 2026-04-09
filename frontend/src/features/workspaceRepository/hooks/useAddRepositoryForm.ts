@@ -9,10 +9,17 @@ export function useAddRepositoryForm(workspaceId: string) {
   const queryClient = useQueryClient()
 
   const { mutate, isPending, error } = useMutation({
-    mutationFn: ({ repositoryUrl, accessToken }: { repositoryUrl: string; accessToken?: string }) =>
-      addRepositoryData(workspaceId, { repositoryUrl, accessToken }),
+    mutationFn: ({
+      repositoryUrl,
+      accessToken,
+    }: {
+      repositoryUrl: string
+      accessToken?: string
+    }) => addRepositoryData(workspaceId, { repositoryUrl, accessToken }),
     onSuccess: () => {
-      void queryClient.invalidateQueries({ queryKey: ['repositories', workspaceId] })
+      void queryClient.invalidateQueries({
+        queryKey: ['repositories', workspaceId],
+      })
       setUrl('')
       setToken('')
       setIsPrivate(false)
@@ -27,8 +34,22 @@ export function useAddRepositoryForm(workspaceId: string) {
   function handleSubmit(e: React.SyntheticEvent<HTMLFormElement>) {
     e.preventDefault()
     if (!url.trim()) return
-    mutate({ repositoryUrl: url, accessToken: isPrivate ? token.trim() || undefined : undefined })
+    mutate({
+      repositoryUrl: url,
+      accessToken: isPrivate ? token.trim() || undefined : undefined,
+    })
   }
 
-  return { url, setUrl, token, setToken, isPrivate, setPublic, setPrivate: () => setIsPrivate(true), isPending, error, handleSubmit }
+  return {
+    url,
+    setUrl,
+    token,
+    setToken,
+    isPrivate,
+    setPublic,
+    setPrivate: () => setIsPrivate(true),
+    isPending,
+    error,
+    handleSubmit,
+  }
 }

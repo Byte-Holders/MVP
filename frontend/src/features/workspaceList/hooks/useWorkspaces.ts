@@ -4,13 +4,14 @@ import type { WorkspaceListItem } from '../types/Workspace'
 
 export function useWorkspaces() {
   const [workspaces, setWorkspaces] = useState<WorkspaceListItem[]>([])
-  const [isLoading, setIsLoading]   = useState(true)
-  const [error, setError]           = useState<string | null>(null)
+  const [isLoading, setIsLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
 
-  useEffect(() => { //chiama l'API per ottenere i workspace dell'utente 
+  useEffect(() => {
+    //chiama l'API per ottenere i workspace dell'utente
     getWorkspaces()
       .then(setWorkspaces)
-      .catch(err => setError(err.message))
+      .catch((err) => setError(err.message))
       .finally(() => setIsLoading(false))
   }, [])
 
@@ -19,7 +20,7 @@ export function useWorkspaces() {
     setIsLoading(true)
     getWorkspaces()
       .then(setWorkspaces)
-      .catch(err => setError(err.message))
+      .catch((err) => setError(err.message))
       .finally(() => setIsLoading(false))
   }
 

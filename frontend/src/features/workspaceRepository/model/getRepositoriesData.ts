@@ -8,7 +8,10 @@ export async function getRepositoriesData(
   const session = await fetchAuthSession()
   const token = session.tokens?.accessToken?.toString()
 
-  const url = new URL(`/api/workspaces/${workspaceId}/repositories`, window.location.origin)
+  const url = new URL(
+    `/api/workspaces/${workspaceId}/repositories`,
+    window.location.origin,
+  )
   if (searchInput) url.searchParams.set('searchInput', searchInput)
 
   const response = await fetch(url.toString(), {

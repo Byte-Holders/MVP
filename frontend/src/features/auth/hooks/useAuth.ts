@@ -1,5 +1,10 @@
 import { useState, useEffect } from 'react'
-import { fetchCurrentUser, fetchSession, signIn, logOut } from '../model/authApi'
+import {
+  fetchCurrentUser,
+  fetchSession,
+  signIn,
+  logOut,
+} from '../model/authApi'
 
 interface AuthState {
   isAuthenticated: boolean
