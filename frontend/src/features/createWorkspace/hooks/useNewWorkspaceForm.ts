@@ -4,6 +4,7 @@ import * as z from 'zod'
 import { createWorkspace } from '../model/createWorkspaceApi'
 import { useState } from 'react'
 import { useRouter } from '@tanstack/react-router'
+import type { CreateWorkspaceRequest } from '../types/CreateWorkspace'
 
 export const newWorkspaceSchema = z.object({
   // validazione lato client con Zod dell'imput del nome del workspace
@@ -22,7 +23,7 @@ export function useNewWorkspaceForm() {
     //gestione del form: chiama createWorkspaceApi quando vine fatto il submit, e gestisce la validazione con lo schema Zod
     defaultValues: { name: '' },
     validators: { onSubmit: newWorkspaceSchema },
-    onSubmit: async ({ value }) => {
+    onSubmit: async ({ value }: { value: CreateWorkspaceRequest }) => {
       setServerError(null) // reset errore server ad ogni tentativo
       try {
         const newWorkspace = await createWorkspace({ name: value.name })

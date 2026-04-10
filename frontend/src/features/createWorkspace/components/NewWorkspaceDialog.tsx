@@ -43,7 +43,7 @@ export function NewWorkspaceDialog() {
           <FieldGroup>
             <form.Field
               name="name"
-              children={(field) => {
+              children={(field: any) => {
                 const isInvalid =
                   field.state.meta.isTouched && !field.state.meta.isValid
                 return (
@@ -77,7 +77,9 @@ export function NewWorkspaceDialog() {
                 Cancel
               </Button>
             </DialogClose>
-            <Button type="submit">Create Workspace</Button>
+            <DialogClose asChild>
+              <Button type="submit">Create Workspace</Button>
+            </DialogClose>
           </DialogFooter>
         </form>
       </DialogContent>
