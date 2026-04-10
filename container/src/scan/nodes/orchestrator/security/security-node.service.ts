@@ -1,7 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import path from 'path';
 import { mkdir } from 'fs/promises';
-import { WorkflowState } from '../orchestrator.service';
+import { WorkflowState } from '../workflow-state.type';
 import { SecurityNodeHelper } from './security-node.helper';
 
 @Injectable()

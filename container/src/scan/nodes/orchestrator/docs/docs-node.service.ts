@@ -1,6 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { DocsReport } from './docs-report.type';
-import { WorkflowState } from '../orchestrator.service';
+import { WorkflowState } from '../workflow-state.type';
 import { DocsNodeHelper } from './docs-node.helper';
 
 @Injectable()

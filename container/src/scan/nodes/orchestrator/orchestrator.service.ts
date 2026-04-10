@@ -1,12 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import { StateGraph, START, END, Annotation, Send } from '@langchain/langgraph';
-
+import { StateGraph, START, END, Send } from '@langchain/langgraph';
 import { Target } from '../../target.types';
-import { VulnerabilitiesReport } from './security/security-report.type';
-import { DepsReport } from './dependency/deps-report.type';
-import { DocsReport } from './docs/docs-report.type';
-import { CoverageReport } from './coverage/coverage-report.type';
-import { Report } from './synthesizer/synthesizer.types';
 import { OrchestratorHelper } from './orchestrator.helper';
 import { CoverageNodeService } from './coverage/coverage-node.service';
 import { GithubNodeService } from './github/github-node.service';
@@ -15,21 +9,8 @@ import { SecurityNodeService } from './security/security-node.service';
 import { RemediationNodeService } from './remediation/remediation-node.service';
 import { DepsNodeService } from './dependency/dependency-node.service';
 import { DocsNodeService } from './docs/docs-node.service';
-
-const WorkflowAnnotation = Annotation.Root({
-  target: Annotation<Target>(),
-  repoPath: Annotation<string>(),
-  startScanTime: Annotation<Date>(),
-  vulnerabilitiesReportPath: Annotation<string | undefined>(),
-  languageBreakdown: Annotation<Record<string, number> | undefined | null>(),
-  depsReport: Annotation<DepsReport | undefined | null>(),
-  vulnerabilitiesReport: Annotation<VulnerabilitiesReport | undefined | null>(),
-  docsReport: Annotation<DocsReport | undefined | null>(),
-  coverageReport: Annotation<CoverageReport | undefined | null>(),
-  finalReport: Annotation<Report | undefined>(),
-});
-
-export type WorkflowState = typeof WorkflowAnnotation.State;
+import { WorkflowAnnotation, WorkflowState } from './workflow-state.type';
+import { Report } from './synthesizer/synthesizer.types';
 
 // Service
 @Injectable()
@@ -97,7 +78,7 @@ export class OrchestratorService {
         return { repoPath, startScanTime };
       })
       .addNode('coverage', async (repoPath: string) => {
-        return await this.coverageNode.scan(repoPath);
+        return await this.coverageNode.scan({ repoPath });
       })
       .addNode('github', async (target: Target) => {
         return await this.githubNode.scan(target);

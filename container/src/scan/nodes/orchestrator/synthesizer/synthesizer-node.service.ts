@@ -1,7 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { SystemMessage, HumanMessage } from '@langchain/core/messages';
 import { Report, ReportSummary } from './synthesizer.types';
-import { WorkflowState } from '../orchestrator.service';
+import { WorkflowState } from '../workflow-state.type';
 import { SynthesizerNodeHelper } from './synthesizer-node.helper';
 
 @Injectable()

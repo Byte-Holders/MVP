@@ -1,6 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { Target } from '../../../target.types';
-import { WorkflowState } from '../orchestrator.service';
+import { WorkflowState } from '../workflow-state.type';
 import { GithubNodeHelper } from './github-node.helper';
 
 @Injectable()
