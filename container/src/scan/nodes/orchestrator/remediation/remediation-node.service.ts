@@ -7,9 +7,12 @@ import {
 } from '../security/security-report.type';
 import { WorkflowState } from '../workflow-state.type';
 import { RemediationNodeHelper } from './remediation-node.helper';
+import { INodeScanService } from '../inode-scan-service.interface';
+
+export const REMEDIATION_NODE_SERVICE_TOKEN = 'RemediationNodeService';
 
 @Injectable()
-export class RemediationNodeService {
+export class RemediationNodeService implements INodeScanService {
   private readonly logger = new Logger(RemediationNodeService.name);
 
   constructor(private readonly helper: RemediationNodeHelper) {}

@@ -1,14 +1,32 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { StateGraph, START, END, Send } from '@langchain/langgraph';
 import { Target } from '../../target.types';
 import { OrchestratorHelper } from './orchestrator.helper';
-import { CoverageNodeService } from './coverage/coverage-node.service';
-import { GithubNodeService } from './github/github-node.service';
+import {
+  COVERAGE_NODE_SERVICE_TOKEN,
+  CoverageNodeService,
+} from './coverage/coverage-node.service';
+import {
+  GITHUB_NODE_SERVICE_TOKEN,
+  GithubNodeService,
+} from './github/github-node.service';
 import { SynthesizerNodeService } from './synthesizer/synthesizer-node.service';
-import { SecurityNodeService } from './security/security-node.service';
-import { RemediationNodeService } from './remediation/remediation-node.service';
-import { DepsNodeService } from './dependency/dependency-node.service';
-import { DocsNodeService } from './docs/docs-node.service';
+import {
+  SECURITY_NODE_SERVICE_TOKEN,
+  SecurityNodeService,
+} from './security/security-node.service';
+import {
+  REMEDIATION_NODE_SERVICE_TOKEN,
+  RemediationNodeService,
+} from './remediation/remediation-node.service';
+import {
+  DEPENDENCY_NODE_SERVICE_TOKEN,
+  DependencyNodeService,
+} from './dependency/dependency-node.service';
+import {
+  DOCS_NODE_SERVICE_TOKEN,
+  DocsNodeService,
+} from './docs/docs-node.service';
 import { WorkflowAnnotation, WorkflowState } from './workflow-state.type';
 import { Report } from './synthesizer/synthesizer.types';
 
@@ -17,12 +35,17 @@ import { Report } from './synthesizer/synthesizer.types';
 export class OrchestratorService {
   constructor(
     private readonly helper: OrchestratorHelper,
+    @Inject(COVERAGE_NODE_SERVICE_TOKEN)
     private readonly coverageNode: CoverageNodeService,
+    @Inject(GITHUB_NODE_SERVICE_TOKEN)
     private readonly githubNode: GithubNodeService,
+    @Inject(SECURITY_NODE_SERVICE_TOKEN)
     private readonly securityNode: SecurityNodeService,
+    @Inject(REMEDIATION_NODE_SERVICE_TOKEN)
     private readonly remediationNode: RemediationNodeService,
-    private readonly dependencyNode: DepsNodeService,
-    private readonly docsNode: DocsNodeService,
+    @Inject(DEPENDENCY_NODE_SERVICE_TOKEN)
+    private readonly dependencyNode: DependencyNodeService,
+    @Inject(DOCS_NODE_SERVICE_TOKEN) private readonly docsNode: DocsNodeService,
     private readonly synthesizerNode: SynthesizerNodeService,
   ) {}
 
@@ -81,10 +104,10 @@ export class OrchestratorService {
         return await this.coverageNode.scan({ repoPath });
       })
       .addNode('github', async (target: Target) => {
-        return await this.githubNode.scan(target);
+        return await this.githubNode.scan({ target });
       })
       .addNode('security', async (repoPath: string) => {
-        return await this.securityNode.scan(repoPath);
+        return await this.securityNode.scan({ repoPath });
       })
       .addNode('remediation', async (state: WorkflowState) => {
         return await this.remediationNode.scan({
@@ -93,10 +116,10 @@ export class OrchestratorService {
         });
       })
       .addNode('dependencies', async (repoPath: string) => {
-        return await this.dependencyNode.scan(repoPath);
+        return await this.dependencyNode.scan({ repoPath });
       })
       .addNode('docs', async (repoPath: string) => {
-        return await this.docsNode.scan(repoPath);
+        return await this.docsNode.scan({ repoPath });
       })
       .addNode('synthesizer', async (state: WorkflowState) => {
         const report = await this.synthesizerNode.summarize(state);

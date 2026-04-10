@@ -3,13 +3,15 @@ import { Target } from '../../../target.types';
 import { WorkflowState } from '../workflow-state.type';
 import { GithubNodeHelper } from './github-node.helper';
 
+export const GITHUB_NODE_SERVICE_TOKEN = 'GithubNodeService';
+
 @Injectable()
 export class GithubNodeService {
   private readonly logger = new Logger(GithubNodeService.name);
 
   constructor(private readonly helper: GithubNodeHelper) {}
 
-  async scan(target: Target): Promise<Partial<WorkflowState>> {
+  async scan({ target }: { target: Target }): Promise<Partial<WorkflowState>> {
     const { owner, repository } = target;
 
     this.logger.log(`Ottenimento linguaggi per ${owner}/${repository}`);

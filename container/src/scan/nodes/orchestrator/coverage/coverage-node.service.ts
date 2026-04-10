@@ -4,9 +4,12 @@ import * as path from 'path';
 import { CoverageReport } from './coverage-report.type';
 import { WorkflowState } from '../workflow-state.type';
 import { CoverageNodeHelper } from './coverage-node.helper';
+import { INodeScanService } from '../inode-scan-service.interface';
+
+export const COVERAGE_NODE_SERVICE_TOKEN = 'CoverageNodeService';
 
 @Injectable()
-export class CoverageNodeService {
+export class CoverageNodeService implements INodeScanService {
   private readonly logger = new Logger(CoverageNodeService.name);
 
   constructor(private readonly helper: CoverageNodeHelper) {}
