@@ -77,7 +77,9 @@ export function NewWorkspaceDialog() {
                 Cancel
               </Button>
             </DialogClose>
-            <Button type="submit">Create Workspace</Button>
+            <DialogClose asChild>
+              <Button type="submit">Create Workspace</Button>
+            </DialogClose>
           </DialogFooter>
         </form>
       </DialogContent>
