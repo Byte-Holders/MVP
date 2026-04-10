@@ -1,9 +1,15 @@
 import { Module } from '@nestjs/common';
 import { CoverageNodeHelper } from './coverage-node.helper';
-import { CoverageNodeService } from './coverage-node.service';
+import {
+  COVERAGE_NODE_SERVICE_TOKEN,
+  CoverageNodeService,
+} from './coverage-node.service';
 
 @Module({
-  providers: [CoverageNodeHelper, CoverageNodeService],
-  exports: [CoverageNodeService],
+  providers: [
+    { provide: COVERAGE_NODE_SERVICE_TOKEN, useClass: CoverageNodeService },
+    CoverageNodeHelper,
+  ],
+  exports: [COVERAGE_NODE_SERVICE_TOKEN],
 })
 export class CoverageModule {}

@@ -1,9 +1,15 @@
 import { Module } from '@nestjs/common';
 import { SecurityNodeHelper } from './security-node.helper';
-import { SecurityNodeService } from './security-node.service';
+import {
+  SECURITY_NODE_SERVICE_TOKEN,
+  SecurityNodeService,
+} from './security-node.service';
 
 @Module({
-  providers: [SecurityNodeHelper, SecurityNodeService],
-  exports: [SecurityNodeService],
+  providers: [
+    { provide: SECURITY_NODE_SERVICE_TOKEN, useClass: SecurityNodeService },
+    SecurityNodeHelper,
+  ],
+  exports: [SECURITY_NODE_SERVICE_TOKEN],
 })
 export class SecurityModule {}
