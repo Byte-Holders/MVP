@@ -3,7 +3,6 @@ import path from 'path';
 import fs from 'fs';
 import { SystemMessage, HumanMessage } from '@langchain/core/messages';
 import { ChatBedrockConverse } from '@langchain/aws';
-import { CodeQualityReport } from '../synthesizer/synthesizer.types';
 import { DocsReport } from './docs-report.type';
 
 type Section = { header: string; content: string; sizeBytes: number };

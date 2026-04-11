@@ -2,31 +2,13 @@ import { Inject, Injectable } from '@nestjs/common';
 import { StateGraph, START, END, Send } from '@langchain/langgraph';
 import { Target } from '../../target.types';
 import { OrchestratorHelper } from './orchestrator.helper';
-import {
-  COVERAGE_NODE_SERVICE_TOKEN,
-  CoverageNodeService,
-} from './coverage/coverage-node.service';
-import {
-  GITHUB_NODE_SERVICE_TOKEN,
-  GithubNodeService,
-} from './github/github-node.service';
+import { COVERAGE_NODE_SERVICE_TOKEN } from './coverage/coverage-node.service';
+import { GITHUB_NODE_SERVICE_TOKEN } from './github/github-node.service';
+import { SECURITY_NODE_SERVICE_TOKEN } from './security/security-node.service';
+import { REMEDIATION_NODE_SERVICE_TOKEN } from './remediation/remediation-node.service';
+import { DEPENDENCY_NODE_SERVICE_TOKEN } from './dependency/dependency-node.service';
+import { DOCS_NODE_SERVICE_TOKEN } from './docs/docs-node.service';
 import { SynthesizerNodeService } from './synthesizer/synthesizer-node.service';
-import {
-  SECURITY_NODE_SERVICE_TOKEN,
-  SecurityNodeService,
-} from './security/security-node.service';
-import {
-  REMEDIATION_NODE_SERVICE_TOKEN,
-  RemediationNodeService,
-} from './remediation/remediation-node.service';
-import {
-  DEPENDENCY_NODE_SERVICE_TOKEN,
-  DependencyNodeService,
-} from './dependency/dependency-node.service';
-import {
-  DOCS_NODE_SERVICE_TOKEN,
-  DocsNodeService,
-} from './docs/docs-node.service';
 import { WorkflowAnnotation, WorkflowState } from './workflow-state.type';
 import { Report } from './synthesizer/synthesizer.types';
 import type { INodeScanService } from './inode-scan-service.interface';
