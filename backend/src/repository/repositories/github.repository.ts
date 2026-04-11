@@ -1,5 +1,10 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
-import type { IGitHubRepository } from './interfaces/github.repository.interface';
+import {
+  ForbiddenException,
+  Injectable,
+  NotFoundException,
+  UnauthorizedException,
+} from '@nestjs/common';
+import type { IGitHubRepository } from '../interfaces/github.repository.interface';
 
 @Injectable()
 export class GitHubRepository implements IGitHubRepository {
@@ -9,6 +14,16 @@ export class GitHubRepository implements IGitHubRepository {
     if (accessToken) headers['Authorization'] = `Bearer ${accessToken}`;
 
     const response = await fetch(url, { headers });
+    if (response.status === 404) {
+      throw new NotFoundException(
+        `Repository ${ownerName}/${name} non trovata su GitHub`,
+      );
+    }
+    if (response.status === 403) {
+      throw new ForbiddenException(
+        'Rate limit GitHub superato o accesso negato',
+      );
+    }
     if (!response.ok) {
       throw new Error(`GitHub API error: ${response.status}`);
     }
