@@ -1,7 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import * as fs from 'fs';
 import * as path from 'path';
-import { CoverageReport } from './coverage-report.type';
+import { TestReport } from './coverage-report.type';
 import { WorkflowState } from '../workflow-state.type';
 import { CoverageNodeHelper } from './coverage-node.helper';
 import { INodeScanService } from '../inode-scan-service.interface';
@@ -23,20 +23,30 @@ export class CoverageNodeService implements INodeScanService {
       `[CoverageNode] Inizio analisi coverage (percorso: ${repoPath})`,
     );
 
-    let report: CoverageReport = {
-      statements: 0,
-      branches: 0,
-      functions: 0,
-      lines: 0,
+    let testReport: TestReport = {
+      coverageReport: { statements: 0, branches: 0, functions: 0, lines: 0 },
+      failedTests: [],
+      testsRun: 0,
     };
 
     try {
       if (fs.existsSync(path.join(repoPath, 'package.json'))) {
-        const output = await this.helper.runCoverageTool(repoPath);
-        const split = this.helper.splitResult(output);
-        report = this.helper.parseOutput(split);
-        this.logger.log('Terminata coverage');
-        this.logger.debug(JSON.stringify(report, null, 2));
+        const { stdout, resultsPath } =
+          await this.helper.runCoverageTool(repoPath);
+
+        try {
+          const split = this.helper.splitResult(stdout);
+          const coverageReport = this.helper.parseOutput(split);
+          const { failedTests, testsRun } =
+            this.helper.parseTestResults(resultsPath);
+          testReport = { coverageReport, failedTests, testsRun };
+          this.logger.log('Terminata coverage');
+          this.logger.debug(JSON.stringify(testReport, null, 2));
+        } finally {
+          if (fs.existsSync(resultsPath)) {
+            fs.unlinkSync(resultsPath);
+          }
+        }
       }
     } catch (err: unknown) {
       if (err instanceof Error) {
@@ -45,6 +55,7 @@ export class CoverageNodeService implements INodeScanService {
         this.logger.error('Fallimento coverage, tipo di errore sconosciuto.');
       }
     }
-    return { coverageReport: report };
+
+    return { testReport };
   }
 }

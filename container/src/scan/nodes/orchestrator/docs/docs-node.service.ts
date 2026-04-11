@@ -16,11 +16,20 @@ export class DocsNodeService implements INodeScanService {
     this.logger.log('Inizio analisi della documentazione');
 
     const files = this.helper.collectTextFiles(repoPath);
-    const docsReport: DocsReport = await this.helper.analyzeRepoDocumentation(
+
+    const { report } = await this.helper.analyzeRepoDocumentation(
       repoPath,
       files,
     );
 
-    return { docsReport };
+    const codeQualityReport = await this.helper.extractCodeQuality(report);
+
+    const docsReport: DocsReport = {
+      readmeReport: report,
+      commentReport: '', // TODO riempire
+      mark: codeQualityReport.mark,
+    };
+
+    return { docsReport, codeQualityReport };
   }
 }

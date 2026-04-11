@@ -75,10 +75,10 @@ export class OrchestratorService {
 
     const checkExecutionEnd = (state: WorkflowState) => {
       const reports = [
-        state.coverageReport,
+        state.testReport,
         state.depsReport,
         state.docsReport,
-        state.languageBreakdown,
+        state.languages,
         state.vulnerabilitiesReport,
       ];
 
