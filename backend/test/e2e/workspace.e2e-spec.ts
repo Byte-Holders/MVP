@@ -1,10 +1,10 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication } from '@nestjs/common';
 import request from 'supertest';
+import { getModelToken } from '@nestjs/mongoose';
 
 jest.mock('jwks-rsa', () => ({
     passportJwtSecret: () => {
-      // Forniamo una chiave fittizia invece di "undefined" per accontentare passport-jwt
       return (req: any, header: any, payload: any, cb: any) => {
         if (cb) {
           cb(null, 'chiave-segreta-finta');
@@ -18,19 +18,31 @@ import { JwtAuthGuard } from '../../src/auth/jwt-auth.guard';
 
 describe('WorkspaceController (e2e)', () => {
   let app: INestApplication;
+  let workspaceRealeId: string;
+  let workspaceModel: any; // Lo dichiariamo qui così lo vedono tutti i test!
 
   beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
-      imports: [AppModule], // Accendiamo l'intera applicazione
+      imports: [AppModule], 
     })
-      // --- LA MAGIA DELLA SICUREZZA ---
-      // Scavalchiamo il controllo del token JWT
       .overrideGuard(JwtAuthGuard)
-      .useValue({ canActivate: () => true }) // Facciamo passare sempre la richiesta HTTP
+      .useValue({ canActivate: () => true }) 
       .compile();
 
     app = moduleFixture.createNestApplication();
+    app.setGlobalPrefix('api');
     await app.init();
+
+    workspaceModel = app.get(getModelToken('Workspace'));
+    
+    const nuovoWorkspace = await workspaceModel.create({
+      name: `Workspace per E2E ${Date.now()}`,
+      ownerId: 'user-test-e2e',
+      creationDate: new Date(),
+      repositories: [] // Torniamo all'array vuoto! Nessun errore Mongoose.
+    });
+    
+    workspaceRealeId = nuovoWorkspace._id.toString();
   });
 
   afterAll(async () => {
@@ -43,23 +55,29 @@ describe('WorkspaceController (e2e)', () => {
 
   describe('POST /workspaces/:workspaceId/repositories', () => {
     it('dovrebbe aggiungere una repository e restituire 201', () => {
-      // Inventiamo un ID che sembri un vero ObjectId di Mongoose (24 caratteri)
-      const fakeWorkspaceId = '507f1f77bcf86cd799439011'; 
-      
-      return request(app.getHttpServer() as any) // Assicurati di mantenere la soluzione TypeScript che avevi scelto!
-        .post(`/workspaces/${fakeWorkspaceId}/repositories`) 
+      return request(app.getHttpServer() as any) 
+        .post(`/api/workspaces/${workspaceRealeId}/repositories`) 
         .send({
-          // Guardando il tuo controller, si aspetta un AddRepositoryDto.
-          // Quindi gli passiamo l'URL della repository:
           repositoryUrl: 'https://github.com/test/repo-e2e',
-          // accessToken: 'opzionale' -> se non è obbligatorio nel DTO possiamo ometterlo
         })
-        .expect(201) // NestJS di default risponde con 201 ai metodi @Post()
-        .then((response) => {
-          // Il metodo nel controller restituisce Promise<void>, 
-          // quindi non ci aspettiamo un corpo (body) nella risposta, ci basta che il codice HTTP sia 201!
-          expect(response.status).toBe(201);
-        });
+        .expect(201);
+    });
+  });
+
+  describe('DELETE /workspaces/:workspaceId/repositories/:id', () => {
+    it('dovrebbe rimuovere una repository dal workspace e restituire 200', async () => {
+      
+      const workspaceAggiornato = await workspaceModel.findById(workspaceRealeId);
+      const repoAggiunta = workspaceAggiornato.repositories[0];
+      
+      // Ora sappiamo che la proprietà si chiama "repoId"
+      // Aggiungiamo anche .toString() perché Mongoose potrebbe restituirlo come oggetto ObjectId
+      const repoIdDaCancellare = repoAggiunta.repoId.toString();
+
+      const response = await request(app.getHttpServer() as any)
+        .delete(`/api/workspaces/${workspaceRealeId}/repositories/${repoIdDaCancellare}`);
+        
+      expect(response.status).toBe(200);
     });
   });
 });
