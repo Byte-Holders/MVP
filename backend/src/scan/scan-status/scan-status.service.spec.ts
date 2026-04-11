@@ -50,7 +50,18 @@ describe('ScanStatusService', () => {
         expect(result).toBe(status);
       }
     });
+    it('throws when the scan is not found', async () => { //
+      for (const status of Object.values(ScanStatus)) {
+        const scan = makeScan({status});
+        const id = scan.id;
+      mockRepository.find.mockResolvedValue(null);
+      await expect(service.getScanStatus(scan.id)).rejects.toThrow(
+          `Non sono state trovate scansioni in ${scan.id}`
+          )}
+    });
+    });
   });
+
 
   describe('setScanStatus', () => {
     it('calls the repository to update each ScanStatus value', async () => {
