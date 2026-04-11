@@ -22,19 +22,19 @@ export class DocsNodeHelper {
 
   buildSections(repoPath: string, allFiles: string[]): Section[] {
     return allFiles
-        .map((filePath) => {
-          const relativePath = path.relative(repoPath, filePath);
-          if (relativePath === 'README.md') return null;
+      .map((filePath) => {
+        const relativePath = path.relative(repoPath, filePath);
+        if (relativePath === 'README.md') return null;
 
-          const raw = fs.readFileSync(filePath, 'utf-8');
-          const content = `### File: ${relativePath}\n\`\`\`\n${raw}\n\`\`\``;
-          return {
-            header: relativePath,
-            content,
-            sizeBytes: Buffer.byteLength(content, 'utf-8'),
-          };
-        })
-        .filter((s): s is Section => s !== null);
+        const raw = fs.readFileSync(filePath, 'utf-8');
+        const content = `### File: ${relativePath}\n\`\`\`\n${raw}\n\`\`\``;
+        return {
+          header: relativePath,
+          content,
+          sizeBytes: Buffer.byteLength(content, 'utf-8'),
+        };
+      })
+      .filter((s): s is Section => s !== null);
   }
 
   createBatches(sections: Section[]): Section[][] {
@@ -44,8 +44,8 @@ export class DocsNodeHelper {
 
     for (const section of sections) {
       if (
-          currentSize + section.sizeBytes > BATCH_SIZE_BYTES &&
-          currentBatch.length > 0
+        currentSize + section.sizeBytes > BATCH_SIZE_BYTES &&
+        currentBatch.length > 0
       ) {
         batches.push(currentBatch);
         currentBatch = [];
@@ -58,23 +58,23 @@ export class DocsNodeHelper {
     if (currentBatch.length > 0) batches.push(currentBatch);
 
     this.logger.debug(
-        `Suddiviso in ${batches.length} batch (limite ${BATCH_SIZE_BYTES / 1024 / 1024} MB ciascuno)`,
+      `Suddiviso in ${batches.length} batch (limite ${BATCH_SIZE_BYTES / 1024 / 1024} MB ciascuno)`,
     );
     return batches;
   }
 
   async processBatch(
-      batch: Section[],
-      index: number,
-      total: number,
-      systemPrompt: string,
+    batch: Section[],
+    index: number,
+    total: number,
+    systemPrompt: string,
   ): Promise<string> {
     const payload = batch.map((s) => s.content).join('\n\n');
     try {
       const response = await this.createModel().invoke([
         new SystemMessage(systemPrompt),
         new HumanMessage(
-            `Batch ${index + 1}/${total} — file della repository:\n\n${payload}`,
+          `Batch ${index + 1}/${total} — file della repository:\n\n${payload}`,
         ),
       ]);
       this.logger.debug(`✓ Batch ${index + 1}/${total} completato`);
@@ -85,13 +85,16 @@ export class DocsNodeHelper {
     }
   }
 
-  async synthesizeReports(reports: string[], systemPrompt: string): Promise<string> {
+  async synthesizeReports(
+    reports: string[],
+    systemPrompt: string,
+  ): Promise<string> {
     if (reports.length === 1) return reports[0];
 
     this.logger.debug(`Avvio sintesi di ${reports.length} batch...`);
     const payload = reports
-        .map((r, i) => `=== Batch ${i + 1} ===\n${r}`)
-        .join('\n\n');
+      .map((r, i) => `=== Batch ${i + 1} ===\n${r}`)
+      .join('\n\n');
 
     try {
       const response = await this.createModel().invoke([
@@ -129,28 +132,35 @@ export class DocsNodeHelper {
     }
   }
 
-  async analyzeCodeComments(repoPath: string, allFiles: string[]): Promise<string> {
+  async analyzeCodeComments(
+    repoPath: string,
+    allFiles: string[],
+  ): Promise<string> {
     const sections = this.buildSections(repoPath, allFiles);
     const batches = this.createBatches(sections);
 
-    this.logger.debug(`Analisi commenti: ${batches.length} batch su ${sections.length} file`);
+    this.logger.debug(
+      `Analisi commenti: ${batches.length} batch su ${sections.length} file`,
+    );
 
     const batchReports = await Promise.all(
-        batches.map((batch, i) =>
-            this.processBatch(batch, i, batches.length, SYS_COMMENTS_BATCH),
-        ),
+      batches.map((batch, i) =>
+        this.processBatch(batch, i, batches.length, SYS_COMMENTS_BATCH),
+      ),
     );
 
     return this.synthesizeReports(batchReports, SYS_COMMENTS_SYNTHESIS);
   }
 
-
-  async extractMark(readmeReport: string, commentReport: string): Promise<number> {
+  async extractMark(
+    readmeReport: string,
+    commentReport: string,
+  ): Promise<number> {
     try {
       const response = await this.createModel().invoke([
         new SystemMessage(SYS_MARK),
         new HumanMessage(
-            `README Report:\n${readmeReport}\n\nComment Report:\n${commentReport}`,
+          `README Report:\n${readmeReport}\n\nComment Report:\n${commentReport}`,
         ),
       ]);
       const text = (response.content as string).trim();
@@ -163,8 +173,8 @@ export class DocsNodeHelper {
   }
 
   async analyzeRepoDocumentation(
-      repoPath: string,
-      allFiles: string[],
+    repoPath: string,
+    allFiles: string[],
   ): Promise<DocsReport> {
     this.logger.log(`Avvio scansione di ${allFiles.length} file`);
 
@@ -210,7 +220,7 @@ export class DocsNodeHelper {
             const stat = fs.statSync(fullPath);
             if (stat.size > MAX_FILE_SIZE_BYTES) {
               this.logger.warn(
-                  `[SKIP] File troppo grande (${Math.round(stat.size / 1024)}KB): ${fullPath}`,
+                `[SKIP] File troppo grande (${Math.round(stat.size / 1024)}KB): ${fullPath}`,
               );
               continue;
             }
@@ -233,17 +243,65 @@ const MAX_FILE_SIZE_BYTES = 100 * 1024;
 const BATCH_SIZE_BYTES = 1024 * 1024;
 
 const TEXT_EXTENSIONS = new Set([
-  '.ts', '.js', '.tsx', '.jsx', '.py', '.java', '.kt', '.swift',
-  '.go', '.rs', '.c', '.cpp', '.h', '.hpp', '.cs', '.php', '.rb',
-  '.vue', '.svelte', '.html', '.css', '.scss', '.less', '.json',
-  '.yaml', '.yml', '.toml', '.xml', '.env.example', '.md', '.txt',
-  '.sh', '.bash', '.dockerfile', '.sql', '.graphql', '.proto',
+  '.ts',
+  '.js',
+  '.tsx',
+  '.jsx',
+  '.py',
+  '.java',
+  '.kt',
+  '.swift',
+  '.go',
+  '.rs',
+  '.c',
+  '.cpp',
+  '.h',
+  '.hpp',
+  '.cs',
+  '.php',
+  '.rb',
+  '.vue',
+  '.svelte',
+  '.html',
+  '.css',
+  '.scss',
+  '.less',
+  '.json',
+  '.yaml',
+  '.yml',
+  '.toml',
+  '.xml',
+  '.env.example',
+  '.md',
+  '.txt',
+  '.sh',
+  '.bash',
+  '.dockerfile',
+  '.sql',
+  '.graphql',
+  '.proto',
 ]);
 
 const IGNORED_DIRS = new Set([
-  'node_modules', '.git', 'dist', 'build', 'out', 'coverage',
-  '.next', '.nuxt', '.cache', 'vendor', '__pycache__', '.venv',
-  'venv', 'env', 'reports', 'tmp', 'temp', '.idea', '.vscode',
+  'node_modules',
+  '.git',
+  'dist',
+  'build',
+  'out',
+  'coverage',
+  '.next',
+  '.nuxt',
+  '.cache',
+  'vendor',
+  '__pycache__',
+  '.venv',
+  'venv',
+  'env',
+  'reports',
+  'tmp',
+  'temp',
+  '.idea',
+  '.vscode',
 ]);
 
 // Prompts

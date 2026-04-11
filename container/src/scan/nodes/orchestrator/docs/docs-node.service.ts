@@ -16,7 +16,10 @@ export class DocsNodeService implements INodeScanService {
     this.logger.log('Inizio analisi della documentazione');
 
     const files = this.helper.collectTextFiles(repoPath);
-    const docsReport: DocsReport = await this.helper.analyzeRepoDocumentation(repoPath, files);
+    const docsReport: DocsReport = await this.helper.analyzeRepoDocumentation(
+      repoPath,
+      files,
+    );
 
     return { docsReport };
   }
