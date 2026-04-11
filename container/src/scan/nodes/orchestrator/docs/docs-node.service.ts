@@ -12,24 +12,13 @@ export class DocsNodeService implements INodeScanService {
 
   constructor(private readonly helper: DocsNodeHelper) {}
 
-  async scan(repoPath: string): Promise<Partial<WorkflowState>> {
+  async scan({repoPath}: {repoPath:string} ): Promise<Partial<WorkflowState>> {
     this.logger.log('Inizio analisi della documentazione');
 
     const files = this.helper.collectTextFiles(repoPath);
 
-    const { report } = await this.helper.analyzeRepoDocumentation(
-      repoPath,
-      files,
-    );
+    const docsReport: DocsReport = await this.helper.analyzeRepoDocumentation(repoPath, files);
 
-    const codeQualityReport = await this.helper.extractCodeQuality(report);
-
-    const docsReport: DocsReport = {
-      readmeReport: report,
-      commentReport: '', // TODO riempire
-      mark: codeQualityReport.mark,
-    };
-
-    return { docsReport, codeQualityReport };
+    return { docsReport };
   }
 }

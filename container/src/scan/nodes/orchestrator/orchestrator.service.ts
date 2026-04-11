@@ -29,6 +29,7 @@ import {
 } from './docs/docs-node.service';
 import { WorkflowAnnotation, WorkflowState } from './workflow-state.type';
 import { Report } from './synthesizer/synthesizer.types';
+import type {INodeScanService} from "./inode-scan-service.interface";
 
 // Service
 @Injectable()
@@ -36,16 +37,16 @@ export class OrchestratorService {
   constructor(
     private readonly helper: OrchestratorHelper,
     @Inject(COVERAGE_NODE_SERVICE_TOKEN)
-    private readonly coverageNode: CoverageNodeService,
+    private readonly coverageNode: INodeScanService,
     @Inject(GITHUB_NODE_SERVICE_TOKEN)
-    private readonly githubNode: GithubNodeService,
+    private readonly githubNode: INodeScanService,
     @Inject(SECURITY_NODE_SERVICE_TOKEN)
-    private readonly securityNode: SecurityNodeService,
+    private readonly securityNode: INodeScanService,
     @Inject(REMEDIATION_NODE_SERVICE_TOKEN)
-    private readonly remediationNode: RemediationNodeService,
+    private readonly remediationNode: INodeScanService,
     @Inject(DEPENDENCY_NODE_SERVICE_TOKEN)
-    private readonly dependencyNode: DependencyNodeService,
-    @Inject(DOCS_NODE_SERVICE_TOKEN) private readonly docsNode: DocsNodeService,
+    private readonly dependencyNode: INodeScanService,
+    @Inject(DOCS_NODE_SERVICE_TOKEN) private readonly docsNode: INodeScanService,
     private readonly synthesizerNode: SynthesizerNodeService,
   ) {}
 
@@ -112,7 +113,7 @@ export class OrchestratorService {
       .addNode('remediation', async (state: WorkflowState) => {
         return await this.remediationNode.scan({
           vulnerabilitiesReportPath: state.vulnerabilitiesReportPath,
-          vulnerabilities: state.vulnerabilitiesReport,
+          vulnerabilitiesReport: state.vulnerabilitiesReport,
         });
       })
       .addNode('dependencies', async (repoPath: string) => {
