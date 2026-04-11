@@ -12,27 +12,11 @@ export class DocsNodeService implements INodeScanService {
 
   constructor(private readonly helper: DocsNodeHelper) {}
 
-  async scan({
-    repoPath,
-  }: {
-    repoPath: string;
-  }): Promise<Partial<WorkflowState>> {
+  async scan(repoPath: string): Promise<Partial<WorkflowState>> {
     this.logger.log('Inizio analisi della documentazione');
 
     const files = this.helper.collectTextFiles(repoPath);
-
-    const { report /*, totalTokens */ } =
-      await this.helper.analyzeRepoDocumentation(repoPath, files);
-
-    // console.log(
-    //   `[DocsNode] Token totali usati: ${totalTokens.toLocaleString('it-IT')}`,
-    // );
-
-    const docsReport: DocsReport = {
-      readmeReport: { analysis: { analysis: report } },
-      commentReport: [],
-      mark: 5,
-    };
+    const docsReport: DocsReport = await this.helper.analyzeRepoDocumentation(repoPath, files);
 
     return { docsReport };
   }
