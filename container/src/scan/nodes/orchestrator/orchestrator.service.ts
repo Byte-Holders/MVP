@@ -29,7 +29,7 @@ import {
 } from './docs/docs-node.service';
 import { WorkflowAnnotation, WorkflowState } from './workflow-state.type';
 import { Report } from './synthesizer/synthesizer.types';
-import type {INodeScanService} from "./inode-scan-service.interface";
+import type { INodeScanService } from './inode-scan-service.interface';
 
 // Service
 @Injectable()
@@ -46,7 +46,8 @@ export class OrchestratorService {
     private readonly remediationNode: INodeScanService,
     @Inject(DEPENDENCY_NODE_SERVICE_TOKEN)
     private readonly dependencyNode: INodeScanService,
-    @Inject(DOCS_NODE_SERVICE_TOKEN) private readonly docsNode: INodeScanService,
+    @Inject(DOCS_NODE_SERVICE_TOKEN)
+    private readonly docsNode: INodeScanService,
     private readonly synthesizerNode: SynthesizerNodeService,
   ) {}
 
