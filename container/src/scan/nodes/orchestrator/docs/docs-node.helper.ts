@@ -3,6 +3,7 @@ import path from 'path';
 import fs from 'fs';
 import { SystemMessage, HumanMessage } from '@langchain/core/messages';
 import { ChatBedrockConverse } from '@langchain/aws';
+import { CodeQualityReport } from '../synthesizer/synthesizer.types';
 
 @Injectable()
 export class DocsNodeHelper {
@@ -248,6 +249,22 @@ export class DocsNodeHelper {
     walk(dirPath);
     return results;
   }
+
+  async extractCodeQuality(report: string): Promise<CodeQualityReport> {
+    try {
+      const response = await this.createModel().invoke([
+        new SystemMessage(SYS_CODE_QUALITY),
+        new HumanMessage(`Report di analisi:\n${report}`),
+      ]);
+
+      const raw = (response.content as string)
+        .replace(/```json|```/g, '')
+        .trim();
+      return JSON.parse(raw) as CodeQualityReport;
+    } catch {
+      return { analysis: [], mark: 0 };
+    }
+  }
 }
 
 // Estensioni considerate file di testo analizzabili
@@ -336,3 +353,11 @@ Produci un unico report finale strutturato:
 3. **Problemi ricorrenti** — pattern trasversali a più file
 4. **Valutazione complessiva** — voto da 1 a 10 con motivazione
 5. **Top 5 azioni di miglioramento** per l'intera codebase`;
+
+const SYS_CODE_QUALITY = `Sei un tech lead esperto. Ricevi un report di analisi della qualità del codice.
+Estrai i 5 principali suggerimenti sotto forma di linee guida da adottare, relativamente alle best practice non adottate all'interno del repository.
+Restituisci SOLO un JSON con questa struttura, senza markdown:
+{
+  "analysis": [{"name": "<nome linea guida>", "recommendation": "<suggerimento specifico max 50 parole>"}],
+  "mark": <voto intero da 1 a 10>
+}`;
