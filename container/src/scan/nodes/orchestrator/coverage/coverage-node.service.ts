@@ -2,16 +2,23 @@ import { Injectable, Logger } from '@nestjs/common';
 import * as fs from 'fs';
 import * as path from 'path';
 import { CoverageReport } from './coverage-report.type';
-import { WorkflowState } from '../orchestrator.service';
+import { WorkflowState } from '../workflow-state.type';
 import { CoverageNodeHelper } from './coverage-node.helper';
+import { INodeScanService } from '../inode-scan-service.interface';
+
+export const COVERAGE_NODE_SERVICE_TOKEN = 'CoverageNodeService';
 
 @Injectable()
-export class CoverageNodeService {
+export class CoverageNodeService implements INodeScanService {
   private readonly logger = new Logger(CoverageNodeService.name);
 
   constructor(private readonly helper: CoverageNodeHelper) {}
 
-  async scan(repoPath: string): Promise<Partial<WorkflowState>> {
+  async scan({
+    repoPath,
+  }: {
+    repoPath: string;
+  }): Promise<Partial<WorkflowState>> {
     this.logger.log(
       `[CoverageNode] Inizio analisi coverage (percorso: ${repoPath})`,
     );

@@ -3,14 +3,21 @@ import * as fs from 'fs';
 import * as os from 'os';
 import * as path from 'path';
 import { DepsReport } from './deps-report.type';
-import { WorkflowState } from '../orchestrator.service';
+import { WorkflowState } from '../workflow-state.type';
 import { executeCli, type CliCommand } from '../../../exec.cli';
+import { INodeScanService } from '../inode-scan-service.interface';
+
+export const DEPENDENCY_NODE_SERVICE_TOKEN = 'DependencyNodeService';
 
 @Injectable()
-export class DepsNodeService {
-  private readonly logger = new Logger(DepsNodeService.name);
+export class DependencyNodeService implements INodeScanService {
+  private readonly logger = new Logger(DependencyNodeService.name);
 
-  async scan(repoPath: string): Promise<Partial<WorkflowState>> {
+  async scan({
+    repoPath,
+  }: {
+    repoPath: string;
+  }): Promise<Partial<WorkflowState>> {
     this.logger.log(`Inizio analisi delle dipendenze in: ${repoPath}`);
 
     // Syft genera lo SBOM

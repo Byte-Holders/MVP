@@ -1,7 +1,9 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { Target } from '../../../target.types';
-import { WorkflowState } from '../orchestrator.service';
+import { WorkflowState } from '../workflow-state.type';
 import { GithubNodeHelper } from './github-node.helper';
+
+export const GITHUB_NODE_SERVICE_TOKEN = 'GithubNodeService';
 
 @Injectable()
 export class GithubNodeService {
@@ -9,7 +11,7 @@ export class GithubNodeService {
 
   constructor(private readonly helper: GithubNodeHelper) {}
 
-  async scan(target: Target): Promise<Partial<WorkflowState>> {
+  async scan({ target }: { target: Target }): Promise<Partial<WorkflowState>> {
     const { owner, repository } = target;
 
     this.logger.log(`Ottenimento linguaggi per ${owner}/${repository}`);

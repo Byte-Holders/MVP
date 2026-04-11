@@ -3,7 +3,8 @@ import { INestApplication } from '@nestjs/common';
 import request from 'supertest';
 import { App } from 'supertest/types';
 import { AppModule } from './../src/app.module';
-
+// Questo è un test di esempio generato da NestJS, che verifica che l'endpoint GET / risponda con "Hello World!".
+//file da elimare o usare per fare health check
 describe('AppController (e2e)', () => {
   let app: INestApplication<App>;
 
