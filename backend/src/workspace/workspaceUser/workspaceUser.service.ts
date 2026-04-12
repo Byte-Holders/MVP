@@ -1,4 +1,4 @@
-import { Inject, Injectable } from "@nestjs/common";
+import { Inject, Injectable, NotFoundException, PreconditionFailedException } from "@nestjs/common";
 import { IAddUserToWorkspace } from "./interfaces/IAddUserToWorkspace.interface";
 import { IWorkspaceUserService } from "./interfaces/IWorkspaceUserService";
 import { type IWorkspaceUserRepository, IWorkspaceUserRepositoryToken } from "./interfaces/IWorkspaceUserRepository.interface";
@@ -11,14 +11,20 @@ export class WorkspaceUserService implements IWorkspaceUserService, IAddUserToWo
     ) {}
 
     async getUsersOfWorkspace(workspaceId: string) {
-        return this.workspaceUserRepository.getUsersOfWorkspace(workspaceId);
+        return await this.workspaceUserRepository.getUsersOfWorkspace(workspaceId);
     }
 
     async removeUserFromWorkspace(workspaceId: string, userId: string) {
+        if(!await this.workspaceUserRepository.checkIfUserIsInWorkspace(workspaceId, userId)) {
+            throw new NotFoundException('L\'utente con id ' + userId + ' non è un membro del workspace con id ' + workspaceId);
+        }
         await this.workspaceUserRepository.removeUserFromWorkspace(workspaceId, userId);
     }
 
     async addUserToWorkspace(user: UserOfWorkspaceInfo, workspaceId: string) {
+        if(await this.workspaceUserRepository.checkIfUserIsInWorkspace(workspaceId, user.userId)) {
+            throw new PreconditionFailedException('L\'utente con id ' + user.userId + ' è già un membro del workspace con id ' + workspaceId);
+        }
         await this.workspaceUserRepository.addUserToWorkspace(user, workspaceId);
     }
 }
