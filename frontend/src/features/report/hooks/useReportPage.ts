@@ -2,10 +2,15 @@ import { useState, useEffect } from 'react'
 import { useGetBranches } from './useGetBranches'
 import { useGetReport } from './useGetReport'
 
-export function useReportPage(repositoryId: string, ownerName: string, name: string) {
+export function useReportPage(
+  repositoryId: string,
+  ownerName: string,
+  name: string,
+) {
   const [selectedBranch, setSelectedBranch] = useState<string>('develop')
 
-  const { data: branches = [], isLoading: branchesLoading } = useGetBranches(repositoryId)
+  const { data: branches = [], isLoading: branchesLoading } =
+    useGetBranches(repositoryId)
 
   useEffect(() => {
     if (branches && branches.length > 0) {
@@ -14,8 +19,11 @@ export function useReportPage(repositoryId: string, ownerName: string, name: str
     }
   }, [branches])
 
-  const { data: report, isLoading: reportLoading, error: reportError } =
-    useGetReport(ownerName, name, selectedBranch)
+  const {
+    data: report,
+    isLoading: reportLoading,
+    error: reportError,
+  } = useGetReport(ownerName, name, selectedBranch)
 
   return {
     branches,

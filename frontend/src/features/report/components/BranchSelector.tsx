@@ -5,9 +5,16 @@ type Props = {
   onChange: (branch: string) => void
 }
 
-export function BranchSelector({ branches, isLoading, selectedBranch, onChange }: Props) {
+export function BranchSelector({
+  branches,
+  isLoading,
+  selectedBranch,
+  onChange,
+}: Props) {
   if (isLoading) {
-    return <div className="h-8 w-32 animate-pulse rounded-lg bg-[var(--chip-line)]" />
+    return (
+      <div className="h-8 w-32 animate-pulse rounded-lg bg-[var(--chip-line)]" />
+    )
   }
 
   return (

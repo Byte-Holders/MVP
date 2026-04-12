@@ -44,7 +44,6 @@ function ScoreBar({
   )
 }
 
-
 export default function RepositoryCard({
   name,
   ownerName,
@@ -86,7 +85,12 @@ export default function RepositoryCard({
       </div>
 
       <div className="flex flex-col gap-2">
-        <ScoreBar label="Documentation" value={documentationScore} max={10} unit="/10" />
+        <ScoreBar
+          label="Documentation"
+          value={documentationScore}
+          max={10}
+          unit="/10"
+        />
         <ScoreBar label="Code Coverage" value={codeCoverage} />
         <ScoreBar label="CVSS" value={cvss} max={10} unit="/10" />
       </div>

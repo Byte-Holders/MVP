@@ -17,7 +17,11 @@ export const Route = createFileRoute(
     const { ownerName, name } = Route.useSearch()
     return (
       <ProtectedRoute>
-        <ReportPage repositoryId={repositoryId} ownerName={ownerName} name={name} />
+        <ReportPage
+          repositoryId={repositoryId}
+          ownerName={ownerName}
+          name={name}
+        />
       </ProtectedRoute>
     )
   },

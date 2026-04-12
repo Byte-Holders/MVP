@@ -26,8 +26,12 @@ export function ReportPage({ repositoryId, ownerName, name }: Props) {
     <div className="flex flex-col gap-6 p-6">
       <div className="flex items-center justify-between">
         <div>
-          <p className="text-xs text-[var(--sea-ink)] opacity-60">{ownerName}</p>
-          <h1 className="text-xl font-semibold text-[var(--sea-ink)]">{name}</h1>
+          <p className="text-xs text-[var(--sea-ink)] opacity-60">
+            {ownerName}
+          </p>
+          <h1 className="text-xl font-semibold text-[var(--sea-ink)]">
+            {name}
+          </h1>
         </div>
 
         <div className="flex items-center gap-2">

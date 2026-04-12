@@ -37,7 +37,8 @@ export function SecuritySection({ vulnerabilitiesReport, depsReport }: Props) {
       {vulnerabilitiesReport.vulnerabilities.length > 0 ? (
         <div className="flex flex-col gap-2">
           <p className="text-xs font-medium text-[var(--sea-ink)] opacity-60">
-            Vulnerabilità codice ({vulnerabilitiesReport.vulnerabilities.length})
+            Vulnerabilità codice ({vulnerabilitiesReport.vulnerabilities.length}
+            )
           </p>
           {vulnerabilitiesReport.vulnerabilities.map((v) => (
             <div
@@ -61,7 +62,9 @@ export function SecuritySection({ vulnerabilitiesReport, depsReport }: Props) {
           ))}
         </div>
       ) : (
-        <p className="text-xs text-green-600">Nessuna vulnerabilità nel codice</p>
+        <p className="text-xs text-green-600">
+          Nessuna vulnerabilità nel codice
+        </p>
       )}
 
       {depsReport.vulnerabilities.length > 0 && (
