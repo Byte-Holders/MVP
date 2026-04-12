@@ -57,8 +57,7 @@ export type ReportInfo = {
     startScanTime: string;
     endScanTime: string;
     target: {
-      owner: string;
-      repository: string;
+      repositoryId: string;
       branch: string;
     };
   };

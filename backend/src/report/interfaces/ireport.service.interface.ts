@@ -3,8 +3,7 @@ import type { ReportInfo } from '../types/report.type';
 export interface IReportService {
   saveReport(report: ReportInfo): Promise<void>;
   getReport(
-    owner: string,
-    repository: string,
+    repositoryId: string,
     branch: string,
   ): Promise<ReportInfo>;
 }

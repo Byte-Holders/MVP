@@ -126,8 +126,7 @@ const ReportDataSchemaDefinition = SchemaFactory.createForClass(ReportDataSchema
 
 @Schema({ _id: false })
 class ReportTargetSchema {
-  @Prop({ required: true, type: String }) owner: string;
-  @Prop({ required: true, type: String }) repository: string;
+  @Prop({ required: true, type: String }) repositoryId: string;
   @Prop({ required: true, type: String }) branch: string;
 }
 const ReportTargetSchemaDefinition = SchemaFactory.createForClass(ReportTargetSchema);
@@ -154,8 +153,7 @@ export const ReportSchema = SchemaFactory.createForClass(ReportSchemaClass);
 
 ReportSchema.index(
   {
-    'metadata.target.owner': 1,
-    'metadata.target.repository': 1,
+    'metadata.target.repositoryId': 1,
     'metadata.target.branch': 1,
   },
   { name: 'idx_target' },

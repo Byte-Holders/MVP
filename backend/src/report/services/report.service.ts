@@ -21,8 +21,8 @@ export class ReportService implements IReportService {
     await this.reportRepository.save(report);
 
     if (report.metadata?.target.branch === DEVELOP_BRANCH) {
-      const { owner, repository } = report.metadata.target;
-      await this.repositoryScoreWriter.updateScores(owner, repository, {
+      const { repositoryId } = report.metadata.target;
+      await this.repositoryScoreWriter.updateScores(repositoryId, {
         documentationScore: report.data.docsReport?.mark,
         cvss: report.data.vulnerabilitiesReport?.mark,
         codeCoverage: report.data.testReport?.coverageReport?.lines,
@@ -32,18 +32,16 @@ export class ReportService implements IReportService {
   }
 
   async getReport(
-    owner: string,
-    repository: string,
+    repositoryId: string,
     branch: string,
   ): Promise<ReportInfo> {
     const entity = await this.reportRepository.findLatestByTarget(
-      owner,
-      repository,
+      repositoryId,
       branch,
     );
     if (!entity) {
       throw new NotFoundException(
-        `Report non trovato per ${owner}/${repository}@${branch}`,
+        `Report non trovato per repository ${repositoryId}@${branch}`,
       );
     }
     return {

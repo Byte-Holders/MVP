@@ -11,10 +11,9 @@ export class RepositoryScoreService implements IRepositoryScoreWriter {
   ) {}
 
   async updateScores(
-    ownerName: string,
-    name: string,
+    repositoryId: string,
     scores: RepositoryScores,
   ): Promise<void> {
-    return this.repositoryScoreRepository.updateScores(ownerName, name, scores);
+    return this.repositoryScoreRepository.updateScores(repositoryId, scores);
   }
 }

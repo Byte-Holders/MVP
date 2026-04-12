@@ -4,14 +4,21 @@ import { TechSection } from '../components/TechSection'
 import { TestSection } from '../components/TestSection'
 import { SecuritySection } from '../components/SecuritySection'
 import { DocsSection } from '../components/DocsSection'
+import { ScanButton } from '#/features/repo/components/ScanButton'
 
 type Props = {
+  workspaceId: string
   repositoryId: string
   ownerName: string
   name: string
 }
 
-export function ReportPage({ repositoryId, ownerName, name }: Props) {
+export function ReportPage({
+  workspaceId,
+  repositoryId,
+  ownerName,
+  name,
+}: Props) {
   const {
     branches,
     branchesLoading,
@@ -20,7 +27,7 @@ export function ReportPage({ repositoryId, ownerName, name }: Props) {
     report,
     reportLoading,
     reportError,
-  } = useReportPage(repositoryId, ownerName, name)
+  } = useReportPage(repositoryId)
 
   return (
     <div className="flex flex-col gap-6 p-6">
@@ -34,7 +41,7 @@ export function ReportPage({ repositoryId, ownerName, name }: Props) {
           </h1>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-3">
           <label
             htmlFor="branch-select"
             className="text-xs text-[var(--sea-ink)] opacity-60"
@@ -46,6 +53,11 @@ export function ReportPage({ repositoryId, ownerName, name }: Props) {
             isLoading={branchesLoading}
             selectedBranch={selectedBranch}
             onChange={setSelectedBranch}
+          />
+          <ScanButton
+            workspaceId={workspaceId}
+            repositoryId={repositoryId}
+            branch={selectedBranch}
           />
         </div>
       </div>

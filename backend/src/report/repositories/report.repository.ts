@@ -13,12 +13,11 @@ export class ReportRepository implements IReportRepository {
   ) {}
 
   async save(report: ReportEntity): Promise<ReportEntity> {
-    const { owner, repository, branch } = report.metadata!.target;
+    const { repositoryId, branch } = report.metadata!.target;
     const doc = await this.reportModel
       .findOneAndUpdate(
         {
-          'metadata.target.owner': owner,
-          'metadata.target.repository': repository,
+          'metadata.target.repositoryId': repositoryId,
           'metadata.target.branch': branch,
         },
         { $set: report },
@@ -31,14 +30,12 @@ export class ReportRepository implements IReportRepository {
   }
 
   async findLatestByTarget(
-    owner: string,
-    repository: string,
+    repositoryId: string,
     branch: string,
   ): Promise<ReportEntity | null> {
     const doc = await this.reportModel
       .findOne({
-        'metadata.target.owner': owner,
-        'metadata.target.repository': repository,
+        'metadata.target.repositoryId': repositoryId,
         'metadata.target.branch': branch,
       })
       .sort({ createdAt: -1 })

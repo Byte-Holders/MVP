@@ -7,8 +7,7 @@ export type RepositoryScores = {
 
 export interface IRepositoryScoreWriter {
   updateScores(
-    ownerName: string,
-    name: string,
+    repositoryId: string,
     scores: RepositoryScores,
   ): Promise<void>;
 }

@@ -2,11 +2,7 @@ import { useState, useEffect } from 'react'
 import { useGetBranches } from './useGetBranches'
 import { useGetReport } from './useGetReport'
 
-export function useReportPage(
-  repositoryId: string,
-  ownerName: string,
-  name: string,
-) {
+export function useReportPage(repositoryId: string) {
   const [selectedBranch, setSelectedBranch] = useState<string>('develop')
 
   const { data: branches = [], isLoading: branchesLoading } =
@@ -23,7 +19,7 @@ export function useReportPage(
     data: report,
     isLoading: reportLoading,
     error: reportError,
-  } = useGetReport(ownerName, name, selectedBranch)
+  } = useGetReport(repositoryId, selectedBranch)
 
   return {
     branches,

@@ -26,13 +26,12 @@ export class ReportController {
     return this.reportService.saveReport(dto);
   }
 
-  @Get(':owner/repositories/:repository/branches/:branch')
+  @Get(':repositoryId/branches/:branch')
   async getReport(
-    @Param('owner') owner: string,
-    @Param('repository') repository: string,
+    @Param('repositoryId') repositoryId: string,
     @Param('branch') branch: string,
   ): Promise<ReportResponseDto> {
-    const report = await this.reportService.getReport(owner, repository, branch);
+    const report = await this.reportService.getReport(repositoryId, branch);
     return { ...report };
   }
 }
