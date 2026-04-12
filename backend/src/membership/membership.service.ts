@@ -1,72 +1,105 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable, Inject, NotFoundException, PreconditionFailedException } from '@nestjs/common';
 import { MembershipRepository } from './membership.repository';
-import {
-  InviteUserDto,
-  ManageInviteDto,
-  GetInviteDto,
-  ManageInviteAction,
-} from './dto/membership.dto';
+import { ManageInviteAction, MembershipStatus} from './dto/membership.dto';
+import { type IFindUserByUsername } from 'src/user/interfaces/IfindUserByUsername.interface';
+import { FindUserByUsernameToken } from 'src/user/interfaces/IfindUserByUsername.interface';
+import { UserInfo } from 'src/user/types/user.type';
+import { InviteUserInfo } from './type/inviteUser.type';
+import { IMembershipService } from './interfaces/IMembershipService.interface';
+import { MembershipPopulatedInfo } from './type/memberhsipPopulated.type';
+import { MembershipPopulatedEntity } from './entity/membershipPopulated.entity';
+import { CreateMembershipEntityParams } from './entity/createMembershipEntityParams';
+import { ManageInviteInfo } from './type/manageInvite.type';
+import { type IAddUserToWorkspace, IAddUserToWorkspaceToken } from 'src/workspace/workspaceUser/interfaces/IAddUserToWorkspace.interface';
+import { UserOfWorkspaceInfo } from 'src/workspace/workspaceUser/type/userOfWorkspace.type';
+import { IMembershipRepositoryToken } from './interfaces/IMembershipRepository.interface';
+
 @Injectable()
-export class MembershipService {
-  constructor(private readonly repository: MembershipRepository) {}
+export class MembershipService implements IMembershipService {
+  constructor(
+    @Inject(IMembershipRepositoryToken) private readonly repository: MembershipRepository,
+    @Inject(FindUserByUsernameToken) private readonly findUserByUsername: IFindUserByUsername,
+    @Inject(IAddUserToWorkspaceToken) private readonly addUserToWorkspace: IAddUserToWorkspace,
+  ) {}
 
-  async inviteUser(inviteUserDto: InviteUserDto): Promise<void> {
-    // Passiamo stringhe dirette al posto del ResearchInviteDto
-    const existingInvite = await this.repository.findPendingInvite(
-      inviteUserDto.recipientId,
-      inviteUserDto.workspaceId,
-    );
+  async inviteUser(inviteUserInfo: InviteUserInfo): Promise<void> {
+    const user: UserInfo | null = await this.findUserByUsername.findByUsername(inviteUserInfo.recipientUsername);
 
-    if (existingInvite) {
-      throw new BadRequestException(
-        `L'utente ha già un invito pendente per questo workspace (${inviteUserDto.workspaceId})`,
-      );
+    if (!user) {
+      throw new NotFoundException(`Utente con username ${inviteUserInfo.recipientUsername} non trovato`);
     }
 
-    // Passiamo un oggetto anonimo invece di AddInviteDto
-    await this.repository.addInvite({
-      workspaceId: inviteUserDto.workspaceId,
-      senderId: inviteUserDto.senderId,
-      recipientId: inviteUserDto.recipientId,
-      recipientRole: inviteUserDto.recipientRole,
-    });
-  }
-
-  async getInvites(getInviteDto: GetInviteDto): Promise<any[]> {
-    const pendingMemberships = await this.repository.findPendingInvites(
-      getInviteDto.userId,
+    const existingPendingInvite = await this.repository.findPendingInvite(
+      user._id,
+      inviteUserInfo.workspaceId,
     );
 
-    return pendingMemberships.map((m) => ({
-      workspaceId: m.workspaceId,
-      senderUsername: m.senderId,
-      recipientUsername: m.recipientId,
-      recipientRole: m.recipientRole,
-      status: m.status,
-    }));
+    if (existingPendingInvite) {
+      throw new BadRequestException(`L'utente ha già un invito pendente per questo workspace (${inviteUserInfo.workspaceId})`);
+    }
+    const createMembershipEntityParams: CreateMembershipEntityParams = {
+      workspaceId: inviteUserInfo.workspaceId,
+      senderId: inviteUserInfo.senderId,
+      recipientId: user._id,
+      recipientRole: inviteUserInfo.recipientRole,
+      status: MembershipStatus.Pending,
+    };
+
+    await this.repository.addInvite(createMembershipEntityParams);
   }
 
-  async manageInvite(manageInviteDto: ManageInviteDto): Promise<void> {
-    // Passiamo stringhe dirette al posto del ResearchInviteDto
-    const invite = await this.repository.findPendingInvite(
-      manageInviteDto.userId,
-      manageInviteDto.workspaceId,
+  async getInvites(userId: string): Promise<MembershipPopulatedInfo[]> {
+    const pendingMemberships: MembershipPopulatedEntity[] = await this.repository.findPendingInvites(
+      userId,
     );
+    return pendingMemberships;
+  }
 
+  async manageInvite(manageInviteInfo: ManageInviteInfo): Promise<void> {
+    const invite = await this.repository.findPendingInviteById(manageInviteInfo.id);
     if (!invite) {
       throw new BadRequestException('Invito non trovato o già gestito');
     }
 
-    // Mappiamo l'enum ManageInviteAction (Accept/Reject) nel formato stringa atteso dal DB (ACCEPTED/REJECTED)
-    const newStatus =
-      manageInviteDto.action === ManageInviteAction.Accept
-        ? 'ACCEPTED'
-        : 'REJECTED';
+    const populatedInvites = await this.repository.findPendingInvites(invite.recipientId);
+    const userUsername = populatedInvites.find(invite => invite._id === manageInviteInfo.id)?.recipientUsername; //username dell'utente da raggiungere
 
-    // Passiamo stringhe dirette invece di UpdateInviteDto
-    await this.repository.updateInvite(
-      (invite as any)._id.toString(),
-      newStatus,
-    );
+    if(!userUsername) {
+      throw new Error("errore nel recupero dell'username dell'utente destinatario dell'invito");
+    }
+
+    if (manageInviteInfo.action === ManageInviteAction.Accept) {
+      const userToAdd = await this.findUserByUsername.findByUsername(userUsername);
+      if (!userToAdd) {
+        throw new NotFoundException(`Utente con username ${userUsername} non trovato`);
+      }
+      const userOfWorkspaceInfo: UserOfWorkspaceInfo = {
+        userId: userToAdd._id,
+        username: userToAdd.username,
+        role: invite.recipientRole
+      };
+      try {
+        await this.addUserToWorkspace.addUserToWorkspace(userOfWorkspaceInfo, invite.workspaceId);
+      } catch (error) {
+        if (error instanceof PreconditionFailedException) {
+          await this.repository.updateInvite(
+            manageInviteInfo.id,
+            MembershipStatus.Rejected,
+          );
+          throw new PreconditionFailedException("l'utente è già un membro del workspace, quindi l'invito è stato rifiutato");
+        } else {
+          throw error;
+        }
+      }
+      await this.repository.updateInvite(
+        manageInviteInfo.id,
+        MembershipStatus.Accepted,
+      );
+    } else {
+      await this.repository.updateInvite(
+        manageInviteInfo.id,
+        MembershipStatus.Rejected,
+      );
+    }
   }
 }

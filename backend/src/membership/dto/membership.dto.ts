@@ -1,21 +1,31 @@
+import { WorkspaceRole } from "src/workspace/roles.enum";
+
 export enum ManageInviteAction {
   Accept = 'Accept',
   Reject = 'Reject',
 }
 
+export enum MembershipStatus {
+  Pending = 'PENDING',
+  Accepted = 'ACCEPTED',
+  Rejected = 'REJECTED',
+}
+
 export class InviteUserDto {
   workspaceId!: string;
-  senderId!: string;
-  recipientId!: string;
-  recipientRole!: string;
+  recipientUsername!: string;
+  recipientRole!: WorkspaceRole;
 }
 
 export class ManageInviteDto {
-  workspaceId!: string;
-  userId!: string;
+  membershipId!: string;
   action!: ManageInviteAction;
 }
 
-export class GetInviteDto {
-  userId!: string;
+export class GetInviteResponseDto {
+  workspaceName!: string;
+  senderUsername!: string;
+  recipientUsername!: string;
+  recipientRole!: WorkspaceRole;
+  status!: MembershipStatus;
 }
