@@ -97,6 +97,7 @@ export class DependencyNodeService implements INodeScanService {
       const response = await model.invoke([
         new SystemMessage(
           `Sei un esperto di architettura software. Ricevi una lista di dipendenze software e un elenco di vulnerabilità.
+Ti viene anche fornito un file package.json che contiene le librerie esplicitamente utilizzate in un progetto.
 Restituisci SOLO un JSON con questa struttura, senza markdown:
 {
   "libraries": [{"name": "...", "version": "..."}],
@@ -105,10 +106,10 @@ Restituisci SOLO un JSON con questa struttura, senza markdown:
 }
 Separa le dipendenze in:
 - "frameworks": es. NestJS, Angular, Express
-- "libraries": la lista di librerie tipicamente all'interno di un package.json`, // TODO da qualche altra parte o passare file package.json per cross-check
+- "libraries": la lista di librerie presenti anche all'interno del file package.json, con la versione effettiva`, // TODO da qualche altra parte o passare file package.json per cross-check
         ),
         new HumanMessage(
-          `Dipendenze:\n${JSON.stringify(report.list)}\n\nVulnerabilità:\n${JSON.stringify(report.vulnerabilities)}`,
+          `Dipendenze:\n${JSON.stringify(report.list)}\n\nVulnerabilità:\n${JSON.stringify(report.vulnerabilities)}\npackage.json:${JSON.stringify(fs.readFileSync(path.join(repoPath, 'package.json')))}`,
         ),
       ]);
 
