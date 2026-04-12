@@ -4,5 +4,9 @@ export interface WorkspaceMember {
   role: string
 }
 
-export const WORKSPACE_ROLES = ['Project Manager', 'Tech Lead', 'Developer'] as const
+export const WORKSPACE_ROLES = [
+  'Project Manager',
+  'Tech Lead',
+  'Developer',
+] as const
 export type WorkspaceRole = (typeof WORKSPACE_ROLES)[number]

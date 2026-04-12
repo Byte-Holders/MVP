@@ -16,7 +16,9 @@ export function MemberItem({ member, isRemoving, onRemove }: Props) {
           {initials}
         </div>
         <div>
-          <p className="text-sm font-semibold text-[var(--sea-ink)]">{member.username}</p>
+          <p className="text-sm font-semibold text-[var(--sea-ink)]">
+            {member.username}
+          </p>
           <p className="text-xs text-[var(--sea-ink-soft)]">{member.role}</p>
         </div>
       </div>

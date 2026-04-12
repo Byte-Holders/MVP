@@ -18,16 +18,24 @@ export function InviteItem({ invite, isPending, onAccept, onReject }: Props) {
         </div>
         <div>
           <div className="flex items-baseline gap-2 mb-0.5">
-            <p className="text-sm font-medium text-[var(--sea-ink-soft)]">Workspace:</p>
-            <h3 className="text-lg font-semibold text-[var(--sea-ink)]">{invite.workspaceName}</h3>
+            <p className="text-sm font-medium text-[var(--sea-ink-soft)]">
+              Workspace:
+            </p>
+            <h3 className="text-lg font-semibold text-[var(--sea-ink)]">
+              {invite.workspaceName}
+            </h3>
           </div>
           <p className="text-sm text-[var(--sea-ink-soft)]">
             Invitato da:{' '}
-            <span className="font-medium text-[var(--sea-ink)]">{invite.senderUsername}</span>
+            <span className="font-medium text-[var(--sea-ink)]">
+              {invite.senderUsername}
+            </span>
           </p>
           <p className="text-sm text-[var(--sea-ink-soft)]">
             Ruolo:{' '}
-            <span className="font-medium text-[var(--sea-ink)]">{invite.recipientRole}</span>
+            <span className="font-medium text-[var(--sea-ink)]">
+              {invite.recipientRole}
+            </span>
           </p>
         </div>
       </div>

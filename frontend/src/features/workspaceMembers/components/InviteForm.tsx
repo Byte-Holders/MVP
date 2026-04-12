@@ -23,7 +23,9 @@ export function InviteForm({
 }: Props) {
   return (
     <form onSubmit={onSubmit} className="flex flex-col gap-4">
-      <h2 className="text-base font-semibold text-[var(--sea-ink)]">Invita un utente</h2>
+      <h2 className="text-base font-semibold text-[var(--sea-ink)]">
+        Invita un utente
+      </h2>
 
       <div className="flex flex-col gap-2 sm:flex-row sm:items-end">
         <div className="flex flex-col gap-1 flex-1">
@@ -45,7 +47,9 @@ export function InviteForm({
             className="rounded-lg border border-[var(--h-line)] bg-[var(--surface)] px-3 py-2 text-sm text-[var(--sea-ink)] focus:outline-none focus:ring-2 focus:ring-indigo-500/40"
           >
             {WORKSPACE_ROLES.map((r) => (
-              <option key={r} value={r}>{r}</option>
+              <option key={r} value={r}>
+                {r}
+              </option>
             ))}
           </select>
         </div>
@@ -59,9 +63,7 @@ export function InviteForm({
         </button>
       </div>
 
-      {error && (
-        <p className="text-xs text-red-500">{error.message}</p>
-      )}
+      {error && <p className="text-xs text-red-500">{error.message}</p>}
       {isSuccess && (
         <p className="text-xs text-green-600">Invito inviato con successo.</p>
       )}

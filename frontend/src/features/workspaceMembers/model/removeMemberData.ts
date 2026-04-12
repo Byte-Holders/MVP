@@ -7,9 +7,12 @@ export async function removeMemberData(
   const session = await fetchAuthSession()
   const token = session.tokens?.accessToken?.toString()
 
-  const response = await fetch(`/api/workspace/${workspaceId}/users/${userId}`, {
-    method: 'DELETE',
-    headers: { Authorization: `Bearer ${token}` },
-  })
+  const response = await fetch(
+    `/api/workspace/${workspaceId}/users/${userId}`,
+    {
+      method: 'DELETE',
+      headers: { Authorization: `Bearer ${token}` },
+    },
+  )
   if (!response.ok) throw new Error('Errore nella rimozione del membro')
 }

@@ -1,7 +1,9 @@
 import { fetchAuthSession } from 'aws-amplify/auth'
 import type { WorkspaceMember } from '../types/workspaceMember'
 
-export async function getMembersData(workspaceId: string): Promise<WorkspaceMember[]> {
+export async function getMembersData(
+  workspaceId: string,
+): Promise<WorkspaceMember[]> {
   const session = await fetchAuthSession()
   const token = session.tokens?.accessToken?.toString()
 

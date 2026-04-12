@@ -28,7 +28,10 @@ export function WorkspaceHeader({ workspaceId }: Props) {
         </h1>
         <div className="flex items-center gap-3">
           <p className="text-base text-[var(--sea-ink-soft)]">
-            Owner: <span className="font-medium text-[var(--sea-ink)]">{workspace.owner}</span>
+            Owner:{' '}
+            <span className="font-medium text-[var(--sea-ink)]">
+              {workspace.owner}
+            </span>
           </p>
           <span className="text-[var(--sea-ink-soft)] opacity-40">·</span>
           <span className="rounded-full border border-indigo-500/30 bg-indigo-500/10 px-3 py-1 text-sm font-medium text-indigo-400">
