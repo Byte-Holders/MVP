@@ -96,17 +96,20 @@ export class DependencyNodeService implements INodeScanService {
       const model = this.helper.createModel();
       const response = await model.invoke([
         new SystemMessage(
-          `Sei un esperto di architettura software. Ricevi una lista di dipendenze software e un elenco di vulnerabilità.
-Ti viene anche fornito un file package.json che contiene le librerie esplicitamente utilizzate in un progetto.
-Restituisci SOLO un JSON con questa struttura, senza markdown:
-{
-  "libraries": [{"name": "...", "version": "..."}],
-  "frameworks": [{"name": "...", "version": "..."}],
-  "vulnerabilityAnalysis": "<breve analisi max 100 parole>"
-}
-Separa le dipendenze in:
-- "frameworks": es. NestJS, Angular, Express
-- "libraries": la lista di librerie presenti anche all'interno del file package.json, con la versione effettiva`, // TODO da qualche altra parte o passare file package.json per cross-check
+          `Sei un esperto di architettura e sicurezza software in typescript. Ricevi una lista di dipendenze software e un elenco di vulnerabilità.
+        Ti viene anche fornito un file package.json che contiene le librerie esplicitamente utilizzate in un progetto.
+        Restituisci SOLO un JSON con questa struttura, senza markdown:
+        {
+          "libraries": [{"name": "...", "version": "..."}],
+          "frameworks": [{"name": "...", "version": "..."}],
+          "vulnerabilityAnalysis": "..."
+        }
+        Separa le dipendenze in:
+        - "frameworks": la lista di framework utilizzati all'interno del progetto. Compaiono sicuramente, e solamente, all'interno del file package.json
+        - "libraries": tutte le librerie presenti nel package.json ma non all'interno del campo "frameworks" definito al punto precedente. Di ciascuna libreria deve essere anche presente la versione effettiva installata, che puoi trovare all'interno del report sulle dipendenze
+        - "vulnerabilityAnalysis": una breve analisi riassuntiva delle vulnerabilità presenti all'interno della lista delle vulnerabilità. La lunghezza del riassunto è vincolata a massimo 100 parole.
+
+        Assicurati che il documento JSON che produci sia valido.`,
         ),
         new HumanMessage(
           `Dipendenze:\n${JSON.stringify(report.list)}\n\nVulnerabilità:\n${JSON.stringify(report.vulnerabilities)}\npackage.json:${JSON.stringify(fs.readFileSync(path.join(repoPath, 'package.json')))}`,

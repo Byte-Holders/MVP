@@ -38,12 +38,12 @@ export class OrchestratorService {
 
     const app = workflow.compile();
 
-    const finalReport = await app.invoke({ target });
+    const { finalReport } = await app.invoke({ target });
     if (!finalReport) {
       throw new Error('Il synthesizer non ha prodotto un report.');
     }
 
-    return finalReport.finalReport;
+    return finalReport;
   }
 
   private buildWorkflow() {

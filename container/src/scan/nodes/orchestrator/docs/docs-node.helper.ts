@@ -240,7 +240,7 @@ export class DocsNodeHelper {
 //Costanti di dimensione batch e file
 
 const MAX_FILE_SIZE_BYTES = 100 * 1024;
-const BATCH_SIZE_BYTES = 1024 * 1024;
+const BATCH_SIZE_BYTES = 512 * 1024;
 
 const TEXT_EXTENSIONS = new Set([
   '.ts',
