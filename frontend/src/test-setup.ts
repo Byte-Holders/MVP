@@ -1,16 +1,17 @@
-// Aggiunge i matcher jest-dom a Vitest
-// es: expect(el).toBeInTheDocument(), .toHaveValue(), .toBeDisabled()
 import '@testing-library/jest-dom'
-
-// Setup MSW — intercetta le chiamate HTTP durante i test
+import { expect, afterEach, beforeAll, afterAll } from 'vitest'
+import { cleanup } from '@testing-library/react'
+import * as matchers from '@testing-library/jest-dom/matchers' // <--- Importa i matcher
 import { server } from './mocks/server'
 
-// Avvia il server mock prima di tutti i test
+// 1. Estende l'oggetto expect di Vitest con i matcher del DOM
+expect.extend(matchers)
+
 beforeAll(() => server.listen({ onUnhandledRequest: 'warn' }))
 
-// Resetta gli handler dopo ogni test
-// (evita che un override in un test influenzi il successivo)
-afterEach(() => server.resetHandlers())
+afterEach(() => {
+  cleanup() // 2. Pulisce il DOM tra un test e l'altro 
+  server.resetHandlers()
+})
 
-// Chiude il server dopo tutti i test
 afterAll(() => server.close())
