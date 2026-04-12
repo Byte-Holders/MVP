@@ -8,6 +8,7 @@ import { UserModule } from './user/user.module';
 import { AuthModule } from './auth/auth.module';
 import { ScanModule } from './scan/scan.module';
 import { MembershipModule } from './membership/membership.module';
+import { ReportModule } from './report/report.module';
 
 @Module({
   imports: [
@@ -26,6 +27,7 @@ import { MembershipModule } from './membership/membership.module';
     AuthModule,
     ScanModule,
     MembershipModule,
+    ReportModule,
   ],
   controllers: [AppController],
   providers: [AppService],

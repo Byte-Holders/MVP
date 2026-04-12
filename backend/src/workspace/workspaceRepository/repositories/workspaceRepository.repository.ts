@@ -1,8 +1,8 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
-import { Workspace } from '../schemas/workspace.schema';
-import type { IWorkspaceRepositoryRepository } from './interfaces/workspaceRepository.repository.interface';
+import { Workspace } from '../../schemas/workspace.schema';
+import type { IWorkspaceRepositoryRepository } from '../interfaces/workspaceRepository.repository.interface';
 
 @Injectable()
 export class WorkspaceRepositoryRepository implements IWorkspaceRepositoryRepository {
