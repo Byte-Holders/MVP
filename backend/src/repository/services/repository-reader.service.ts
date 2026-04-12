@@ -3,7 +3,6 @@ import type { IRepositoryReader } from '../interfaces/repository.reader.interfac
 import type { IRepositoryFindRepository } from '../interfaces/repository.find-repository.interface';
 import { RepositoryFindRepositoryToken } from '../interfaces/repository.find-repository.interface';
 import type { RepositoryInfo } from '../types/repository-info';
-import { RepositoryMapper } from '../mappers/repository.mapper';
 
 @Injectable()
 export class RepositoryReaderService implements IRepositoryReader {
@@ -20,6 +19,14 @@ export class RepositoryReaderService implements IRepositoryReader {
       repositoryIds,
       searchInput,
     );
-    return entities.map(RepositoryMapper.toInfo);
+    return entities.map((entity): RepositoryInfo => ({
+      repositoryId: entity.repositoryId,
+      ownerName: entity.ownerName,
+      name: entity.name,
+      dateScan: entity.dateScan?.toISOString(),
+      documentationScore: entity.documentationScore,
+      codeCoverage: entity.codeCoverage,
+      cvss: entity.cvss,
+    }));
   }
 }

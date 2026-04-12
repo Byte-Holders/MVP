@@ -5,7 +5,7 @@ import { RepositoryFindRepositoryToken } from '../interfaces/repository.find-rep
 import type { IGitHubRepository } from '../interfaces/github.repository.interface';
 import { GitHubRepositoryToken } from '../interfaces/github.repository.interface';
 import type { RepositoryInfo } from '../types/repository-info';
-import { RepositoryMapper } from '../mappers/repository.mapper';
+import type { RepositoryEntity } from '../entities/repository.entity';
 
 @Injectable()
 export class RepositoryService implements IRepositoryService {
@@ -18,7 +18,19 @@ export class RepositoryService implements IRepositoryService {
 
   async getRepository(repositoryId: string): Promise<RepositoryInfo> {
     const entity = await this.repositoryRepository.getRepository(repositoryId);
-    return RepositoryMapper.toInfo(entity);
+    return this.toInfo(entity);
+  }
+
+  private toInfo(entity: RepositoryEntity): RepositoryInfo {
+    return {
+      repositoryId: entity.repositoryId,
+      ownerName: entity.ownerName,
+      name: entity.name,
+      dateScan: entity.dateScan?.toISOString(),
+      documentationScore: entity.documentationScore,
+      codeCoverage: entity.codeCoverage,
+      cvss: entity.cvss,
+    };
   }
 
   async getBranches(repositoryId: string): Promise<string[]> {
