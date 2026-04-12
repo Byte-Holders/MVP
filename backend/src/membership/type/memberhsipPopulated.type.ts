@@ -1,4 +1,4 @@
-import { WorkspaceRole } from "src/workspace/roles.enum";
+import { WorkspaceRole } from "../../workspace/roles.enum";
 import { MembershipStatus } from "../dto/membership.dto";
 
 export type MembershipPopulatedInfo = {

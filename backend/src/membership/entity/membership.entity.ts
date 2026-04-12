@@ -1,4 +1,4 @@
-import { WorkspaceRole } from "src/workspace/roles.enum";
+import { WorkspaceRole } from "../../workspace/roles.enum";
 
 export class MembershipEntity {
     _id!: string;

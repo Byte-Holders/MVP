@@ -4,8 +4,8 @@ import { MembershipController } from './membership.controller';
 import { MembershipRepository } from './membership.repository';
 import { MongooseModule } from '@nestjs/mongoose/dist/mongoose.module';
 import { Membership, MembershipSchema } from './schema/membership.schema';
-import { WorkspaceUserModule } from 'src/workspace/workspaceUser/workspaceUser.module';
-import { UserModule } from 'src/user/user.module';
+import { WorkspaceUserModule } from '../workspace/workspaceUser/workspaceUser.module';
+import { UserModule } from '../user/user.module';
 import { IMembershipServiceToken } from './interfaces/IMembershipService.interface';
 import { IMembershipRepositoryToken } from './interfaces/IMembershipRepository.interface';
 

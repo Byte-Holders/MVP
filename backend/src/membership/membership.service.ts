@@ -1,17 +1,18 @@
 import { BadRequestException, Injectable, Inject, NotFoundException, PreconditionFailedException } from '@nestjs/common';
 import { MembershipRepository } from './membership.repository';
 import { ManageInviteAction, MembershipStatus} from './dto/membership.dto';
-import { type IFindUserByUsername } from 'src/user/interfaces/IfindUserByUsername.interface';
-import { FindUserByUsernameToken } from 'src/user/interfaces/IfindUserByUsername.interface';
-import { UserInfo } from 'src/user/types/user.type';
+import { type IFindUserByUsername } from '../user/interfaces/IfindUserByUsername.interface';
+import { FindUserByUsernameToken } from '../user/interfaces/IfindUserByUsername.interface';
+import { UserInfo } from '../user/types/user.type';
 import { InviteUserInfo } from './type/inviteUser.type';
 import { IMembershipService } from './interfaces/IMembershipService.interface';
 import { MembershipPopulatedInfo } from './type/memberhsipPopulated.type';
 import { MembershipPopulatedEntity } from './entity/membershipPopulated.entity';
 import { CreateMembershipEntityParams } from './entity/createMembershipEntityParams';
 import { ManageInviteInfo } from './type/manageInvite.type';
-import { type IAddUserToWorkspace, IAddUserToWorkspaceToken } from 'src/workspace/workspaceUser/interfaces/IAddUserToWorkspace.interface';
-import { UserOfWorkspaceInfo } from 'src/workspace/workspaceUser/type/userOfWorkspace.type';
+import { type IAddUserToWorkspace } from '../workspace/workspaceUser/interfaces/IAddUserToWorkspace.interface';
+import { IAddUserToWorkspaceToken } from '../workspace/workspaceUser/interfaces/IAddUserToWorkspace.interface';
+import { UserOfWorkspaceInfo } from '../workspace/workspaceUser/type/userOfWorkspace.type';
 import { IMembershipRepositoryToken } from './interfaces/IMembershipRepository.interface';
 
 @Injectable()

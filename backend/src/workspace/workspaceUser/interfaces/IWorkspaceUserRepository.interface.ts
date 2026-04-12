@@ -1,4 +1,4 @@
-import { WorkspaceRole } from 'src/workspace/roles.enum';
+import { WorkspaceRole } from "../../roles.enum";
 import { UserOfWorkspaceEntity } from '../entity/userOfWorkspace.entity';
 
 export interface IWorkspaceUserRepository {

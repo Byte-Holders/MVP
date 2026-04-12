@@ -1,7 +1,7 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import mongoose, { Document } from 'mongoose';
 import { MembershipStatus } from '../dto/membership.dto';
-import { WorkspaceRole } from 'src/workspace/roles.enum';
+import { WorkspaceRole } from '../../workspace/roles.enum';
 
 @Schema({ timestamps: true })
 export class Membership extends Document {
