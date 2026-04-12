@@ -4,11 +4,7 @@ import { Type } from 'class-transformer';
 export class ReportTargetDto {
   @IsString()
   @IsNotEmpty()
-  owner!: string;
-
-  @IsString()
-  @IsNotEmpty()
-  repository!: string;
+  repositoryId!: string;
 
   @IsString()
   @IsNotEmpty()

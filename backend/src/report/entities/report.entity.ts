@@ -88,8 +88,7 @@ export class ReportSummaryEntity {
 }
 
 export class ReportTargetEntity {
-  owner!: string;
-  repository!: string;
+  repositoryId!: string;
   branch!: string;
 }
 

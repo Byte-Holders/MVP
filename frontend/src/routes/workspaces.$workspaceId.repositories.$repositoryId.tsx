@@ -13,11 +13,12 @@ export const Route = createFileRoute(
 )({
   validateSearch: searchSchema,
   component: function ReportRoute() {
-    const { repositoryId } = Route.useParams()
+    const { workspaceId, repositoryId } = Route.useParams()
     const { ownerName, name } = Route.useSearch()
     return (
       <ProtectedRoute>
         <ReportPage
+          workspaceId={workspaceId}
           repositoryId={repositoryId}
           ownerName={ownerName}
           name={name}

@@ -51,7 +51,6 @@ export class RepositoryRepository
     let repository = await this.repositoryModel.findOne({ ownerName, name });
     if (!repository) {
       repository = await this.repositoryModel.create({
-        repoId: `${ownerName}/${name}`,
         ownerName,
         name,
         accessToken,
@@ -76,12 +75,11 @@ export class RepositoryRepository
   }
 
   async updateScores(
-    ownerName: string,
-    name: string,
+    repositoryId: string,
     scores: RepositoryScores,
   ): Promise<void> {
     const result = await this.repositoryModel.updateOne(
-      { ownerName, name },
+      { _id: repositoryId },
       { $set: scores },
     );
     if (result.matchedCount === 0) {

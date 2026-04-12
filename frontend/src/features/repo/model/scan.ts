@@ -18,7 +18,7 @@ export async function requestScan(
   }
 
   const response = await axios.post(
-    'http://localhost:3001/scan',
+    '/api/scan',
     payload,
     config,
   )

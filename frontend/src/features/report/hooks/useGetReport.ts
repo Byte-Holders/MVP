@@ -2,13 +2,12 @@ import { useQuery } from '@tanstack/react-query'
 import { getReportData } from '../model/getReportData'
 
 export function useGetReport(
-  owner: string,
-  repository: string,
+  repositoryId: string,
   branch: string | undefined,
 ) {
   return useQuery({
-    queryKey: ['report', owner, repository, branch],
-    queryFn: () => getReportData(owner, repository, branch!),
+    queryKey: ['report', repositoryId, branch],
+    queryFn: () => getReportData(repositoryId, branch!),
     enabled: !!branch,
   })
 }
