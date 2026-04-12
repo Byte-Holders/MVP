@@ -18,6 +18,10 @@ import {
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { randomUUID } from 'crypto';
+import {
+  RepositoryReaderToken,
+  type IRepositoryReader,
+} from '../../repository/interfaces/repository.reader.interface';
 
 @Injectable()
 export class ScanManagerService implements IScanManagerService {
@@ -26,6 +30,8 @@ export class ScanManagerService implements IScanManagerService {
   constructor(
     @Inject(ISCAN_REPOSITORY_TOKEN)
     private readonly scanRepository: IScanRepository,
+    @Inject(RepositoryReaderToken)
+    private readonly repositoryReader: IRepositoryReader,
     private readonly configService: ConfigService,
     private readonly jwtService: JwtService,
   ) {}
@@ -35,7 +41,25 @@ export class ScanManagerService implements IScanManagerService {
       `Lancio scansione verso workspace ${info.workspaceId}, repository ${info.repositoryId}, branch ${info.branch} `,
     );
 
-    const receiver_token = await this.jwtService.signAsync(info);
+    const [repository] = await this.repositoryReader.getRepositories([
+      info.repositoryId,
+    ]);
+
+    const callbackToken = await this.jwtService.signAsync({
+      TARGET_OWNER: repository.ownerName,
+      TARGET_REPOSITORY: repository.name,
+      TARGET_BRANCH: info.branch,
+      RECEIVER_URL: this.configService.get<string>('SCAN_RECEIVER_URL')!,
+      AWS_ACCESS_KEY_ID: this.configService.get<string>('AWS_ACCESS_KEY_ID')!,
+      AWS_SECRET_ACCESS_KEY: this.configService.get<string>(
+        'AWS_SECRET_ACCESS_KEY',
+      )!,
+      AWS_SESSION_TOKEN: this.configService.get<string>('AWS_SESSION_TOKEN')!,
+      AWS_BEARER_TOKEN_BEDROCK: this.configService.get<string>(
+        'AWS_BEARER_TOKEN_BEDROCK',
+      )!,
+    });
+
     const client = new ECSClient({
       region: this.configService.get<string>('CONTAINER_REGION')!,
     });
@@ -65,11 +89,7 @@ export class ScanManagerService implements IScanManagerService {
           {
             name: 'poc-mock',
             environment: [
-              { name: 'TARGET_OWNER', value: 'TODO_TARGET_OWNER' },
-              { name: 'TARGET_REPOSITORY', value: 'TODO_TARGET_REPOSITORY' },
-              { name: 'TARGET_BRANCH', value: info.branch },
-              { name: 'RECEIVER_URL', value: 'TODO_RECEIVER_URL' },
-              { name: 'RECEIVER_TOKEN', value: receiver_token },
+              { name: 'REPORT_CALLBACK_TOKEN', value: callbackToken },
             ],
           },
         ],
@@ -89,7 +109,7 @@ export class ScanManagerService implements IScanManagerService {
         repositoryId: info.repositoryId,
         branchName: info.branch,
       },
-      callbackToken: receiver_token,
+      callbackToken,
       startTime: new Date(),
       status: ScanStatus.Started,
       containerRef: handle,

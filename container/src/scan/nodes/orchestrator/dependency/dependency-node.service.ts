@@ -65,10 +65,15 @@ export class DependencyNodeService implements INodeScanService {
         };
 
         const grypeRaw = (await executeCli(grypeCommand)).toString().trim();
-        // TODO bisogna mettere una qualche spiegazione della vulnerabilità e aggiungere eventuali versioni per fix
+
         const grypeReport = JSON.parse(grypeRaw) as {
           matches: {
-            vulnerability: { id: string; severity: string };
+            vulnerability: {
+              id: string;
+              severity: string;
+              description: string;
+              fix: { versions: string[]; state: string };
+            };
             artifact: { name: string; version: string };
           }[];
         };
@@ -80,8 +85,13 @@ export class DependencyNodeService implements INodeScanService {
         report.vulnerabilities = grypeReport.matches.map((m) => ({
           id: m.vulnerability.id,
           severity: m.vulnerability.severity,
+          description: m.vulnerability.description,
           packageName: m.artifact.name,
           packageVersion: m.artifact.version,
+          fixVersion:
+            m.vulnerability.fix.state === 'fixed'
+              ? m.vulnerability.fix.versions[0]
+              : undefined,
         }));
       } catch (grypeError: unknown) {
         this.logger.error(

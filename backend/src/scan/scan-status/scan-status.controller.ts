@@ -32,7 +32,7 @@ export class ScanStatusController {
     return await this.scanStatusService.getScanStatus(dto.scanId);
   }
 
-  // TODO guardia container
+  // TODO guardia che permette solo al container di interagire
   // UpdateScanStatusFromContainerDto ~ UpdateScanStatusDto
   @Put('/')
   @UsePipes(new ValidationPipe())
