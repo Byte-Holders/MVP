@@ -1,9 +1,5 @@
-import { createFileRoute } from '@tanstack/react-router'
-import { RepositoriesPage } from '@/features/workspaceRepository/pages/RepositoriesPage'
+import { createFileRoute, Outlet } from '@tanstack/react-router'
 
 export const Route = createFileRoute('/workspaces/$workspaceId/repositories')({
-  component: function RepositoriesRoute() {
-    const { workspaceId } = Route.useParams()
-    return <RepositoriesPage workspaceId={workspaceId} />
-  },
+  component: () => <Outlet />,
 })

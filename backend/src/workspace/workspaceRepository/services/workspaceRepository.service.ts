@@ -1,4 +1,4 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import type { IWorkspaceRepositoryService } from '../interfaces/workspaceRepository.service.interface';
 import type { IWorkspaceRepositoryRepository } from '../interfaces/workspaceRepository.repository.interface';
 import { WorkspaceRepositoryToken } from '../interfaces/workspaceRepository.repository.interface';
@@ -57,10 +57,17 @@ export class WorkspaceRepositoryService implements IWorkspaceRepositoryService {
   }
 
   async updateToken(
-    _repositoryId: string,
-    _workspaceId: string,
-    _accessToken: string,
+    repositoryId: string,
+    workspaceId: string,
+    accessToken: string,
   ): Promise<void> {
-    // TODO: implementare logica di aggiornamento token
+    const ids =
+      await this.workspaceRepositoryRepository.getRepositories(workspaceId);
+    if (!ids.includes(repositoryId)) {
+      throw new NotFoundException(
+        'Repository non trovata nel workspace',
+      );
+    }
+    await this.repositoryWriter.updateToken(repositoryId, accessToken);
   }
 }
