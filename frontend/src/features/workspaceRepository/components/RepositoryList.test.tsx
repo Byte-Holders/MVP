@@ -12,13 +12,11 @@ vi.mock('../model/getRepositoriesData', () => ({
 }))
 
 const renderWithClient = (ui: React.ReactElement) => {
-  const queryClient = new QueryClient({ 
-    defaultOptions: { queries: { retry: false } } 
+  const queryClient = new QueryClient({
+    defaultOptions: { queries: { retry: false } },
   })
   return render(
-    <QueryClientProvider client={queryClient}>
-      {ui}
-    </QueryClientProvider>
+    <QueryClientProvider client={queryClient}>{ui}</QueryClientProvider>,
   )
 }
 
@@ -29,10 +27,10 @@ describe('RepositoryList Component', () => {
     vi.clearAllMocks()
   })
 
-  it('dovrebbe mostrare il messaggio di caricamento all\'inizio', () => {
+  it("dovrebbe mostrare il messaggio di caricamento all'inizio", () => {
     // Facciamo in modo che la promessa resti "pendente"
     vi.mocked(getRepositoriesData).mockReturnValue(new Promise(() => {}))
-    
+
     renderWithClient(<RepositoryList workspaceId={workspaceId} />)
     expect(screen.getByText(/caricamento/i)).toBeInTheDocument()
   })
@@ -43,29 +41,31 @@ describe('RepositoryList Component', () => {
     renderWithClient(<RepositoryList workspaceId={workspaceId} />)
 
     await waitFor(() => {
-      expect(screen.getByText(/nessun repository aggiunto/i)).toBeInTheDocument()
+      expect(
+        screen.getByText(/nessun repository aggiunto/i),
+      ).toBeInTheDocument()
     })
   })
 
   it('dovrebbe renderizzare la lista di repository quando i dati arrivano', async () => {
     const mockRepos = [
-      { 
-        repositoryId: 'repo-1', 
-        name: 'app-frontend', 
+      {
+        repositoryId: 'repo-1',
+        name: 'app-frontend',
         ownerName: 'giacomo',
         dateScan: '2024-01-01',
         documentationScore: 80,
         codeCoverage: 70,
-        cvss: 0
+        cvss: 0,
       },
-      { 
-        repositoryId: 'repo-2', 
-        name: 'api-backend', 
+      {
+        repositoryId: 'repo-2',
+        name: 'api-backend',
         ownerName: 'giacomo',
         dateScan: '2024-01-02',
         documentationScore: 90,
         codeCoverage: 85,
-        cvss: 2
+        cvss: 2,
       },
     ]
     vi.mocked(getRepositoriesData).mockResolvedValue(mockRepos)
@@ -79,7 +79,7 @@ describe('RepositoryList Component', () => {
     })
   })
 
-  it('dovrebbe chiamare l\'API con il termine di ricerca corretto quando l\'utente digita', async () => {
+  it("dovrebbe chiamare l'API con il termine di ricerca corretto quando l'utente digita", async () => {
     const user = userEvent.setup()
     vi.mocked(getRepositoriesData).mockResolvedValue([])
 
@@ -90,7 +90,10 @@ describe('RepositoryList Component', () => {
 
     // Verifichiamo che l'API sia stata richiamata con il parametro di ricerca
     await waitFor(() => {
-      expect(getRepositoriesData).toHaveBeenCalledWith(workspaceId, 'test-search')
+      expect(getRepositoriesData).toHaveBeenCalledWith(
+        workspaceId,
+        'test-search',
+      )
     })
   })
 })

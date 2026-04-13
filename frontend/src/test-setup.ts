@@ -10,7 +10,7 @@ expect.extend(matchers)
 beforeAll(() => server.listen({ onUnhandledRequest: 'warn' }))
 
 afterEach(() => {
-  cleanup() // 2. Pulisce il DOM tra un test e l'altro 
+  cleanup() // 2. Pulisce il DOM tra un test e l'altro
   server.resetHandlers()
 })
 

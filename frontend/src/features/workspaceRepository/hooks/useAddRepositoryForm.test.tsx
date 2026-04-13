@@ -10,9 +10,10 @@ vi.mock('../model/addRepositoryData', () => ({
 }))
 
 // 2. Creiamo un wrapper per React Query
-const createTestQueryClient = () => new QueryClient({
-  defaultOptions: { queries: { retry: false } },
-})
+const createTestQueryClient = () =>
+  new QueryClient({
+    defaultOptions: { queries: { retry: false } },
+  })
 
 const wrapper = ({ children }: { children: React.ReactNode }) => (
   <QueryClientProvider client={createTestQueryClient()}>
@@ -28,7 +29,9 @@ describe('useAddRepositoryForm Hook', () => {
   })
 
   it('dovrebbe inizializzare lo stato correttamente', () => {
-    const { result } = renderHook(() => useAddRepositoryForm(workspaceId), { wrapper })
+    const { result } = renderHook(() => useAddRepositoryForm(workspaceId), {
+      wrapper,
+    })
 
     expect(result.current.url).toBe('')
     expect(result.current.token).toBe('')
@@ -36,13 +39,15 @@ describe('useAddRepositoryForm Hook', () => {
   })
 
   it('dovrebbe svuotare il token quando si passa da privata a pubblica', () => {
-    const { result } = renderHook(() => useAddRepositoryForm(workspaceId), { wrapper })
+    const { result } = renderHook(() => useAddRepositoryForm(workspaceId), {
+      wrapper,
+    })
 
     act(() => {
       result.current.setPrivate()
       result.current.setToken('mio-token-segreto')
     })
-    
+
     expect(result.current.isPrivate).toBe(true)
     expect(result.current.token).toBe('mio-token-segreto')
 
@@ -55,7 +60,9 @@ describe('useAddRepositoryForm Hook', () => {
   })
 
   it('non dovrebbe chiamare mutate se url è vuoto', () => {
-    const { result } = renderHook(() => useAddRepositoryForm(workspaceId), { wrapper })
+    const { result } = renderHook(() => useAddRepositoryForm(workspaceId), {
+      wrapper,
+    })
 
     act(() => {
       // Passiamo un finto evento form (e.preventDefault)

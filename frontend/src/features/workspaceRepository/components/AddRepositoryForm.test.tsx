@@ -12,11 +12,11 @@ vi.mock('../model/addRepositoryData', () => ({
 }))
 
 const renderWithClient = (ui: React.ReactElement) => {
-  const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } })
+  const queryClient = new QueryClient({
+    defaultOptions: { queries: { retry: false } },
+  })
   return render(
-    <QueryClientProvider client={queryClient}>
-      {ui}
-    </QueryClientProvider>
+    <QueryClientProvider client={queryClient}>{ui}</QueryClientProvider>,
   )
 }
 
@@ -32,7 +32,9 @@ describe('AddRepositoryForm Component', () => {
     renderWithClient(<AddRepositoryForm workspaceId={workspaceId} />)
 
     // All'inizio il token non c'è (è pubblica di default)
-    expect(screen.queryByPlaceholderText('GitHub token')).not.toBeInTheDocument()
+    expect(
+      screen.queryByPlaceholderText('GitHub token'),
+    ).not.toBeInTheDocument()
 
     // L'utente clicca su "Privata"
     const privateRadio = screen.getByLabelText('Privata')
