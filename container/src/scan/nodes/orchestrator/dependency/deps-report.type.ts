@@ -6,8 +6,10 @@ type DepsReportUnit = {
 type VulnerabilityUnit = {
   id: string;
   severity: string;
+  description: string;
   packageName: string;
   packageVersion: string;
+  fixVersion: string | undefined;
 };
 
 export type DepsReport = {

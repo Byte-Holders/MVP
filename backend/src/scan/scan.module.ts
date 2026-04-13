@@ -13,9 +13,11 @@ import { ScanManagerService } from './scan-manager/scan-manager.service';
 import { ScanManagerController } from './scan-manager/scan-manager.controller';
 import { ConfigService } from '@nestjs/config';
 import { JwtModule, JwtModuleOptions } from '@nestjs/jwt';
+import { RepositoryModule } from '../repository/repository.module';
 
 @Module({
   imports: [
+    RepositoryModule,
     MongooseModule.forFeature([
       { name: ScanSchemaClass.name, schema: ScanSchema },
     ]),

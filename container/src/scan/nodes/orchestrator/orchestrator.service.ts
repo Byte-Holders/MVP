@@ -38,12 +38,12 @@ export class OrchestratorService {
 
     const app = workflow.compile();
 
-    const finalReport = await app.invoke({ target });
+    const { finalReport } = await app.invoke({ target });
     if (!finalReport) {
       throw new Error('Il synthesizer non ha prodotto un report.');
     }
 
-    return finalReport.finalReport;
+    return finalReport;
   }
 
   private buildWorkflow() {
@@ -51,7 +51,7 @@ export class OrchestratorService {
       return [
         new Send('coverage', state.repoPath),
         new Send('dependencies', state.repoPath),
-        new Send('github', state.target),
+        new Send('github', state.repoPath),
         new Send('security', state.repoPath),
         new Send('docs', state.repoPath),
       ];
@@ -81,14 +81,15 @@ export class OrchestratorService {
     const workflow = new StateGraph(WorkflowAnnotation)
       .addNode('orchestrator', async (state: WorkflowState) => {
         const repoPath = await this.helper.cloneRepo(state.target);
+        console.debug(`ORCHESTRATORE ${repoPath}`);
         const startScanTime = new Date();
         return { repoPath, startScanTime };
       })
       .addNode('coverage', async (repoPath: string) => {
         return await this.coverageNode.scan({ repoPath });
       })
-      .addNode('github', async (target: Target) => {
-        return await this.githubNode.scan({ target });
+      .addNode('github', async (repoPath: string) => {
+        return await this.githubNode.scan({ repoPath });
       })
       .addNode('security', async (repoPath: string) => {
         return await this.securityNode.scan({ repoPath });

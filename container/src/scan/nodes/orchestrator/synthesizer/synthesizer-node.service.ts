@@ -53,16 +53,20 @@ Restituisci SOLO un JSON con questa struttura, senza markdown:
       };
     }
 
+    // `list` è là solamente per essere tirata fuori dal report finale quindi non è utilizzata
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { libraries, frameworks, list, ...depsReport } = state.depsReport ?? {
+      list: [],
+      libraries: [],
+      frameworks: [],
+      vulnerabilities: [],
+      vulnerabilityAnalysis: '',
+    };
+
     const report: Report = {
       summary: reportSummary,
       data: {
-        depsReport: state.depsReport ?? {
-          list: [],
-          libraries: [],
-          frameworks: [],
-          vulnerabilities: [],
-          vulnerabilityAnalysis: '',
-        },
+        depsReport,
         vulnerabilitiesReport: state.vulnerabilitiesReport ?? {
           vulnerabilities: [],
           mark: 10,
@@ -82,10 +86,10 @@ Restituisci SOLO un JSON con questa struttura, senza markdown:
           failedTests: [],
           testsRun: 0,
         },
-        languages: state.languages ?? [],
-        codeQualityReport: state.codeQualityReport ?? {
-          analysis: [],
-          mark: 0,
+        techReport: {
+          libraries,
+          frameworks,
+          languages: state.languages ?? [],
         },
       },
       metadata: {
