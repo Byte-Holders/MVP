@@ -10,8 +10,7 @@ function ScoreRing({ mark }: { mark: number }) {
   const radius = 36
   const circ = 2 * Math.PI * radius
   const dash = (pct / 100) * circ
-  const color =
-    mark >= 7 ? '#4fb8b2' : mark >= 5 ? '#f59e0b' : '#ef4444'
+  const color = mark >= 7 ? '#4fb8b2' : mark >= 5 ? '#f59e0b' : '#ef4444'
 
   return (
     <svg width={96} height={96} viewBox="0 0 96 96">

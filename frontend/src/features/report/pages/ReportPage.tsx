@@ -23,7 +23,9 @@ const NAV_ITEMS = [
 ]
 
 function scrollTo(id: string) {
-  document.getElementById(id)?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+  document
+    .getElementById(id)
+    ?.scrollIntoView({ behavior: 'smooth', block: 'start' })
 }
 
 export function ReportPage({
@@ -47,8 +49,12 @@ export function ReportPage({
       {/* Header */}
       <div className="sticky top-[72px] z-30 -mx-6 flex items-center justify-between border-b border-[var(--chip-line)] bg-[var(--h-bg)] px-6 py-3 backdrop-blur-md">
         <div>
-          <p className="text-xs text-[var(--sea-ink)] opacity-60">{ownerName}</p>
-          <h1 className="text-xl font-semibold text-[var(--sea-ink)]">{name}</h1>
+          <p className="text-xs text-[var(--sea-ink)] opacity-60">
+            {ownerName}
+          </p>
+          <h1 className="text-xl font-semibold text-[var(--sea-ink)]">
+            {name}
+          </h1>
         </div>
         <div className="flex items-center gap-3">
           <label
@@ -115,7 +121,10 @@ export function ReportPage({
             {report.summary && (
               <>
                 <div id="summary">
-                  <SummarySection summary={report.summary} metadata={report.metadata} />
+                  <SummarySection
+                    summary={report.summary}
+                    metadata={report.metadata}
+                  />
                 </div>
                 <hr className="border-[var(--chip-line)]" />
               </>

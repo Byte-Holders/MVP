@@ -17,17 +17,25 @@ type Props = {
   depsReport: ReportInfo['data']['depsReport']
 }
 
-
-const SEVERITY_CONFIG: Record<string, { color: string; bg: string; text: string }> = {
-  Critical:   { color: '#dc2626', bg: 'bg-red-100',    text: 'text-red-700' },
-  High:       { color: '#ea580c', bg: 'bg-orange-100', text: 'text-orange-700' },
-  Medium:     { color: '#d97706', bg: 'bg-yellow-100', text: 'text-yellow-700' },
-  Low:        { color: '#16a34a', bg: 'bg-green-100',  text: 'text-green-700' },
-  Negligible: { color: '#6b7280', bg: 'bg-gray-100',   text: 'text-gray-600' },
+const SEVERITY_CONFIG: Record<
+  string,
+  { color: string; bg: string; text: string }
+> = {
+  Critical: { color: '#dc2626', bg: 'bg-red-100', text: 'text-red-700' },
+  High: { color: '#ea580c', bg: 'bg-orange-100', text: 'text-orange-700' },
+  Medium: { color: '#d97706', bg: 'bg-yellow-100', text: 'text-yellow-700' },
+  Low: { color: '#16a34a', bg: 'bg-green-100', text: 'text-green-700' },
+  Negligible: { color: '#6b7280', bg: 'bg-gray-100', text: 'text-gray-600' },
 }
 
 function severityConfig(s: string) {
-  return SEVERITY_CONFIG[s] ?? { color: '#6b7280', bg: 'bg-gray-100', text: 'text-gray-600' }
+  return (
+    SEVERITY_CONFIG[s] ?? {
+      color: '#6b7280',
+      bg: 'bg-gray-100',
+      text: 'text-gray-600',
+    }
+  )
 }
 
 function codeSeverityLabel(score: number) {
@@ -41,14 +49,13 @@ export function SecuritySection({ vulnerabilitiesReport, depsReport }: Props) {
   const [expandedVuln, setExpandedVuln] = useState<string | null>(null)
 
   // ── Dipendenze: raggruppa per severity ────────────────────────────────────
-  const depsBySeverity = depsReport.vulnerabilities.reduce<Record<string, number>>(
-    (acc, v) => {
-      const s = v.severity ?? 'Unknown'
-      acc[s] = (acc[s] ?? 0) + 1
-      return acc
-    },
-    {},
-  )
+  const depsBySeverity = depsReport.vulnerabilities.reduce<
+    Record<string, number>
+  >((acc, v) => {
+    const s = v.severity ?? 'Unknown'
+    acc[s] = (acc[s] ?? 0) + 1
+    return acc
+  }, {})
 
   const depsPieData = Object.entries(depsBySeverity)
     .map(([name, value]) => ({ name, value, fill: severityConfig(name).color }))
@@ -58,14 +65,13 @@ export function SecuritySection({ vulnerabilitiesReport, depsReport }: Props) {
     })
 
   // ── Vulnerabilità codice: raggruppa per severity ──────────────────────────
-  const codeVulnsBySeverity = vulnerabilitiesReport.vulnerabilities.reduce<Record<string, number>>(
-    (acc, v) => {
-      const label = codeSeverityLabel(v.severity)
-      acc[label] = (acc[label] ?? 0) + 1
-      return acc
-    },
-    {},
-  )
+  const codeVulnsBySeverity = vulnerabilitiesReport.vulnerabilities.reduce<
+    Record<string, number>
+  >((acc, v) => {
+    const label = codeSeverityLabel(v.severity)
+    acc[label] = (acc[label] ?? 0) + 1
+    return acc
+  }, {})
 
   const codePieData = Object.entries(codeVulnsBySeverity)
     .map(([name, value]) => ({ name, value, fill: severityConfig(name).color }))
@@ -89,7 +95,10 @@ export function SecuritySection({ vulnerabilitiesReport, depsReport }: Props) {
       <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
         {(
           [
-            ['Vulnerabilità codice', vulnerabilitiesReport.vulnerabilities.length],
+            [
+              'Vulnerabilità codice',
+              vulnerabilitiesReport.vulnerabilities.length,
+            ],
             ['Dipendenze vulnerabili', depsReport.vulnerabilities.length],
             ['Critiche (codice)', codeVulnsBySeverity['Critical'] ?? 0],
             ['Critiche (dipendenze)', depsBySeverity['Critical'] ?? 0],
@@ -99,8 +108,12 @@ export function SecuritySection({ vulnerabilitiesReport, depsReport }: Props) {
             key={label}
             className="flex flex-col gap-0.5 rounded-xl border border-[var(--chip-line)] p-3"
           >
-            <span className="text-xl font-bold text-[var(--sea-ink)]">{count}</span>
-            <span className="text-[10px] leading-tight opacity-50">{label}</span>
+            <span className="text-xl font-bold text-[var(--sea-ink)]">
+              {count}
+            </span>
+            <span className="text-[10px] leading-tight opacity-50">
+              {label}
+            </span>
           </div>
         ))}
       </div>
@@ -114,7 +127,11 @@ export function SecuritySection({ vulnerabilitiesReport, depsReport }: Props) {
               Vulnerabilità codice per severità
             </p>
             <ResponsiveContainer width="100%" height={160}>
-              <BarChart data={codePieData} barCategoryGap="10%" margin={{ top: 14, right: 4, bottom: 0, left: 0 }}>
+              <BarChart
+                data={codePieData}
+                barCategoryGap="10%"
+                margin={{ top: 14, right: 4, bottom: 0, left: 0 }}
+              >
                 <CartesianGrid vertical={false} stroke="var(--chip-line)" />
                 <XAxis
                   dataKey="name"
@@ -125,13 +142,26 @@ export function SecuritySection({ vulnerabilitiesReport, depsReport }: Props) {
                 <YAxis hide allowDecimals={false} />
                 <Tooltip
                   cursor={{ fill: 'var(--chip-line)', opacity: 0.4 }}
-                  contentStyle={{ fontSize: 11, borderRadius: 8, border: '1px solid var(--chip-line)', background: 'var(--chip-bg)' }}
+                  contentStyle={{
+                    fontSize: 11,
+                    borderRadius: 8,
+                    border: '1px solid var(--chip-line)',
+                    background: 'var(--chip-bg)',
+                  }}
                 />
                 <Bar dataKey="value" radius={[4, 4, 0, 0]} maxBarSize={48}>
                   {codePieData.map((d) => (
                     <Cell key={d.name} fill={d.fill} />
                   ))}
-                  <LabelList dataKey="value" position="top" style={{ fontSize: 11, fontWeight: 600, fill: 'var(--sea-ink)' }} />
+                  <LabelList
+                    dataKey="value"
+                    position="top"
+                    style={{
+                      fontSize: 11,
+                      fontWeight: 600,
+                      fill: 'var(--sea-ink)',
+                    }}
+                  />
                 </Bar>
               </BarChart>
             </ResponsiveContainer>
@@ -145,7 +175,11 @@ export function SecuritySection({ vulnerabilitiesReport, depsReport }: Props) {
               Dipendenze vulnerabili per severità
             </p>
             <ResponsiveContainer width="100%" height={160}>
-              <BarChart data={depsPieData} barCategoryGap="10%" margin={{ top: 14, right: 4, bottom: 0, left: 0 }}>
+              <BarChart
+                data={depsPieData}
+                barCategoryGap="10%"
+                margin={{ top: 14, right: 4, bottom: 0, left: 0 }}
+              >
                 <CartesianGrid vertical={false} stroke="var(--chip-line)" />
                 <XAxis
                   dataKey="name"
@@ -156,13 +190,26 @@ export function SecuritySection({ vulnerabilitiesReport, depsReport }: Props) {
                 <YAxis hide allowDecimals={false} />
                 <Tooltip
                   cursor={{ fill: 'var(--chip-line)', opacity: 0.4 }}
-                  contentStyle={{ fontSize: 11, borderRadius: 8, border: '1px solid var(--chip-line)', background: 'var(--chip-bg)' }}
+                  contentStyle={{
+                    fontSize: 11,
+                    borderRadius: 8,
+                    border: '1px solid var(--chip-line)',
+                    background: 'var(--chip-bg)',
+                  }}
                 />
                 <Bar dataKey="value" radius={[4, 4, 0, 0]} maxBarSize={48}>
                   {depsPieData.map((d) => (
                     <Cell key={d.name} fill={d.fill} />
                   ))}
-                  <LabelList dataKey="value" position="top" style={{ fontSize: 11, fontWeight: 600, fill: 'var(--sea-ink)' }} />
+                  <LabelList
+                    dataKey="value"
+                    position="top"
+                    style={{
+                      fontSize: 11,
+                      fontWeight: 600,
+                      fill: 'var(--sea-ink)',
+                    }}
+                  />
                 </Bar>
               </BarChart>
             </ResponsiveContainer>
@@ -174,7 +221,8 @@ export function SecuritySection({ vulnerabilitiesReport, depsReport }: Props) {
       {vulnerabilitiesReport.vulnerabilities.length > 0 && (
         <div>
           <p className="mb-2 text-xs font-medium text-[var(--sea-ink)] opacity-60">
-            Vulnerabilità nel codice ({vulnerabilitiesReport.vulnerabilities.length})
+            Vulnerabilità nel codice (
+            {vulnerabilitiesReport.vulnerabilities.length})
           </p>
           <div className="flex flex-col gap-2">
             {vulnerabilitiesReport.vulnerabilities.map((v) => {
@@ -188,33 +236,48 @@ export function SecuritySection({ vulnerabilitiesReport, depsReport }: Props) {
                   className="rounded-lg border border-[var(--chip-line)] text-xs"
                 >
                   <button
-                    onClick={() => setExpandedVuln(isOpen ? null : v.id + v.path)}
+                    onClick={() =>
+                      setExpandedVuln(isOpen ? null : v.id + v.path)
+                    }
                     className="flex w-full items-center justify-between gap-2 p-3 text-left"
                   >
                     <div className="flex items-center gap-2 min-w-0">
-                      <span className={`flex-shrink-0 rounded-full px-2 py-0.5 text-[10px] font-semibold ${cfg.bg} ${cfg.text}`}>
+                      <span
+                        className={`flex-shrink-0 rounded-full px-2 py-0.5 text-[10px] font-semibold ${cfg.bg} ${cfg.text}`}
+                      >
                         {label}
                       </span>
                       <span className="font-medium text-[var(--sea-ink)] truncate">
                         {v.description || v.id}
                       </span>
                     </div>
-                    <span className="flex-shrink-0 opacity-40">{isOpen ? '▲' : '▼'}</span>
+                    <span className="flex-shrink-0 opacity-40">
+                      {isOpen ? '▲' : '▼'}
+                    </span>
                   </button>
 
                   {isOpen && (
                     <div className="border-t border-[var(--chip-line)] p-3 flex flex-col gap-2">
-                      <p className="font-mono text-[10px] text-[var(--sea-ink)] opacity-50">{v.path}</p>
+                      <p className="font-mono text-[10px] text-[var(--sea-ink)] opacity-50">
+                        {v.path}
+                      </p>
                       {v.remediation && (
                         <div>
-                          <span className="font-medium text-[var(--sea-ink)] opacity-60">Rimedio: </span>
-                          <span className="text-[var(--sea-ink)] opacity-80">{v.remediation}</span>
+                          <span className="font-medium text-[var(--sea-ink)] opacity-60">
+                            Rimedio:{' '}
+                          </span>
+                          <span className="text-[var(--sea-ink)] opacity-80">
+                            {v.remediation}
+                          </span>
                         </div>
                       )}
                       {v.cwe.length > 0 && (
                         <div className="flex flex-wrap gap-1">
                           {v.cwe.map((c) => (
-                            <span key={c} className="rounded bg-[var(--chip-line)] px-1.5 py-0.5 text-[10px] text-[var(--sea-ink)] opacity-70">
+                            <span
+                              key={c}
+                              className="rounded bg-[var(--chip-line)] px-1.5 py-0.5 text-[10px] text-[var(--sea-ink)] opacity-70"
+                            >
                               {c}
                             </span>
                           ))}
@@ -223,7 +286,10 @@ export function SecuritySection({ vulnerabilitiesReport, depsReport }: Props) {
                       {v.owasp.length > 0 && (
                         <div className="flex flex-wrap gap-1">
                           {v.owasp.map((o) => (
-                            <span key={o} className="rounded bg-[var(--lagoon)]/10 px-1.5 py-0.5 text-[10px] text-[var(--lagoon-deep)]">
+                            <span
+                              key={o}
+                              className="rounded bg-[var(--lagoon)]/10 px-1.5 py-0.5 text-[10px] text-[var(--lagoon-deep)]"
+                            >
                               {o}
                             </span>
                           ))}
@@ -248,12 +314,19 @@ export function SecuritySection({ vulnerabilitiesReport, depsReport }: Props) {
             {depsReport.vulnerabilities.map((v) => {
               const cfg = severityConfig(v.severity)
               return (
-                <div key={v.id + v.packageVersion} className="flex items-center justify-between gap-3 px-3 py-2 text-xs">
+                <div
+                  key={v.id + v.packageVersion}
+                  className="flex items-center justify-between gap-3 px-3 py-2 text-xs"
+                >
                   <div className="flex items-center gap-2 min-w-0">
-                    <span className={`flex-shrink-0 rounded-full px-2 py-0.5 text-[10px] font-semibold ${cfg.bg} ${cfg.text}`}>
+                    <span
+                      className={`flex-shrink-0 rounded-full px-2 py-0.5 text-[10px] font-semibold ${cfg.bg} ${cfg.text}`}
+                    >
                       {v.severity}
                     </span>
-                    <span className="font-medium text-[var(--sea-ink)] truncate">{v.packageName}</span>
+                    <span className="font-medium text-[var(--sea-ink)] truncate">
+                      {v.packageName}
+                    </span>
                     <span className="opacity-40">{v.packageVersion}</span>
                   </div>
                   {v.fixVersion && (

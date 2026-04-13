@@ -16,7 +16,6 @@ const PIE_COLORS = [
   '#b8efe5',
 ]
 
-
 export function TechSection({ techReport, allDeps }: Props) {
   const langData = techReport.languages
     .filter((l) => l.value >= 1)
@@ -25,7 +24,6 @@ export function TechSection({ techReport, allDeps }: Props) {
       value: parseFloat(l.value.toFixed(1)),
       fill: PIE_COLORS[i % PIE_COLORS.length],
     }))
-
 
   return (
     <section className="flex flex-col gap-5 rounded-2xl border border-[var(--chip-line)] bg-[var(--chip-bg)] p-5">
@@ -93,8 +91,7 @@ export function TechSection({ techReport, allDeps }: Props) {
                   key={f.name}
                   className="rounded-full border border-[var(--chip-line)] bg-[var(--lagoon)]/10 px-3 py-0.5 text-xs font-medium text-[var(--lagoon-deep)]"
                 >
-                  {f.name}{' '}
-                  <span className="opacity-60">{f.version}</span>
+                  {f.name} <span className="opacity-60">{f.version}</span>
                 </span>
               ))}
             </div>
@@ -121,7 +118,9 @@ export function TechSection({ techReport, allDeps }: Props) {
                     <td className="py-1 font-medium text-[var(--sea-ink)]">
                       {lib.name}
                     </td>
-                    <td className="py-1 text-right opacity-50">{lib.version}</td>
+                    <td className="py-1 text-right opacity-50">
+                      {lib.version}
+                    </td>
                   </tr>
                 ))}
               </tbody>

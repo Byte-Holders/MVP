@@ -121,9 +121,7 @@ export function TestSection({ testReport }: Props) {
       {/* Test falliti */}
       {failedTests.length > 0 && (
         <div>
-          <p className="mb-2 text-xs font-medium text-red-500">
-            Test falliti
-          </p>
+          <p className="mb-2 text-xs font-medium text-red-500">Test falliti</p>
           <div className="flex flex-col gap-2">
             {failedTests.map((t) => (
               <div

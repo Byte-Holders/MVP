@@ -51,9 +51,7 @@ export function ScanButton({
       )}
 
       {error && <p className="text-xs text-red-500">{error.message}</p>}
-      {stopError && (
-        <p className="text-xs text-red-500">{stopError.message}</p>
-      )}
+      {stopError && <p className="text-xs text-red-500">{stopError.message}</p>}
     </div>
   )
 }

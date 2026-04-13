@@ -45,7 +45,9 @@ export function DocsSection({ docsReport }: Props) {
           README
         </p>
         <div className="prose prose-sm max-w-none text-xs text-[var(--sea-ink)] opacity-80 [&_h1]:text-sm [&_h2]:text-sm [&_h3]:text-xs [&_table]:w-full [&_table]:border-collapse [&_td]:border [&_td]:border-[var(--chip-line)] [&_td]:px-2 [&_td]:py-1 [&_th]:border [&_th]:border-[var(--chip-line)] [&_th]:px-2 [&_th]:py-1">
-          <ReactMarkdown remarkPlugins={[remarkGfm]}>{docsReport.readmeReport}</ReactMarkdown>
+          <ReactMarkdown remarkPlugins={[remarkGfm]}>
+            {docsReport.readmeReport}
+          </ReactMarkdown>
         </div>
       </div>
 
@@ -56,7 +58,9 @@ export function DocsSection({ docsReport }: Props) {
           Commenti nel codice
         </p>
         <div className="prose prose-sm max-w-none text-xs text-[var(--sea-ink)] opacity-80">
-          <ReactMarkdown remarkPlugins={[remarkGfm]}>{docsReport.commentReport}</ReactMarkdown>
+          <ReactMarkdown remarkPlugins={[remarkGfm]}>
+            {docsReport.commentReport}
+          </ReactMarkdown>
         </div>
       </div>
     </section>
