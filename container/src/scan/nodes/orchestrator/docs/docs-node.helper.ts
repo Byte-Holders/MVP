@@ -265,21 +265,17 @@ const TEXT_EXTENSIONS = new Set([
   '.html',
   '.css',
   '.scss',
-  '.less',
-  '.json',
   '.yaml',
   '.yml',
   '.toml',
   '.xml',
   '.env',
   '.md',
-  '.txt',
   '.sh',
   '.bash',
   '.dockerfile',
   '.sql',
   '.graphql',
-  '.proto',
 ]);
 
 const IGNORED_DIRS = new Set([
