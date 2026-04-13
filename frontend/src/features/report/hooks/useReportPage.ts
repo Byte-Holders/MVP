@@ -3,17 +3,25 @@ import { useGetBranches } from './useGetBranches'
 import { useGetReport } from './useGetReport'
 
 export function useReportPage(repositoryId: string) {
-  const [selectedBranch, setSelectedBranch] = useState<string>('develop')
+  const [selectedBranch, setSelectedBranch] = useState<string | undefined>(
+    undefined,
+  )
+  const [userSelected, setUserSelected] = useState(false)
 
   const { data: branches = [], isLoading: branchesLoading } =
     useGetBranches(repositoryId)
 
   useEffect(() => {
-    if (branches && branches.length > 0) {
+    if (!userSelected && branches.length > 0) {
       const develop = branches.find((b) => b === 'develop')
       setSelectedBranch(develop ?? branches[0])
     }
-  }, [branches])
+  }, [branches, userSelected])
+
+  function handleBranchChange(branch: string) {
+    setUserSelected(true)
+    setSelectedBranch(branch)
+  }
 
   const {
     data: report,
@@ -25,7 +33,7 @@ export function useReportPage(repositoryId: string) {
     branches,
     branchesLoading,
     selectedBranch,
-    setSelectedBranch,
+    setSelectedBranch: handleBranchChange,
     report,
     reportLoading,
     reportError,

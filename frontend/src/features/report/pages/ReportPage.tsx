@@ -1,5 +1,6 @@
 import { useReportPage } from '../hooks/useReportPage'
 import { BranchSelector } from '../components/BranchSelector'
+import { SummarySection } from '../components/SummarySection'
 import { TechSection } from '../components/TechSection'
 import { TestSection } from '../components/TestSection'
 import { SecuritySection } from '../components/SecuritySection'
@@ -51,13 +52,13 @@ export function ReportPage({
           <BranchSelector
             branches={branches}
             isLoading={branchesLoading}
-            selectedBranch={selectedBranch}
+            selectedBranch={selectedBranch ?? ''}
             onChange={setSelectedBranch}
           />
           <ScanButton
             workspaceId={workspaceId}
             repositoryId={repositoryId}
-            branch={selectedBranch}
+            branch={selectedBranch ?? ''}
           />
         </div>
       </div>
@@ -80,8 +81,14 @@ export function ReportPage({
       )}
 
       {report && (
-        <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-          <TechSection techReport={report.data.techReport} />
+        <div className="flex flex-col gap-4">
+          {report.summary && (
+            <SummarySection summary={report.summary} metadata={report.metadata} />
+          )}
+          <TechSection
+            techReport={report.data.techReport}
+            allDeps={report.data.depsReport.list}
+          />
           <TestSection testReport={report.data.testReport} />
           <SecuritySection
             vulnerabilitiesReport={report.data.vulnerabilitiesReport}

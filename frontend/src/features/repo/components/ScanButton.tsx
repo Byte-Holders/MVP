@@ -1,4 +1,4 @@
-import { useScan } from '../hooks/useScan'
+import { useScan, useStopScan } from '../hooks/useScan'
 
 interface ScanButtonProps {
   workspaceId: string
@@ -11,33 +11,49 @@ export function ScanButton({
   repositoryId,
   branch,
 }: ScanButtonProps) {
-  const { triggerScan, isPending, isSuccess, error, reset } = useScan({
+  const { triggerScan, scanId, isPending, isSuccess, error, reset } = useScan({
     workspaceId,
     repositoryId,
     branch,
   })
+  const { triggerStop, isStopping, stopError, resetStop } = useStopScan()
 
-  const disabled = isPending || !branch
+  const scanRunning = isSuccess && !!scanId
 
   return (
     <div className="flex flex-col items-end gap-1">
-      <button
-        onClick={() => {
-          reset()
-          triggerScan()
-        }}
-        disabled={disabled}
-        className="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-indigo-500 disabled:opacity-50"
-      >
-        {isPending ? 'Avvio...' : 'Lancia scansione'}
-      </button>
-
-      {isSuccess && (
-        <p className="text-xs text-green-600">
-          Scansione avviata con successo.
-        </p>
+      {!scanRunning ? (
+        <button
+          onClick={() => {
+            reset()
+            triggerScan()
+          }}
+          disabled={isPending || !branch}
+          className="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-indigo-500 disabled:opacity-50"
+        >
+          {isPending ? 'Avvio...' : 'Lancia scansione'}
+        </button>
+      ) : (
+        <button
+          onClick={() => {
+            triggerStop(scanId, {
+              onSuccess: () => {
+                resetStop()
+                reset()
+              },
+            })
+          }}
+          disabled={isStopping}
+          className="rounded-lg bg-red-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-red-500 disabled:opacity-50"
+        >
+          {isStopping ? 'Arresto...' : 'Ferma scansione'}
+        </button>
       )}
+
       {error && <p className="text-xs text-red-500">{error.message}</p>}
+      {stopError && (
+        <p className="text-xs text-red-500">{stopError.message}</p>
+      )}
     </div>
   )
 }
