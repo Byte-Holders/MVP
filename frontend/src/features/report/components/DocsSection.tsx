@@ -1,3 +1,5 @@
+import ReactMarkdown from 'react-markdown'
+import remarkGfm from 'remark-gfm'
 import type { ReportInfo } from '../types/report'
 
 type Props = {
@@ -43,17 +45,17 @@ export function DocsSection({ docsReport }: Props) {
           <p className="mb-1 text-xs font-medium text-[var(--sea-ink)] opacity-60">
             README
           </p>
-          <p className="text-xs text-[var(--sea-ink)] opacity-80">
-            {docsReport.readmeReport}
-          </p>
+          <div className="prose prose-sm max-w-none text-xs text-[var(--sea-ink)] opacity-80 [&_h1]:text-sm [&_h2]:text-sm [&_h3]:text-xs [&_table]:w-full [&_table]:border-collapse [&_td]:border [&_td]:border-[var(--chip-line)] [&_td]:px-2 [&_td]:py-1 [&_th]:border [&_th]:border-[var(--chip-line)] [&_th]:px-2 [&_th]:py-1">
+            <ReactMarkdown remarkPlugins={[remarkGfm]}>{docsReport.readmeReport}</ReactMarkdown>
+          </div>
         </div>
         <div>
           <p className="mb-1 text-xs font-medium text-[var(--sea-ink)] opacity-60">
             Commenti nel codice
           </p>
-          <p className="text-xs text-[var(--sea-ink)] opacity-80">
-            {docsReport.commentReport}
-          </p>
+          <div className="prose prose-sm max-w-none text-xs text-[var(--sea-ink)] opacity-80">
+            <ReactMarkdown remarkPlugins={[remarkGfm]}>{docsReport.commentReport}</ReactMarkdown>
+          </div>
         </div>
       </div>
     </section>
