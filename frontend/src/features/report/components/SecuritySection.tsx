@@ -1,9 +1,14 @@
 import { useState } from 'react'
 import {
-  Pie,
-  PieChart,
+  Bar,
+  BarChart,
+  CartesianGrid,
+  Cell,
+  LabelList,
   ResponsiveContainer,
   Tooltip,
+  XAxis,
+  YAxis,
 } from 'recharts'
 import type { ReportInfo } from '../types/report'
 
@@ -100,40 +105,36 @@ export function SecuritySection({ vulnerabilitiesReport, depsReport }: Props) {
         ))}
       </div>
 
-      {/* ── Pie charts ─────────────────────────────────────────────────────── */}
-      <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+      {/* ── Bar charts ─────────────────────────────────────────────────────── */}
+      <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
         {/* Vulnerabilità codice */}
         {codePieData.length > 0 && (
           <div>
             <p className="mb-3 text-xs font-medium text-[var(--sea-ink)] opacity-60">
               Vulnerabilità codice per severità
             </p>
-            <div className="flex items-center gap-4">
-              <ResponsiveContainer width={110} height={110}>
-                <PieChart>
-                  <Pie
-                    data={codePieData}
-                    cx="50%" cy="50%"
-                    innerRadius={28} outerRadius={50}
-                    paddingAngle={2}
-                    dataKey="value"
-                  />
-                  <Tooltip contentStyle={{ fontSize: 11, borderRadius: 8, border: '1px solid var(--chip-line)', background: 'var(--chip-bg)' }} />
-                </PieChart>
-              </ResponsiveContainer>
-              <div className="flex flex-col gap-1.5">
-                {codePieData.map((d) => {
-                  const cfg = severityConfig(d.name)
-                  return (
-                    <div key={d.name} className="flex items-center gap-2 text-xs">
-                      <span className="h-2 w-2 flex-shrink-0 rounded-full" style={{ background: cfg.color }} />
-                      <span className="text-[var(--sea-ink)]">{d.name}</span>
-                      <span className="ml-auto font-semibold opacity-70">{d.value}</span>
-                    </div>
-                  )
-                })}
-              </div>
-            </div>
+            <ResponsiveContainer width="100%" height={160}>
+              <BarChart data={codePieData} barCategoryGap="10%" margin={{ top: 14, right: 4, bottom: 0, left: 0 }}>
+                <CartesianGrid vertical={false} stroke="var(--chip-line)" />
+                <XAxis
+                  dataKey="name"
+                  tick={{ fontSize: 10, fill: 'var(--sea-ink)' }}
+                  axisLine={false}
+                  tickLine={false}
+                />
+                <YAxis hide allowDecimals={false} />
+                <Tooltip
+                  cursor={{ fill: 'var(--chip-line)', opacity: 0.4 }}
+                  contentStyle={{ fontSize: 11, borderRadius: 8, border: '1px solid var(--chip-line)', background: 'var(--chip-bg)' }}
+                />
+                <Bar dataKey="value" radius={[4, 4, 0, 0]} maxBarSize={48}>
+                  {codePieData.map((d) => (
+                    <Cell key={d.name} fill={d.fill} />
+                  ))}
+                  <LabelList dataKey="value" position="top" style={{ fontSize: 11, fontWeight: 600, fill: 'var(--sea-ink)' }} />
+                </Bar>
+              </BarChart>
+            </ResponsiveContainer>
           </div>
         )}
 
@@ -143,32 +144,28 @@ export function SecuritySection({ vulnerabilitiesReport, depsReport }: Props) {
             <p className="mb-3 text-xs font-medium text-[var(--sea-ink)] opacity-60">
               Dipendenze vulnerabili per severità
             </p>
-            <div className="flex items-center gap-4">
-              <ResponsiveContainer width={110} height={110}>
-                <PieChart>
-                  <Pie
-                    data={depsPieData}
-                    cx="50%" cy="50%"
-                    innerRadius={28} outerRadius={50}
-                    paddingAngle={2}
-                    dataKey="value"
-                  />
-                  <Tooltip contentStyle={{ fontSize: 11, borderRadius: 8, border: '1px solid var(--chip-line)', background: 'var(--chip-bg)' }} />
-                </PieChart>
-              </ResponsiveContainer>
-              <div className="flex flex-col gap-1.5">
-                {depsPieData.map((d) => {
-                  const cfg = severityConfig(d.name)
-                  return (
-                    <div key={d.name} className="flex items-center gap-2 text-xs">
-                      <span className="h-2 w-2 flex-shrink-0 rounded-full" style={{ background: cfg.color }} />
-                      <span className="text-[var(--sea-ink)]">{d.name}</span>
-                      <span className="ml-auto font-semibold opacity-70">{d.value}</span>
-                    </div>
-                  )
-                })}
-              </div>
-            </div>
+            <ResponsiveContainer width="100%" height={160}>
+              <BarChart data={depsPieData} barCategoryGap="10%" margin={{ top: 14, right: 4, bottom: 0, left: 0 }}>
+                <CartesianGrid vertical={false} stroke="var(--chip-line)" />
+                <XAxis
+                  dataKey="name"
+                  tick={{ fontSize: 10, fill: 'var(--sea-ink)' }}
+                  axisLine={false}
+                  tickLine={false}
+                />
+                <YAxis hide allowDecimals={false} />
+                <Tooltip
+                  cursor={{ fill: 'var(--chip-line)', opacity: 0.4 }}
+                  contentStyle={{ fontSize: 11, borderRadius: 8, border: '1px solid var(--chip-line)', background: 'var(--chip-bg)' }}
+                />
+                <Bar dataKey="value" radius={[4, 4, 0, 0]} maxBarSize={48}>
+                  {depsPieData.map((d) => (
+                    <Cell key={d.name} fill={d.fill} />
+                  ))}
+                  <LabelList dataKey="value" position="top" style={{ fontSize: 11, fontWeight: 600, fill: 'var(--sea-ink)' }} />
+                </Bar>
+              </BarChart>
+            </ResponsiveContainer>
           </div>
         )}
       </div>
