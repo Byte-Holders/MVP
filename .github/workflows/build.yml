@@ -6,7 +6,7 @@ on:
     branches: [main, develop]
 
 jobs:
-  test-backend:
+  build-backend:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
@@ -25,7 +25,7 @@ jobs:
         working-directory: backend
         run: npm run build
 
-  test-container:
+  build-container:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
@@ -44,7 +44,7 @@ jobs:
         working-directory: container
         run: npm run build
 
-  test-frontend:
+  build-frontend:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
