@@ -14,6 +14,7 @@ import { ScanManagerController } from './scan-manager/scan-manager.controller';
 import { ConfigService } from '@nestjs/config';
 import { JwtModule, JwtModuleOptions } from '@nestjs/jwt';
 import { RepositoryModule } from '../repository/repository.module';
+import { ScanAuthGuard } from './scan-auth/scan-auth.guard';
 
 @Module({
   imports: [
@@ -48,6 +49,7 @@ import { RepositoryModule } from '../repository/repository.module';
       provide: ISCAN_MANAGER_SERVICE_TOKEN,
       useClass: ScanManagerService,
     },
+    ScanAuthGuard,
   ],
   controllers: [ScanStatusController, ScanManagerController],
 })

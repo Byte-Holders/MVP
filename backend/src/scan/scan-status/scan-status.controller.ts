@@ -6,6 +6,7 @@ import {
   InternalServerErrorException,
   Param,
   Put,
+  UseGuards,
   UsePipes,
   ValidationPipe,
 } from '@nestjs/common';
@@ -17,6 +18,7 @@ import { GetScanStatusDto } from './dtos/get-scan-status.dto';
 import { UpdateScanStatusFromContainerDto } from './dtos/update-scan-status-from-container.dto';
 import { UpdateScanStatusDto } from './dtos/update-scan-status.dto';
 import { ScanStatus } from './enums/scan-status.enum';
+import { ScanAuthGuard } from '../scan-auth/scan-auth.guard';
 
 @Controller('/scan/status')
 export class ScanStatusController {
@@ -35,6 +37,7 @@ export class ScanStatusController {
   // TODO guardia che permette solo al container di interagire
   // UpdateScanStatusFromContainerDto ~ UpdateScanStatusDto
   @Put('/')
+  @UseGuards(ScanAuthGuard)
   @UsePipes(new ValidationPipe())
   async update(
     @Body() updateStatusDto: UpdateScanStatusFromContainerDto,
