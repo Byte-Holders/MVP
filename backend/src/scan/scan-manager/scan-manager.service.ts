@@ -64,6 +64,7 @@ export class ScanManagerService implements IScanManagerService {
       AWS_BEARER_TOKEN_BEDROCK: this.configService.get<string>(
         'AWS_BEARER_TOKEN_BEDROCK',
       )!,
+      repositoryId: info.repositoryId,
     });
 
     const client = new ECSClient({
@@ -93,7 +94,7 @@ export class ScanManagerService implements IScanManagerService {
       overrides: {
         containerOverrides: [
           {
-            name: 'poc-mock',
+            name: 'scanner',
             environment: [
               { name: 'REPORT_CALLBACK_TOKEN', value: callbackToken },
             ],
