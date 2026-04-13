@@ -160,9 +160,9 @@ describe('ReportService', () => {
     it('throws NotFoundException when report is not found', async () => {
       mockRepository.findLatestByTarget.mockResolvedValue(null);
 
-      await expect(
-        service.getReport('owner', 'repo', 'main'),
-      ).rejects.toThrow(NotFoundException);
+      await expect(service.getReport('owner', 'repo', 'main')).rejects.toThrow(
+        NotFoundException,
+      );
     });
   });
 });

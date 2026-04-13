@@ -1,7 +1,7 @@
-import { WorkspaceRole } from "../../roles.enum";
+import { WorkspaceRole } from '../../roles.enum';
 
 export type UserOfWorkspaceInfo = {
-    userId: string;
-    username: string;
-    role: WorkspaceRole;
+  userId: string;
+  username: string;
+  role: WorkspaceRole;
 };

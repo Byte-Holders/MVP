@@ -1,4 +1,4 @@
-import { WorkspaceRole } from "../../workspace/roles.enum";
+import { WorkspaceRole } from '../../workspace/roles.enum';
 
 export enum ManageInviteAction {
   Accept = 'Accept',

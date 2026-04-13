@@ -58,6 +58,10 @@ import { GitHubRepositoryToken } from './interfaces/github.repository.interface'
       useClass: RepositoryScoreService,
     },
   ],
-  exports: [RepositoryReaderToken, RepositoryWriterToken, RepositoryScoreWriterToken],
+  exports: [
+    RepositoryReaderToken,
+    RepositoryWriterToken,
+    RepositoryScoreWriterToken,
+  ],
 })
 export class RepositoryModule {}

@@ -21,10 +21,9 @@ export class UserRepository implements IUserRepository {
         _id: user._id.toString(),
         sub: user.sub,
         username: user.username,
-        email: user.email
-      }
+        email: user.email,
+      };
     }
-
   }
 
   async findByUsername(username: string): Promise<UserEntity | null> {
@@ -39,8 +38,8 @@ export class UserRepository implements IUserRepository {
         _id: user._id.toString(),
         sub: user.sub,
         username: user.username,
-        email: user.email
-      }
+        email: user.email,
+      };
     }
   }
 
@@ -59,7 +58,7 @@ export class UserRepository implements IUserRepository {
       _id: savedUser._id.toString(),
       sub: savedUser.sub,
       username: savedUser.username,
-      email: savedUser.email
+      email: savedUser.email,
     };
   }
 }

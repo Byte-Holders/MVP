@@ -1,5 +1,13 @@
 // ...existing code...
-import { Controller, Post, Get, Body, Query, UseGuards, Inject } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  Get,
+  Body,
+  Query,
+  UseGuards,
+  Inject,
+} from '@nestjs/common';
 import { MembershipService } from './membership.service';
 import {
   InviteUserDto,
@@ -17,7 +25,8 @@ import { IMembershipServiceToken } from './interfaces/IMembershipService.interfa
 @Controller('membership')
 export class MembershipController {
   constructor(
-    @Inject(IMembershipServiceToken) private readonly membershipService: MembershipService,
+    @Inject(IMembershipServiceToken)
+    private readonly membershipService: MembershipService,
   ) {}
 
   @Post('invite')
@@ -35,20 +44,16 @@ export class MembershipController {
   }
 
   @Get('invites')
-  async getInvites(
-    @User() user: RequestUser,
-  ): Promise<GetInviteResponseDto[]> {
+  async getInvites(@User() user: RequestUser): Promise<GetInviteResponseDto[]> {
     return this.membershipService.getInvites(user.userId);
   }
 
   @Post('manage')
-  async manageInvite(
-    @Body() manageInviteDto: ManageInviteDto,
-  ): Promise<void> {
+  async manageInvite(@Body() manageInviteDto: ManageInviteDto): Promise<void> {
     const manageInviteInfo: ManageInviteInfo = {
       id: manageInviteDto.membershipId,
       action: manageInviteDto.action,
-    }
+    };
     return this.membershipService.manageInvite(manageInviteInfo);
   }
 }

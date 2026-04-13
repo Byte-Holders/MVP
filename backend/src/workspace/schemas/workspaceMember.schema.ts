@@ -16,4 +16,5 @@ export class WorkspaceMember {
   role!: WorkspaceRole;
 }
 
-export const WorkspaceMemberSchema = SchemaFactory.createForClass(WorkspaceMember);
+export const WorkspaceMemberSchema =
+  SchemaFactory.createForClass(WorkspaceMember);

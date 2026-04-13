@@ -1,5 +1,8 @@
 import { Inject, Injectable } from '@nestjs/common';
-import type { IRepositoryScoreWriter, RepositoryScores } from '../interfaces/repository.score-writer.interface';
+import type {
+  IRepositoryScoreWriter,
+  RepositoryScores,
+} from '../interfaces/repository.score-writer.interface';
 import type { IRepositoryScoreRepository } from '../interfaces/repository.score-repository.interface';
 import { RepositoryScoreRepositoryToken } from '../interfaces/repository.score-repository.interface';
 

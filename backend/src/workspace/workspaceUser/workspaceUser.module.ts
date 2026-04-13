@@ -19,7 +19,7 @@ import { IAddUserToWorkspaceToken } from './interfaces/IAddUserToWorkspace.inter
     {
       provide: IWorkspaceUserServiceToken,
       useClass: WorkspaceUserService,
-    }, 
+    },
     {
       provide: IWorkspaceUserRepositoryToken,
       useClass: WorkspaceUserRepository,
@@ -27,7 +27,7 @@ import { IAddUserToWorkspaceToken } from './interfaces/IAddUserToWorkspace.inter
     {
       provide: IAddUserToWorkspaceToken,
       useClass: WorkspaceUserService,
-    }
+    },
   ],
   exports: [IWorkspaceUserServiceToken, IAddUserToWorkspaceToken],
 })

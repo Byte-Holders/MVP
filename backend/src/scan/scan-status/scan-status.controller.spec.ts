@@ -82,11 +82,11 @@ describe('ScanStatusController', () => {
         InternalServerErrorException,
       );
     });
-    it('returns void on success', async () => { //Per controllare che effettivamente in caso di successo dell'update nulla venga ritornato
+    it('returns void on success', async () => {
+      //Per controllare che effettivamente in caso di successo dell'update nulla venga ritornato
       mockService.setScanStatus.mockResolvedValue(undefined);
       const result = await controller.update(makeUpdateDto());
       expect(result).toBeUndefined();
     });
-
   });
 });

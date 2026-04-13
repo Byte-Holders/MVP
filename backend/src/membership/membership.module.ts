@@ -25,7 +25,7 @@ import { IMembershipRepositoryToken } from './interfaces/IMembershipRepository.i
     {
       provide: IMembershipRepositoryToken,
       useClass: MembershipRepository,
-    }
+    },
   ],
   controllers: [MembershipController],
 })
