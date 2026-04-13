@@ -87,8 +87,8 @@ describe('WorkspaceRepositoryService', () => {
       const erroreScatenato = new Error('NotFoundException');
       mockWorkspaceRepository.getRepositories.mockRejectedValue(erroreScatenato);
 
-      // ACT & ASSERT: Il servizio deve rifiutare la promessa con lo stesso errore
-      await expect(service.getRepositories('workspace-fantasma')).rejects.toThrow(erroreScatenato);
+      // ACT & ASSERT
+      await expect(service.getRepositories('workspace-fantasma')).rejects.toThrow('NotFoundException');
     });
   });
 
@@ -131,8 +131,12 @@ describe('WorkspaceRepositoryService', () => {
   });
 
   // --- BLOCCO: removeRepository ---
+  // ...existing code...
+  // --- BLOCCO: removeRepository ---
   describe('removeRepository', () => {
     it('delega correttamente la rimozione al repository', async () => {
+      // Configuriamo prima che il servizio superi eventuali controlli di esistenza:
+      mockWorkspaceRepository.getRepositories.mockResolvedValue(['repo-1']); 
       mockWorkspaceRepository.removeRepository.mockResolvedValue(undefined);
       // Simuliamo che la repo serva ancora altrove, così non viene distrutta
       mockWorkspaceRepository.isRepositoryLinkedToAnyWorkspace.mockResolvedValue(true); 
@@ -158,8 +162,9 @@ describe('WorkspaceRepositoryService', () => {
     });
 
     it('dovrebbe eliminare i dati della repo se non appartiene ad altri workspace', async () => {
+      // Dobbiamo assicurarci che il mock restituisca che la repo è nel workspace:
+      mockWorkspaceRepository.getRepositories.mockResolvedValue(['repo-isolata']);
       mockWorkspaceRepository.removeRepository.mockResolvedValue(undefined);
-      // Diciamo che la repo NON è usata da nessun altro
       mockWorkspaceRepository.isRepositoryLinkedToAnyWorkspace.mockResolvedValue(false);
       mockRepositoryWriter.deleteRepository.mockResolvedValue(undefined);
 
@@ -173,6 +178,9 @@ describe('WorkspaceRepositoryService', () => {
   // --- BLOCCO: updateToken ---
   describe('updateToken', () => {
     it('dovrebbe aggiornare il token della repository', async () => {
+      // Questo test lanciava "NotFoundException" perché il Service verificava l'esistenza:
+      mockWorkspaceRepository.getRepositories.mockResolvedValue(['repo-1']);
+      
       mockRepositoryWriter.updateToken.mockResolvedValue(undefined);
 
       await service.updateToken('repo-1', 'ws-1', 'nuovo-token');

@@ -12,10 +12,10 @@ export class Membership extends Document {
   @Prop({ required: true, ref: 'User' })
   recipientId!: string;
 
-  @Prop({ required: true })
+  @Prop({ required: true, type: String })
   recipientRole!: string;
 
-  @Prop({ default: 'PENDING' })
+  @Prop({ default: 'PENDING', type: String })
   status!: string;
 }
 

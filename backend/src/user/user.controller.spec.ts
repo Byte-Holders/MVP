@@ -7,6 +7,9 @@ describe('UserController', () => {
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       controllers: [UserController],
+      providers: [
+        { provide: 'CREATE_USER', useValue: { execute: jest.fn() } }
+      ]
     }).compile();
 
     controller = module.get<UserController>(UserController);
