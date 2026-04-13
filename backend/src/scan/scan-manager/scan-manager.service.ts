@@ -44,6 +44,9 @@ export class ScanManagerService implements IScanManagerService {
     const [repository] = await this.repositoryReader.getRepositories([
       info.repositoryId,
     ]);
+    this.logger.log(
+      `Lancio scansione verso ${repository.ownerName}/${repository.name}@${info.branch} `,
+    );
 
     const callbackToken = await this.jwtService.signAsync({
       TARGET_OWNER: repository.ownerName,
@@ -58,6 +61,7 @@ export class ScanManagerService implements IScanManagerService {
       AWS_BEARER_TOKEN_BEDROCK: this.configService.get<string>(
         'AWS_BEARER_TOKEN_BEDROCK',
       )!,
+      repositoryId: info.repositoryId,
     });
 
     const client = new ECSClient({
@@ -87,7 +91,7 @@ export class ScanManagerService implements IScanManagerService {
       overrides: {
         containerOverrides: [
           {
-            name: 'poc-mock',
+            name: 'scanner',
             environment: [
               { name: 'REPORT_CALLBACK_TOKEN', value: callbackToken },
             ],
