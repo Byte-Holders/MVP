@@ -1,14 +1,21 @@
-import { Injectable } from '@nestjs/common';
-import { ScanService } from './scan/scan.service';
-import { ReporterService } from './reporter/reporter.service';
+import { Inject, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Target } from './scan/target.types';
+import {
+  ISCAN_SERVICE_TOKEN,
+  type IScanService,
+} from './scan/iscan-service.interface';
+import {
+  IREPORTER_SERVICE_TOKEN,
+  type IReporterService,
+} from './reporter/ireporter-service.interface';
 
 @Injectable()
 export class AppService {
   constructor(
-    private readonly scanService: ScanService,
-    private readonly reporterService: ReporterService,
+    @Inject(ISCAN_SERVICE_TOKEN) private readonly scanService: IScanService,
+    @Inject(IREPORTER_SERVICE_TOKEN)
+    private readonly reporterService: IReporterService,
     private readonly configService: ConfigService,
   ) {}
 

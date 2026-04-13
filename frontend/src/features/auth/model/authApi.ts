@@ -4,6 +4,7 @@ import {
   signInWithRedirect,
   signOut,
 } from 'aws-amplify/auth'
+import { cognitoConfig } from '../../../lib/amplify'
 
 export async function fetchCurrentUser() {
   return amplifyGetCurrentUser()
@@ -19,5 +20,7 @@ export async function signIn(redirectUrl?: string) {
 }
 
 export async function logOut() {
-  return signOut()
+  await signOut()
+  const logoutUri = encodeURIComponent(window.location.origin + '/')
+  window.location.href = `https://${cognitoConfig.domain}/logout?client_id=${cognitoConfig.clientId}&logout_uri=${logoutUri}`
 }

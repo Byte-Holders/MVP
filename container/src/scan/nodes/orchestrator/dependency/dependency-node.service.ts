@@ -3,17 +3,37 @@ import * as fs from 'fs';
 import * as os from 'os';
 import * as path from 'path';
 import { DepsReport } from './deps-report.type';
-import { WorkflowState } from '../orchestrator.service';
+import { WorkflowState } from '../workflow-state.type';
 import { executeCli, type CliCommand } from '../../../exec.cli';
+import { INodeScanService } from '../inode-scan-service.interface';
+import { SystemMessage, HumanMessage } from '@langchain/core/messages';
+import { DependencyNodeHelper } from './dependency-node.helper';
+
+export const DEPENDENCY_NODE_SERVICE_TOKEN = 'DependencyNodeService';
+
+type DepsReportUnit = { name: string; version: string };
 
 @Injectable()
-export class DepsNodeService {
-  private readonly logger = new Logger(DepsNodeService.name);
+export class DependencyNodeService implements INodeScanService {
+  private readonly logger = new Logger(DependencyNodeService.name);
 
-  async scan(repoPath: string): Promise<Partial<WorkflowState>> {
+  constructor(private readonly helper: DependencyNodeHelper) {}
+
+  async scan({
+    repoPath,
+  }: {
+    repoPath: string;
+  }): Promise<Partial<WorkflowState>> {
     this.logger.log(`Inizio analisi delle dipendenze in: ${repoPath}`);
 
-    // Syft genera lo SBOM
+    const report: DepsReport = {
+      list: [],
+      libraries: [],
+      frameworks: [],
+      vulnerabilities: [],
+      vulnerabilityAnalysis: '',
+    };
+
     let sbomRaw: string;
     try {
       const syftCommand: CliCommand = {
@@ -29,14 +49,11 @@ export class DepsNodeService {
 
       this.logger.log(`Trovate ${sbomReport.artifacts.length} dipendenze.`);
 
-      const depsReport: DepsReport = {
-        report: sbomReport.artifacts.map((dep) => ({
-          name: dep.name,
-          version: dep.version,
-        })),
-      };
+      report.list = sbomReport.artifacts.map((dep) => ({
+        name: dep.name,
+        version: dep.version,
+      }));
 
-      //Grype fa analisi vulnerabilità sullo SBOM, passato come file temporaneo
       let tempFile: string | undefined;
       try {
         tempFile = path.join(os.tmpdir(), `sbom-${Date.now()}.json`);
@@ -48,13 +65,10 @@ export class DepsNodeService {
         };
 
         const grypeRaw = (await executeCli(grypeCommand)).toString().trim();
+        // TODO bisogna mettere una qualche spiegazione della vulnerabilità e aggiungere eventuali versioni per fix
         const grypeReport = JSON.parse(grypeRaw) as {
           matches: {
-            vulnerability: {
-              id: string;
-              severity: string;
-              fix?: { versions: string[] };
-            };
+            vulnerability: { id: string; severity: string };
             artifact: { name: string; version: string };
           }[];
         };
@@ -63,30 +77,64 @@ export class DepsNodeService {
           `Grype: trovate ${grypeReport.matches.length} vulnerabilità totali.`,
         );
 
-        depsReport.vulnerabilities = grypeReport.matches.map((m) => ({
+        report.vulnerabilities = grypeReport.matches.map((m) => ({
           id: m.vulnerability.id,
           severity: m.vulnerability.severity,
           packageName: m.artifact.name,
           packageVersion: m.artifact.version,
-          fixedInVersion: m.vulnerability.fix?.versions?.[0],
         }));
       } catch (grypeError: unknown) {
         this.logger.error(
           `Analisi Grype fallita: ${(grypeError as Error).message}`,
         );
-        // Se grype fallisce restituisco comunque il report di syft
       } finally {
         if (tempFile && fs.existsSync(tempFile)) {
           fs.unlinkSync(tempFile);
         }
       }
 
-      return { depsReport };
+      const model = this.helper.createModel();
+      const response = await model.invoke([
+        new SystemMessage(
+          `Sei un esperto di architettura software. Ricevi una lista di dipendenze software e un elenco di vulnerabilità.
+Restituisci SOLO un JSON con questa struttura, senza markdown:
+{
+  "libraries": [{"name": "...", "version": "..."}],
+  "frameworks": [{"name": "...", "version": "..."}],
+  "vulnerabilityAnalysis": "<breve analisi max 100 parole>"
+}
+Separa le dipendenze in:
+- "frameworks": es. NestJS, Angular, Express
+- "libraries": la lista di librerie tipicamente all'interno di un package.json`, // TODO da qualche altra parte o passare file package.json per cross-check
+        ),
+        new HumanMessage(
+          `Dipendenze:\n${JSON.stringify(report.list)}\n\nVulnerabilità:\n${JSON.stringify(report.vulnerabilities)}`,
+        ),
+      ]);
+
+      const raw = (response.content as string)
+        .replace(/```json|```/g, '')
+        .trim();
+      const parsed = JSON.parse(raw) as {
+        libraries: DepsReportUnit[];
+        frameworks: DepsReportUnit[];
+        vulnerabilityAnalysis: string;
+      };
+
+      report.libraries = parsed.libraries ?? [];
+      report.frameworks = parsed.frameworks ?? [];
+      report.vulnerabilityAnalysis = parsed.vulnerabilityAnalysis ?? '';
+
+      this.logger.log(
+        `Identificate ${report.libraries.length} librerie e ${report.frameworks.length} framework`,
+      );
+
+      return { depsReport: report };
     } catch (error: unknown) {
       this.logger.error(
         `Analisi delle dipendenze fallita: ${(error as Error).message}`,
       );
-      return { depsReport: { report: [] } };
+      return { depsReport: report };
     }
   }
 }

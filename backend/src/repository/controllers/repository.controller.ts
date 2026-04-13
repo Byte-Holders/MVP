@@ -4,7 +4,7 @@ import { RepositoryServiceToken } from '../interfaces/repository.service.interfa
 import { RepositoryResponseDto } from '../dtos/repository-response.dto';
 import { JwtAuthGuard } from '../../auth/jwt-auth.guard';
 
-@Controller('repository')
+@Controller('repositories')
 @UseGuards(JwtAuthGuard)
 export class RepositoryController {
   constructor(

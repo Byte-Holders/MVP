@@ -6,4 +6,5 @@ export class RepositoryEntity {
   documentationScore?: number;
   codeCoverage?: number;
   cvss?: number;
+  accessToken?: string;
 }

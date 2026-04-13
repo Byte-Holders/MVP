@@ -1,7 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { SystemMessage, HumanMessage } from '@langchain/core/messages';
 import { Report, ReportSummary } from './synthesizer.types';
-import { WorkflowState } from '../orchestrator.service';
+import { WorkflowState } from '../workflow-state.type';
 import { SynthesizerNodeHelper } from './synthesizer-node.helper';
 
 @Injectable()
@@ -16,9 +16,9 @@ export class SynthesizerNodeService {
     const context = JSON.stringify(
       {
         vulnerabilities: state.vulnerabilitiesReport,
-        coverage: state.coverageReport,
+        testReport: state.testReport,
         documentation: state.docsReport,
-        languages: state.languageBreakdown,
+        languages: state.languages,
       },
       null,
       2,
@@ -56,21 +56,36 @@ Restituisci SOLO un JSON con questa struttura, senza markdown:
     const report: Report = {
       summary: reportSummary,
       data: {
-        depsReport: state.depsReport ?? { report: [] },
+        depsReport: state.depsReport ?? {
+          list: [],
+          libraries: [],
+          frameworks: [],
+          vulnerabilities: [],
+          vulnerabilityAnalysis: '',
+        },
         vulnerabilitiesReport: state.vulnerabilitiesReport ?? {
           vulnerabilities: [],
           mark: 10,
         },
         docsReport: state.docsReport ?? {
-          readmeReport: { analysis: { analysis: '' } },
-          commentReport: [],
+          readmeReport: '',
+          commentReport: '',
           mark: 0,
         },
-        coverageReport: state.coverageReport ?? {
-          statements: 0,
-          branches: 0,
-          functions: 0,
-          lines: 0,
+        testReport: state.testReport ?? {
+          coverageReport: {
+            statements: 0,
+            branches: 0,
+            functions: 0,
+            lines: 0,
+          },
+          failedTests: [],
+          testsRun: 0,
+        },
+        languages: state.languages ?? [],
+        codeQualityReport: state.codeQualityReport ?? {
+          analysis: [],
+          mark: 0,
         },
       },
       metadata: {

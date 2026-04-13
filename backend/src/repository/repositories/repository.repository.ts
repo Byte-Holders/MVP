@@ -4,12 +4,20 @@ import { Model, Types } from 'mongoose';
 import {
   Repository,
   RepositoryDocument,
-} from '../workspace/schemas/repository.schema';
-import type { IRepositoryRepository } from './interfaces/repository.repository.interface';
-import { RepositoryEntity } from './entities/repository.entity';
+} from '../schemas/repository.schema';
+import type { IRepositoryFindRepository } from '../interfaces/repository.find-repository.interface';
+import type { IRepositoryPersistRepository } from '../interfaces/repository.persist-repository.interface';
+import type { IRepositoryScoreRepository } from '../interfaces/repository.score-repository.interface';
+import { RepositoryEntity } from '../entities/repository.entity';
+import type { RepositoryScores } from '../interfaces/repository.score-writer.interface';
 
 @Injectable()
-export class RepositoryRepository implements IRepositoryRepository {
+export class RepositoryRepository
+  implements
+    IRepositoryFindRepository,
+    IRepositoryPersistRepository,
+    IRepositoryScoreRepository
+{
   constructor(
     @InjectModel(Repository.name) private repositoryModel: Model<Repository>,
   ) {}
@@ -36,47 +44,47 @@ export class RepositoryRepository implements IRepositoryRepository {
   }
 
   async addRepository(
-    repositoryUrl: string,
-    _accessToken?: string,
+    ownerName: string,
+    name: string,
+    accessToken?: string,
   ): Promise<string> {
-    const urlParts = repositoryUrl
-      .replace(/https?:\/\/github\.com\//, '')
-      .split('/');
-    const [ownerName, name] = urlParts;
     let repository = await this.repositoryModel.findOne({ ownerName, name });
     if (!repository) {
       repository = await this.repositoryModel.create({
-        repoId: `${ownerName}/${name}`,
         ownerName,
         name,
+        accessToken,
       });
+    } else if (accessToken) {
+      await this.repositoryModel.updateOne(
+        { _id: repository._id },
+        { $set: { accessToken } },
+      );
     }
     return repository._id.toString();
   }
 
-  // --- Metodi usati da altri moduli (workspaceRepository) ---
-
-  async findById(id: string): Promise<RepositoryDocument> {
-    const repository = await this.repositoryModel.findById(id);
-    if (!repository) {
+  async updateToken(repositoryId: string, accessToken: string): Promise<void> {
+    const result = await this.repositoryModel.updateOne(
+      { _id: repositoryId },
+      { $set: { accessToken } },
+    );
+    if (result.matchedCount === 0) {
       throw new NotFoundException('Repository non trovata');
     }
-    return repository;
   }
 
-  async findOrCreate(
-    ownerName: string,
-    name: string,
-  ): Promise<RepositoryDocument> {
-    let repository = await this.repositoryModel.findOne({ ownerName, name });
-    if (!repository) {
-      repository = await this.repositoryModel.create({
-        repoId: `${ownerName}/${name}`,
-        ownerName,
-        name,
-      });
+  async updateScores(
+    repositoryId: string,
+    scores: RepositoryScores,
+  ): Promise<void> {
+    const result = await this.repositoryModel.updateOne(
+      { _id: repositoryId },
+      { $set: scores },
+    );
+    if (result.matchedCount === 0) {
+      throw new NotFoundException('Repository non trovata');
     }
-    return repository;
   }
 
   private toRepositoryEntity(r: RepositoryDocument): RepositoryEntity {
@@ -88,6 +96,7 @@ export class RepositoryRepository implements IRepositoryRepository {
       documentationScore: r.documentationScore,
       codeCoverage: r.codeCoverage,
       cvss: r.cvss,
+      accessToken: r.accessToken,
     };
   }
 }

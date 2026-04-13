@@ -1,8 +1,19 @@
-import { CoverageReport } from '../coverage/coverage-report.type';
+import { TestReport } from '../coverage/coverage-report.type';
 import { DepsReport } from '../dependency/deps-report.type';
 import { DocsReport } from '../docs/docs-report.type';
 import { VulnerabilitiesReport } from '../security/security-report.type';
+import { Language } from '../github/language.type';
 import { Target } from '../../../target.types';
+
+export type GuidelineUnit = {
+  name: string;
+  recommendation: string;
+};
+
+export type CodeQualityReport = {
+  analysis: GuidelineUnit[];
+  mark: number;
+};
 
 export type ReportSummary = {
   summary: string;
@@ -13,7 +24,9 @@ export type DataReport = {
   depsReport: DepsReport;
   vulnerabilitiesReport: VulnerabilitiesReport;
   docsReport: DocsReport;
-  coverageReport: CoverageReport;
+  testReport: TestReport;
+  languages: Language[];
+  codeQualityReport: CodeQualityReport;
 };
 
 export type ReportMetadata = {

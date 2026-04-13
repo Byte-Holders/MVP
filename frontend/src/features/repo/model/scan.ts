@@ -17,11 +17,7 @@ export async function requestScan(
     },
   }
 
-  const response = await axios.post(
-    'http://localhost:3001/scan',
-    payload,
-    config,
-  )
+  const response = await axios.post('/api/scan', payload, config)
 
   if (response.status >= 400) {
     throw new Error(`Errore lancio scansione: ${response.data}`)

@@ -2,9 +2,10 @@ import { HttpService } from '@nestjs/axios';
 import { Injectable } from '@nestjs/common';
 import { Report } from '../scan/nodes/orchestrator/synthesizer/synthesizer.types';
 import * as rx from 'rxjs';
+import { IReporterService } from './ireporter-service.interface';
 
 @Injectable()
-export class ReporterService {
+export class ReporterService implements IReporterService {
   constructor(private readonly httpService: HttpService) {}
 
   async sendReport(report: Report, token: string) {

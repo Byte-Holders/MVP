@@ -1,6 +1,6 @@
 import { useEffect } from 'react'
 import { useNavigate } from '@tanstack/react-router'
-import { getCurrentUser } from 'aws-amplify/auth'
+import { fetchCurrentUser } from '../model/authApi'
 import { useRegister } from '../hooks/useRegister'
 
 export function CallbackPage() {
@@ -10,7 +10,7 @@ export function CallbackPage() {
   useEffect(() => {
     async function handleCallback() {
       try {
-        await getCurrentUser()
+        await fetchCurrentUser()
         await register()
 
         const redirectTo = sessionStorage.getItem('auth_redirect')

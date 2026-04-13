@@ -1,16 +1,23 @@
 import { Injectable, Logger } from '@nestjs/common';
 import path from 'path';
 import { mkdir } from 'fs/promises';
-import { WorkflowState } from '../orchestrator.service';
+import { WorkflowState } from '../workflow-state.type';
 import { SecurityNodeHelper } from './security-node.helper';
+import { INodeScanService } from '../inode-scan-service.interface';
+
+export const SECURITY_NODE_SERVICE_TOKEN = 'SecurityNodeService';
 
 @Injectable()
-export class SecurityNodeService {
+export class SecurityNodeService implements INodeScanService {
   private readonly logger = new Logger(SecurityNodeService.name);
 
   constructor(private readonly helper: SecurityNodeHelper) {}
 
-  async scan(repoPath: string): Promise<Partial<WorkflowState>> {
+  async scan({
+    repoPath,
+  }: {
+    repoPath: string;
+  }): Promise<Partial<WorkflowState>> {
     const reportPath = this.helper.buildReportPath(path.basename(repoPath));
 
     this.logger.log(`Inizio analisi sulla sicurezza: ${repoPath}`);

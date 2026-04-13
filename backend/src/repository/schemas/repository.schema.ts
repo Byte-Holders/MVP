@@ -6,9 +6,6 @@ export type RepositoryDocument = HydratedDocument<Repository>;
 @Schema()
 export class Repository {
   @Prop({ required: true })
-  repoId!: string; //id di GitHub
-
-  @Prop({ required: true })
   ownerName!: string;
 
   @Prop({ required: true })
@@ -25,6 +22,9 @@ export class Repository {
 
   @Prop({ type: Number })
   cvss?: number;
+
+  @Prop()
+  accessToken?: string;
 }
 
 export const RepositorySchema = SchemaFactory.createForClass(Repository);

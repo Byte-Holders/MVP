@@ -1,8 +1,15 @@
 import { Module } from '@nestjs/common';
-import { DepsNodeService } from './dependency-node.service';
+import {
+  DEPENDENCY_NODE_SERVICE_TOKEN,
+  DependencyNodeService,
+} from './dependency-node.service';
+import { DependencyNodeHelper } from './dependency-node.helper';
 
 @Module({
-  providers: [DepsNodeService],
-  exports: [DepsNodeService],
+  providers: [
+    { provide: DEPENDENCY_NODE_SERVICE_TOKEN, useClass: DependencyNodeService },
+    DependencyNodeHelper,
+  ],
+  exports: [DEPENDENCY_NODE_SERVICE_TOKEN],
 })
 export class DepsModule {}
