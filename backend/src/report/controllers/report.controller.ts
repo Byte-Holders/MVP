@@ -6,6 +6,7 @@ import {
   Param,
   Post,
   UnauthorizedException,
+  UseGuards,
   UsePipes,
   ValidationPipe,
 } from '@nestjs/common';
@@ -15,6 +16,7 @@ import { ReportServiceToken } from '../interfaces/ireport.service.interface';
 import { SaveReportDto } from '../dtos/save-report.dto';
 import { ReportResponseDto } from '../dtos/report-response.dto';
 import type { ReportInfo } from '../types/report.type';
+import { JwtAuthGuard } from '../../auth/jwt-auth.guard';
 
 @Controller('reports')
 export class ReportController {
@@ -55,6 +57,7 @@ export class ReportController {
   }
 
   @Get(':repositoryId/branches/:branch')
+  @UseGuards(JwtAuthGuard)
   async getReport(
     @Param('repositoryId') repositoryId: string,
     @Param('branch') branch: string,
