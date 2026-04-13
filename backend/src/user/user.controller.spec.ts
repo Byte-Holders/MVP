@@ -81,7 +81,7 @@ describe('UserController', () => {
     it('propaga ConflictException se l utente è già registrato', async () => {
       // Arrange — il service lancia ConflictException (sub duplicato)
       service.create.mockRejectedValue(
-        new ConflictException('Utente con sub cognito|abc123 già esistente'),
+        new ConflictException('Utente già esistente'),
       );
 
       // Act & Assert

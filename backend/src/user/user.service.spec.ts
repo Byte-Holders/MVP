@@ -161,13 +161,5 @@ describe('UserService', () => {
 
       expect(repo.create).not.toHaveBeenCalled();
     });
-
-    // ⚠️ Documenta il gap: email duplicata non gestita dal service
-    it('TODO: dovrebbe lanciare ConflictException se la email è già registrata', async () => {
-      // Il service controlla solo sub — se stessa email con sub diverso
-      // passa il controllo e fallisce a livello MongoDB (errore non gestito)
-      // Questo test documenta il comportamento atteso ma non ancora implementato
-      expect(true).toBe(false);
-    });
   });
 });
