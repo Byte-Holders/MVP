@@ -5,12 +5,13 @@ export type ReportInfo = {
   };
   data: {
     depsReport: {
-      list: { name: string; version: string }[];
+      list?: { name: string; version: string }[];
       vulnerabilities: {
         id: string;
         severity: string;
         packageName: string;
         packageVersion: string;
+        fixVersion?: string;
       }[];
       vulnerabilityAnalysis: string;
     };

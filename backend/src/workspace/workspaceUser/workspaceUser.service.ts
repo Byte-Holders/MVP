@@ -21,6 +21,10 @@ export class WorkspaceUserService implements IWorkspaceUserService, IAddUserToWo
         await this.workspaceUserRepository.removeUserFromWorkspace(workspaceId, userId);
     }
 
+    async getUserRoleForRepository(repositoryId: string, userId: string) {
+        return this.workspaceUserRepository.getUserRoleForRepository(repositoryId, userId);
+    }
+
     async addUserToWorkspace(user: UserOfWorkspaceInfo, workspaceId: string) {
         if(await this.workspaceUserRepository.checkIfUserIsInWorkspace(workspaceId, user.userId)) {
             throw new PreconditionFailedException('L\'utente con id ' + user.userId + ' è già un membro del workspace con id ' + workspaceId);

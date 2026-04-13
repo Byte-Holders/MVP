@@ -5,7 +5,8 @@ export interface IWorkspaceUserRepository {
   addUserToWorkspace(user: UserOfWorkspaceEntity, workspaceId: string): Promise<void>;
   removeUserFromWorkspace(workspaceId: string, userId: string): Promise<void>;
   getUsersOfWorkspace(workspaceId: string): Promise<UserOfWorkspaceEntity[]>;
-  checkIfUserIsInWorkspace(workspaceId: string, userId: string): Promise<boolean>
+  checkIfUserIsInWorkspace(workspaceId: string, userId: string): Promise<boolean>;
+  getUserRoleForRepository(repositoryId: string, userId: string): Promise<WorkspaceRole | null>;
 }
 
 export const IWorkspaceUserRepositoryToken = 'IWorkspaceUserRepository';

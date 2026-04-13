@@ -5,28 +5,23 @@ import { VulnerabilitiesReport } from '../security/security-report.type';
 import { Language } from '../github/language.type';
 import { Target } from '../../../target.types';
 
-export type GuidelineUnit = {
-  name: string;
-  recommendation: string;
-};
-
-export type CodeQualityReport = {
-  analysis: GuidelineUnit[];
-  mark: number;
-};
-
 export type ReportSummary = {
   summary: string;
   mark: number;
 };
 
+export type TechReport = {
+  libraries: DepsReport['libraries'];
+  frameworks: DepsReport['frameworks'];
+  languages: Language[];
+};
+
 export type DataReport = {
-  depsReport: DepsReport;
+  depsReport: Pick<DepsReport, 'vulnerabilities' | 'vulnerabilityAnalysis'>;
   vulnerabilitiesReport: VulnerabilitiesReport;
   docsReport: DocsReport;
   testReport: TestReport;
-  languages: Language[];
-  codeQualityReport: CodeQualityReport;
+  techReport: TechReport;
 };
 
 export type ReportMetadata = {

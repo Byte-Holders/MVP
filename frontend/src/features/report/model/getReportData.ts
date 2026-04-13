@@ -9,7 +9,7 @@ export async function getReportData(
   const token = session.tokens?.accessToken?.toString()
 
   const response = await fetch(
-    `/api/reports/${repositoryId}/branches/${branch}`,
+    `/api/reports/${repositoryId}/branches/${encodeURIComponent(branch)}`,
     { headers: { Authorization: `Bearer ${token}` } },
   )
   if (!response.ok) throw new Error('Report non trovato')

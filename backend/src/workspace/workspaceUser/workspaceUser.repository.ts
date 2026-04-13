@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException, PreconditionFailedException } from "@nestjs/common";
+import { Injectable, NotFoundException } from "@nestjs/common";
 import { IWorkspaceUserRepository } from "./interfaces/IWorkspaceUserRepository.interface";
 import { InjectModel } from "@nestjs/mongoose";
 import { UserOfWorkspaceEntity } from "./entity/userOfWorkspace.entity";
@@ -36,6 +36,16 @@ export class WorkspaceUserRepository implements IWorkspaceUserRepository {
             { _id: workspaceId },
             { $push: { members: { userId: user.userId, userUsername: user.username, role: user.role } } }
         ).exec();
+    }
+
+    async getUserRoleForRepository(repositoryId: string, userId: string): Promise<WorkspaceRole | null> {
+        const workspace = await this.workspaceModel.findOne({
+            'repositories.repoId': repositoryId,
+            'members.userId': userId,
+        } as any).lean().exec();
+        if (!workspace) return null;
+        const member = workspace.members.find((m) => m.userId === userId);
+        return member ? (member.role as WorkspaceRole) : null;
     }
 
     async checkIfUserIsInWorkspace(workspaceId: string, userId: string): Promise<boolean> {

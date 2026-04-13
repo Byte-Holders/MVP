@@ -1,4 +1,10 @@
-import { IsArray, IsNotEmpty, IsString, ValidateNested } from 'class-validator';
+import {
+  IsArray,
+  IsNotEmpty,
+  IsOptional,
+  IsString,
+  ValidateNested,
+} from 'class-validator';
 import { Type } from 'class-transformer';
 
 export class DependencyDto {
@@ -27,13 +33,18 @@ export class DepVulnerabilityDto {
   @IsString()
   @IsNotEmpty()
   packageVersion!: string;
+
+  @IsOptional()
+  @IsString()
+  fixVersion?: string;
 }
 
 export class DepsReportDto {
+  @IsOptional()
   @IsArray()
   @ValidateNested({ each: true })
   @Type(() => DependencyDto)
-  list!: DependencyDto[];
+  list?: DependencyDto[];
 
   @IsArray()
   @ValidateNested({ each: true })
@@ -41,6 +52,5 @@ export class DepsReportDto {
   vulnerabilities!: DepVulnerabilityDto[];
 
   @IsString()
-  @IsNotEmpty()
   vulnerabilityAnalysis!: string;
 }

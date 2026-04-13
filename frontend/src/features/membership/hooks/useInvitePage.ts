@@ -1,8 +1,9 @@
 import { useGetInvites } from './useGetInvites'
 import { useManageInvite } from './useManageInvite'
 import type { InviteAction } from '../types'
+import type { IInvitePageViewModel } from '../types/viewModels'
 
-export function useInvitePage() {
+export function useInvitePage(): IInvitePageViewModel {
   const { data: invites = [], isLoading } = useGetInvites()
   const { mutate: manage, isPending } = useManageInvite()
 
