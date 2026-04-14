@@ -1,9 +1,11 @@
-import { Controller, Get, Inject, Param } from '@nestjs/common';
+import { Controller, Get, Inject, Param, UseGuards } from '@nestjs/common';
 import type { IRepositoryService } from '../interfaces/repository.service.interface';
 import { RepositoryServiceToken } from '../interfaces/repository.service.interface';
 import { RepositoryResponseDto } from '../dtos/repository-response.dto';
+import { JwtAuthGuard } from '../../auth/jwt-auth.guard';
 
-@Controller('repository')
+@Controller('repositories')
+@UseGuards(JwtAuthGuard)
 export class RepositoryController {
   constructor(
     @Inject(RepositoryServiceToken)

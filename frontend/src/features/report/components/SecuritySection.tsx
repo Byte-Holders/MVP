@@ -1,0 +1,364 @@
+import { useState } from 'react'
+import {
+  Bar,
+  BarChart,
+  CartesianGrid,
+  Cell,
+  LabelList,
+  ResponsiveContainer,
+  Tooltip,
+  XAxis,
+  YAxis,
+} from 'recharts'
+import type { ReportInfo } from '../types/report'
+
+type Props = {
+  vulnerabilitiesReport: ReportInfo['data']['vulnerabilitiesReport']
+  depsReport: ReportInfo['data']['depsReport']
+}
+
+const SEVERITY_CONFIG: Record<
+  string,
+  { color: string; bg: string; text: string }
+> = {
+  Critical: { color: '#dc2626', bg: 'bg-red-100', text: 'text-red-700' },
+  High: { color: '#ea580c', bg: 'bg-orange-100', text: 'text-orange-700' },
+  Medium: { color: '#d97706', bg: 'bg-yellow-100', text: 'text-yellow-700' },
+  Low: { color: '#16a34a', bg: 'bg-green-100', text: 'text-green-700' },
+  Negligible: { color: '#6b7280', bg: 'bg-gray-100', text: 'text-gray-600' },
+}
+
+function severityConfig(s: string) {
+  return (
+    SEVERITY_CONFIG[s] ?? {
+      color: '#6b7280',
+      bg: 'bg-gray-100',
+      text: 'text-gray-600',
+    }
+  )
+}
+
+function codeSeverityLabel(score: number) {
+  if (score >= 9) return 'Critical'
+  if (score >= 7) return 'High'
+  if (score >= 4) return 'Medium'
+  return 'Low'
+}
+
+export function SecuritySection({ vulnerabilitiesReport, depsReport }: Props) {
+  const [expandedVuln, setExpandedVuln] = useState<string | null>(null)
+
+  // ── Dipendenze: raggruppa per severity ────────────────────────────────────
+  const depsBySeverity = depsReport.vulnerabilities.reduce<
+    Record<string, number>
+  >((acc, v) => {
+    const s = v.severity ?? 'Unknown'
+    acc[s] = (acc[s] ?? 0) + 1
+    return acc
+  }, {})
+
+  const depsPieData = Object.entries(depsBySeverity)
+    .map(([name, value]) => ({ name, value, fill: severityConfig(name).color }))
+    .sort((a, b) => {
+      const order = ['Critical', 'High', 'Medium', 'Low', 'Negligible']
+      return order.indexOf(a.name) - order.indexOf(b.name)
+    })
+
+  // ── Vulnerabilità codice: raggruppa per severity ──────────────────────────
+  const codeVulnsBySeverity = vulnerabilitiesReport.vulnerabilities.reduce<
+    Record<string, number>
+  >((acc, v) => {
+    const label = codeSeverityLabel(v.severity)
+    acc[label] = (acc[label] ?? 0) + 1
+    return acc
+  }, {})
+
+  const codePieData = Object.entries(codeVulnsBySeverity)
+    .map(([name, value]) => ({ name, value, fill: severityConfig(name).color }))
+    .sort((a, b) => {
+      const order = ['Critical', 'High', 'Medium', 'Low']
+      return order.indexOf(a.name) - order.indexOf(b.name)
+    })
+
+  return (
+    <section className="flex flex-col gap-6 rounded-2xl border border-[var(--chip-line)] bg-[var(--chip-bg)] p-5">
+      <div className="flex items-center justify-between">
+        <h2 className="text-base font-semibold text-[var(--sea-ink)]">
+          Analisi della sicurezza
+        </h2>
+        <span className="rounded-full border border-[var(--chip-line)] px-3 py-0.5 text-xs font-semibold text-[var(--sea-ink)]">
+          CVSS {vulnerabilitiesReport.mark.toFixed(1)} / 10
+        </span>
+      </div>
+
+      {/* ── Overview ───────────────────────────────────────────────────────── */}
+      <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
+        {(
+          [
+            [
+              'Vulnerabilità codice',
+              vulnerabilitiesReport.vulnerabilities.length,
+            ],
+            ['Dipendenze vulnerabili', depsReport.vulnerabilities.length],
+            ['Critiche (codice)', codeVulnsBySeverity['Critical'] ?? 0],
+            ['Critiche (dipendenze)', depsBySeverity['Critical'] ?? 0],
+          ] as [string, number][]
+        ).map(([label, count]) => (
+          <div
+            key={label}
+            className="flex flex-col gap-0.5 rounded-xl border border-[var(--chip-line)] p-3"
+          >
+            <span className="text-xl font-bold text-[var(--sea-ink)]">
+              {count}
+            </span>
+            <span className="text-[10px] leading-tight opacity-50">
+              {label}
+            </span>
+          </div>
+        ))}
+      </div>
+
+      {/* ── Bar charts ─────────────────────────────────────────────────────── */}
+      <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
+        {/* Vulnerabilità codice */}
+        {codePieData.length > 0 && (
+          <div>
+            <p className="mb-3 text-xs font-medium text-[var(--sea-ink)] opacity-60">
+              Vulnerabilità codice per severità
+            </p>
+            <ResponsiveContainer width="100%" height={160}>
+              <BarChart
+                data={codePieData}
+                barCategoryGap="10%"
+                margin={{ top: 14, right: 4, bottom: 0, left: 0 }}
+              >
+                <CartesianGrid vertical={false} stroke="var(--chip-line)" />
+                <XAxis
+                  dataKey="name"
+                  tick={{ fontSize: 10, fill: 'var(--sea-ink)' }}
+                  axisLine={false}
+                  tickLine={false}
+                />
+                <YAxis hide allowDecimals={false} />
+                <Tooltip
+                  cursor={{ fill: 'var(--chip-line)', opacity: 0.4 }}
+                  contentStyle={{
+                    fontSize: 11,
+                    borderRadius: 8,
+                    border: '1px solid var(--chip-line)',
+                    background: 'var(--chip-bg)',
+                  }}
+                />
+                <Bar dataKey="value" radius={[4, 4, 0, 0]} maxBarSize={48}>
+                  {codePieData.map((d) => (
+                    <Cell key={d.name} fill={d.fill} />
+                  ))}
+                  <LabelList
+                    dataKey="value"
+                    position="top"
+                    style={{
+                      fontSize: 11,
+                      fontWeight: 600,
+                      fill: 'var(--sea-ink)',
+                    }}
+                  />
+                </Bar>
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+        )}
+
+        {/* Dipendenze vulnerabili */}
+        {depsPieData.length > 0 && (
+          <div>
+            <p className="mb-3 text-xs font-medium text-[var(--sea-ink)] opacity-60">
+              Dipendenze vulnerabili per severità
+            </p>
+            <ResponsiveContainer width="100%" height={160}>
+              <BarChart
+                data={depsPieData}
+                barCategoryGap="10%"
+                margin={{ top: 14, right: 4, bottom: 0, left: 0 }}
+              >
+                <CartesianGrid vertical={false} stroke="var(--chip-line)" />
+                <XAxis
+                  dataKey="name"
+                  tick={{ fontSize: 10, fill: 'var(--sea-ink)' }}
+                  axisLine={false}
+                  tickLine={false}
+                />
+                <YAxis hide allowDecimals={false} />
+                <Tooltip
+                  cursor={{ fill: 'var(--chip-line)', opacity: 0.4 }}
+                  contentStyle={{
+                    fontSize: 11,
+                    borderRadius: 8,
+                    border: '1px solid var(--chip-line)',
+                    background: 'var(--chip-bg)',
+                  }}
+                />
+                <Bar dataKey="value" radius={[4, 4, 0, 0]} maxBarSize={48}>
+                  {depsPieData.map((d) => (
+                    <Cell key={d.name} fill={d.fill} />
+                  ))}
+                  <LabelList
+                    dataKey="value"
+                    position="top"
+                    style={{
+                      fontSize: 11,
+                      fontWeight: 600,
+                      fill: 'var(--sea-ink)',
+                    }}
+                  />
+                </Bar>
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+        )}
+      </div>
+
+      {/* ── Vulnerabilità codice: lista espandibile ─────────────────────────── */}
+      {vulnerabilitiesReport.vulnerabilities.length > 0 && (
+        <div>
+          <p className="mb-2 text-xs font-medium text-[var(--sea-ink)] opacity-60">
+            Vulnerabilità nel codice (
+            {vulnerabilitiesReport.vulnerabilities.length})
+          </p>
+          <div className="flex flex-col gap-2">
+            {vulnerabilitiesReport.vulnerabilities.map((v) => {
+              const label = codeSeverityLabel(v.severity)
+              const cfg = severityConfig(label)
+              const isOpen = expandedVuln === v.id + v.path
+
+              return (
+                <div
+                  key={v.id + v.path}
+                  className="rounded-lg border border-[var(--chip-line)] text-xs"
+                >
+                  <button
+                    onClick={() =>
+                      setExpandedVuln(isOpen ? null : v.id + v.path)
+                    }
+                    className="flex w-full items-center justify-between gap-2 p-3 text-left"
+                  >
+                    <div className="flex items-center gap-2 min-w-0">
+                      <span
+                        className={`flex-shrink-0 rounded-full px-2 py-0.5 text-[10px] font-semibold ${cfg.bg} ${cfg.text}`}
+                      >
+                        {label}
+                      </span>
+                      <span className="font-medium text-[var(--sea-ink)] truncate">
+                        {v.description || v.id}
+                      </span>
+                    </div>
+                    <span className="flex-shrink-0 opacity-40">
+                      {isOpen ? '▲' : '▼'}
+                    </span>
+                  </button>
+
+                  {isOpen && (
+                    <div className="border-t border-[var(--chip-line)] p-3 flex flex-col gap-2">
+                      <p className="font-mono text-[10px] text-[var(--sea-ink)] opacity-50">
+                        {v.path}
+                      </p>
+                      {v.remediation && (
+                        <div>
+                          <span className="font-medium text-[var(--sea-ink)] opacity-60">
+                            Rimedio:{' '}
+                          </span>
+                          <span className="text-[var(--sea-ink)] opacity-80">
+                            {v.remediation}
+                          </span>
+                        </div>
+                      )}
+                      {v.cwe.length > 0 && (
+                        <div className="flex flex-wrap gap-1">
+                          {v.cwe.map((c) => (
+                            <span
+                              key={c}
+                              className="rounded bg-[var(--chip-line)] px-1.5 py-0.5 text-[10px] text-[var(--sea-ink)] opacity-70"
+                            >
+                              {c}
+                            </span>
+                          ))}
+                        </div>
+                      )}
+                      {v.owasp.length > 0 && (
+                        <div className="flex flex-wrap gap-1">
+                          {v.owasp.map((o) => (
+                            <span
+                              key={o}
+                              className="rounded bg-[var(--lagoon)]/10 px-1.5 py-0.5 text-[10px] text-[var(--lagoon-deep)]"
+                            >
+                              {o}
+                            </span>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </div>
+              )
+            })}
+          </div>
+        </div>
+      )}
+
+      {/* ── Dipendenze vulnerabili: lista con fix version ──────────────────── */}
+      {depsReport.vulnerabilities.length > 0 && (
+        <div>
+          <p className="mb-2 text-xs font-medium text-[var(--sea-ink)] opacity-60">
+            Dipendenze vulnerabili ({depsReport.vulnerabilities.length})
+          </p>
+          <div className="flex flex-col divide-y divide-[var(--chip-line)] rounded-xl border border-[var(--chip-line)] overflow-hidden">
+            {depsReport.vulnerabilities.map((v) => {
+              const cfg = severityConfig(v.severity)
+              return (
+                <div
+                  key={v.id + v.packageVersion}
+                  className="flex items-center justify-between gap-3 px-3 py-2 text-xs"
+                >
+                  <div className="flex items-center gap-2 min-w-0">
+                    <span
+                      className={`flex-shrink-0 rounded-full px-2 py-0.5 text-[10px] font-semibold ${cfg.bg} ${cfg.text}`}
+                    >
+                      {v.severity}
+                    </span>
+                    <span className="font-medium text-[var(--sea-ink)] truncate">
+                      {v.packageName}
+                    </span>
+                    <span className="opacity-40">{v.packageVersion}</span>
+                  </div>
+                  {v.fixVersion && (
+                    <span className="flex-shrink-0 text-[10px] text-green-600">
+                      fix: {v.fixVersion}
+                    </span>
+                  )}
+                </div>
+              )
+            })}
+          </div>
+        </div>
+      )}
+
+      {/* ── Analisi testuale ───────────────────────────────────────────────── */}
+      {depsReport.vulnerabilityAnalysis && (
+        <div className="rounded-xl border border-[var(--chip-line)] p-3">
+          <p className="mb-1 text-xs font-medium text-[var(--sea-ink)] opacity-60">
+            Analisi
+          </p>
+          <p className="text-xs leading-relaxed text-[var(--sea-ink)] opacity-80">
+            {depsReport.vulnerabilityAnalysis}
+          </p>
+        </div>
+      )}
+
+      {vulnerabilitiesReport.vulnerabilities.length === 0 &&
+        depsReport.vulnerabilities.length === 0 && (
+          <p className="text-xs text-green-600">
+            Nessuna vulnerabilità rilevata.
+          </p>
+        )}
+    </section>
+  )
+}

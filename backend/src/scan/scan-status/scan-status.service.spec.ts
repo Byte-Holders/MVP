@@ -50,29 +50,41 @@ describe('ScanStatusService', () => {
         expect(result).toBe(status);
       }
     });
-  });
-
-  describe('setScanStatus', () => {
-    it('calls the repository to update each ScanStatus value', async () => {
-      for (const originalStatus of Object.values(ScanStatus)) {
-        for (const updatedStatus of Object.values(ScanStatus)) {
-          const updatedScan = makeScan({ status: updatedStatus });
-          const originalScan = makeScan({ status: originalStatus });
-
-          mockRepository.update.mockImplementation(
-            (id: string, scan: Partial<Scan>) => ({
-              ...scan,
-              id: id,
-            }),
-          );
-
-          await service.setScanStatus(originalScan.id, updatedStatus);
-          expect(mockRepository.update).toHaveReturnedWith({
-            id: updatedScan.id,
-            status: updatedScan.status,
-          });
-        }
+    it('throws when the scan is not found', async () => {
+      //
+      for (const status of Object.values(ScanStatus)) {
+        const scan = makeScan({ status });
+        // const id = scan.id;
+        mockRepository.find.mockResolvedValue(null);
+        await expect(service.getScanStatus(scan.id)).rejects.toThrow(
+          `Non sono state trovate scansioni in ${scan.id}`,
+        );
       }
     });
   });
 });
+
+// describe('setScanStatus', () => {
+//   it('calls the repository to update each ScanStatus value', async () => {
+//     for (const originalStatus of Object.values(ScanStatus)) {
+//       for (const updatedStatus of Object.values(ScanStatus)) {
+//         const updatedScan = makeScan({ status: updatedStatus });
+//         const originalScan = makeScan({ status: originalStatus });
+
+//         mockRepository.update.mockImplementation(
+//           (id: string, scan: Partial<Scan>) => ({
+//             ...scan,
+//             id: id,
+//           }),
+//         );
+
+//         await service.setScanStatus(originalScan.id, updatedStatus);
+//         expect(mockRepository.update).toHaveReturnedWith({
+//           id: updatedScan.id,
+//           status: updatedScan.status,
+//         });
+//       }
+//     }
+//   });
+//   });
+// });

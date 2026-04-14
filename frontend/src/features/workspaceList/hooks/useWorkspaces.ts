@@ -1,16 +1,18 @@
 import { useEffect, useState } from 'react'
 import { getWorkspaces } from '../model/getWorkspacesApi'
 import type { WorkspaceListItem } from '../types/Workspace'
+import type { IWorkspacesViewModel } from '../types/viewModels'
 
-export function useWorkspaces() {
+export function useWorkspaces(): IWorkspacesViewModel {
   const [workspaces, setWorkspaces] = useState<WorkspaceListItem[]>([])
-  const [isLoading, setIsLoading]   = useState(true)
-  const [error, setError]           = useState<string | null>(null)
+  const [isLoading, setIsLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
 
-  useEffect(() => { //chiama l'API per ottenere i workspace dell'utente 
+  useEffect(() => {
+    //chiama l'API per ottenere i workspace dell'utente
     getWorkspaces()
       .then(setWorkspaces)
-      .catch(err => setError(err.message))
+      .catch((err) => setError(err.message))
       .finally(() => setIsLoading(false))
   }, [])
 
@@ -19,7 +21,7 @@ export function useWorkspaces() {
     setIsLoading(true)
     getWorkspaces()
       .then(setWorkspaces)
-      .catch(err => setError(err.message))
+      .catch((err) => setError(err.message))
       .finally(() => setIsLoading(false))
   }
 

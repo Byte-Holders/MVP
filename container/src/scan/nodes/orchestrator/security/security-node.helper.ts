@@ -9,6 +9,7 @@ import { executeCli, type CliCommand } from '../../../exec.cli';
 type SemgrepResult = {
   results: {
     check_id: string;
+    path: string;
     extra: {
       message: string;
       severity: string;
@@ -21,6 +22,7 @@ type SemgrepMetadata = {
   category: string;
   cwe: string[];
   owasp: string[];
+  impact?: string;
 };
 
 @Injectable()
@@ -73,12 +75,14 @@ export class SecurityNodeHelper {
 
     return (json.results ?? []).map((r) => ({
       id: r.check_id ?? 'unknown',
+      path: r.path ?? '',
       description: r.extra?.message ?? '',
       remediation: '',
       severity: this.parseSeverity(r.extra?.severity),
-      category: r.extra?.metadata.category,
-      cwe: r.extra?.metadata.cwe,
-      owasp: r.extra?.metadata.owasp,
+      impact: r.extra?.metadata?.impact ?? '',
+      category: r.extra?.metadata?.category ?? '',
+      cwe: r.extra?.metadata?.cwe ?? [],
+      owasp: r.extra?.metadata?.owasp ?? [],
     }));
   }
 

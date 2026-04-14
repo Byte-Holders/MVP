@@ -1,7 +1,5 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import * as mongoose from 'mongoose';
 import { HydratedDocument } from 'mongoose';
-import { User } from '../../user/schemas/user.schema';
 import { WorkspaceRole } from '../roles.enum';
 
 export type WorkspaceMemberDocument = HydratedDocument<WorkspaceMember>;

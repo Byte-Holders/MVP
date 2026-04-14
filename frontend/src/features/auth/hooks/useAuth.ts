@@ -1,14 +1,19 @@
 import { useState, useEffect } from 'react'
-import { getCurrentUser, signOut, fetchAuthSession } from 'aws-amplify/auth'
-import { signInWithRedirect } from 'aws-amplify/auth'
+import {
+  fetchCurrentUser,
+  fetchSession,
+  signIn,
+  logOut,
+} from '../model/authApi'
+import type { IAuthViewModel } from '../types/viewModels'
 
 interface AuthState {
   isAuthenticated: boolean
   isLoading: boolean
-  user: { username: string; email?: string } | null
+  user: { username: string } | null
 }
 
-export function useAuth() {
+export function useAuth(): IAuthViewModel {
   const [authState, setAuthState] = useState<AuthState>({
     isAuthenticated: false,
     isLoading: true,
@@ -21,8 +26,8 @@ export function useAuth() {
 
   async function checkAuth() {
     try {
-      const user = await getCurrentUser()
-      const session = await fetchAuthSession()
+      const user = await fetchCurrentUser()
+      const session = await fetchSession()
       setAuthState({
         isAuthenticated: !!session.tokens,
         isLoading: false,
@@ -34,16 +39,11 @@ export function useAuth() {
   }
 
   async function login(redirectTo?: string) {
-    // Salva la destinazione prima del redirect OAuth
-    if (redirectTo) {
-      sessionStorage.setItem('auth_redirect', redirectTo)
-    }
-    await signInWithRedirect() // apre la Cognito Hosted UI
+    await signIn(redirectTo)
   }
 
   async function logout() {
-    await signOut()
-    setAuthState({ isAuthenticated: false, isLoading: false, user: null })
+    await logOut()
   }
 
   return { ...authState, login, logout, checkAuth }

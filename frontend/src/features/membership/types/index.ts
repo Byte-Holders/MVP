@@ -1,5 +1,6 @@
 export interface Invite {
-  workspaceId: string
+  _id: string
+  workspaceName: string
   senderUsername: string
   recipientUsername: string
   recipientRole: string

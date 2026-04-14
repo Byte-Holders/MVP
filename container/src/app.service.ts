@@ -1,43 +1,84 @@
-import { Injectable } from '@nestjs/common';
-import { ScanService } from './scan/scan.service';
-import { ReporterService } from './reporter/reporter.service';
+import { Inject, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import { JwtService } from '@nestjs/jwt';
 import { Target } from './scan/target.types';
+import {
+  ISCAN_SERVICE_TOKEN,
+  type IScanService,
+} from './scan/iscan-service.interface';
+import {
+  IREPORTER_SERVICE_TOKEN,
+  type IReporterService,
+} from './reporter/ireporter-service.interface';
+
+interface ReportCallbackToken {
+  TARGET_OWNER: string;
+  TARGET_REPOSITORY: string;
+  TARGET_BRANCH: string;
+  RECEIVER_URL: string;
+  AWS_ACCESS_KEY_ID: string;
+  AWS_SECRET_ACCESS_KEY: string;
+  AWS_SESSION_TOKEN: string;
+  AWS_BEARER_TOKEN_BEDROCK: string;
+}
 
 @Injectable()
 export class AppService {
   constructor(
-    private readonly scanService: ScanService,
-    private readonly reporterService: ReporterService,
+    @Inject(ISCAN_SERVICE_TOKEN) private readonly scanService: IScanService,
+    @Inject(IREPORTER_SERVICE_TOKEN)
+    private readonly reporterService: IReporterService,
     private readonly configService: ConfigService,
+    private readonly jwtService: JwtService,
   ) {}
 
   async run() {
-    const owner = this.configService.get<string>('TARGET_OWNER');
-    const repository = this.configService.get<string>('TARGET_REPOSITORY');
-    const branch = this.configService.get<string>('TARGET_BRANCH');
+    const reportCallbackToken = this.configService.get<string>(
+      'REPORT_CALLBACK_TOKEN',
+    );
+    if (!reportCallbackToken) {
+      throw new Error('Non è stato iniettato il REPORT_CALLBACK_TOKEN.');
+    }
 
-    // Da gestire meglio
-    if (!owner || !repository || !branch) {
+    const decoded =
+      this.jwtService.decode<ReportCallbackToken>(reportCallbackToken);
+    if (!decoded) {
+      throw new Error('REPORT_CALLBACK_TOKEN mal formattato.');
+    }
+
+    const {
+      TARGET_OWNER,
+      TARGET_REPOSITORY,
+      TARGET_BRANCH,
+      RECEIVER_URL,
+      AWS_ACCESS_KEY_ID,
+      AWS_SECRET_ACCESS_KEY,
+      AWS_SESSION_TOKEN,
+      AWS_BEARER_TOKEN_BEDROCK,
+    } = decoded;
+
+    if (!TARGET_OWNER || !TARGET_REPOSITORY || !TARGET_BRANCH) {
       throw new Error(
-        `Mancano informazioni per lanciare scansioni.\nOwner: ${owner}\nRepository: ${repository}\nBranch: ${branch}`,
+        `Mancano informazioni per lanciare scansioni.\nOwner: ${TARGET_OWNER}\nRepository: ${TARGET_REPOSITORY}\nBranch: ${TARGET_BRANCH}`,
       );
     }
 
-    const token = this.configService.get<string>('RECEIVER_TOKEN');
-    if (!token) {
-      throw new Error('Manca il token per comunicazione con backend.');
-    }
+    process.env.AWS_ACCESS_KEY_ID = AWS_ACCESS_KEY_ID;
+    process.env.AWS_SECRET_ACCESS_KEY = AWS_SECRET_ACCESS_KEY;
+    process.env.AWS_SESSION_TOKEN = AWS_SESSION_TOKEN;
+    process.env.AWS_BEARER_TOKEN_BEDROCK = AWS_BEARER_TOKEN_BEDROCK;
+
+    this.configService.set('RECEIVER_URL', RECEIVER_URL);
 
     const target: Target = {
-      owner,
-      repository,
-      branch,
+      owner: TARGET_OWNER,
+      repository: TARGET_REPOSITORY,
+      branch: TARGET_BRANCH,
     };
 
     const report = await this.scanService.scan(target);
     if (!report) throw new Error('Non è stato generato alcun report');
 
-    await this.reporterService.sendReport(report, token);
+    await this.reporterService.sendReport(report, reportCallbackToken);
   }
 }

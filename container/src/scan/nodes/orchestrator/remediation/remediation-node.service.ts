@@ -5,32 +5,39 @@ import {
   VulnerabilitiesReport,
   VulnerabilityUnit,
 } from '../security/security-report.type';
-import { WorkflowState } from '../orchestrator.service';
+import { WorkflowState } from '../workflow-state.type';
 import { RemediationNodeHelper } from './remediation-node.helper';
+import { INodeScanService } from '../inode-scan-service.interface';
+
+export const REMEDIATION_NODE_SERVICE_TOKEN = 'RemediationNodeService';
 
 @Injectable()
-export class RemediationNodeService {
+export class RemediationNodeService implements INodeScanService {
   private readonly logger = new Logger(RemediationNodeService.name);
 
   constructor(private readonly helper: RemediationNodeHelper) {}
 
-  async scan(vulnerabilitiesReport: {
-    vulnerabilities: VulnerabilitiesReport | null | undefined;
+  async scan({
+    vulnerabilitiesReport,
+    vulnerabilitiesReportPath,
+  }: {
+    vulnerabilitiesReport: VulnerabilitiesReport | null | undefined;
     vulnerabilitiesReportPath?: string;
   }): Promise<Partial<WorkflowState>> {
-    const semgrepReportPath = vulnerabilitiesReport.vulnerabilitiesReportPath;
-
-    if (!semgrepReportPath) {
+    if (
+      !vulnerabilitiesReportPath ||
+      vulnerabilitiesReport?.vulnerabilities.length == 0
+    ) {
       this.logger.warn('Non è stato generato un report da semgrep');
       return {};
     }
 
     this.logger.log(
-      `Generazione remediation per ${vulnerabilitiesReport.vulnerabilities?.vulnerabilities?.length} vulneraibilità`,
+      `Generazione remediation per ${vulnerabilitiesReport?.vulnerabilities?.length} vulnerabilità`,
     );
 
     try {
-      await access(semgrepReportPath);
+      await access(vulnerabilitiesReportPath);
     } catch (e: unknown) {
       this.logger.error(
         `Errore accesso a report di semgrep: ${(e as Error).message}`,
@@ -38,7 +45,9 @@ export class RemediationNodeService {
       return {};
     }
 
-    const rawJson = JSON.parse(await readFile(semgrepReportPath, 'utf-8')) as {
+    const rawJson = JSON.parse(
+      await readFile(vulnerabilitiesReportPath, 'utf-8'),
+    ) as {
       results?: { path: string }[];
     };
 
@@ -47,14 +56,14 @@ export class RemediationNodeService {
       return {
         vulnerabilitiesReport: {
           vulnerabilities: [],
-          mark: vulnerabilitiesReport.vulnerabilities?.mark ?? 10,
+          mark: vulnerabilitiesReport?.mark ?? 10,
         },
       };
     }
 
     const model = this.helper.createModel();
     const vulnerabilities: VulnerabilityUnit[] = [
-      ...(vulnerabilitiesReport?.vulnerabilities?.vulnerabilities ?? []),
+      ...(vulnerabilitiesReport?.vulnerabilities ?? []),
     ];
 
     // Raggruppa i risultati semgrep per file, in poche parole metto in result tutti i file presenti in almeno una vulnerabilita, se un file e' presente in piu di 1 vulnerabilita lo passo cmq 1 sola volta
@@ -118,8 +127,8 @@ export class RemediationNodeService {
 
     return {
       vulnerabilitiesReport: {
-        vulnerabilities: vulnerabilities,
-        mark: vulnerabilitiesReport.vulnerabilities?.mark ?? 10,
+        vulnerabilities,
+        mark: vulnerabilitiesReport?.mark ?? 10,
       },
     };
   }

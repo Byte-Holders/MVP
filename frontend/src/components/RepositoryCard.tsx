@@ -5,10 +5,22 @@ type RepositoryCardProps = {
   documentationScore?: number
   codeCoverage?: number
   cvss?: number
+  onRemove?: () => void
+  isRemoving?: boolean
 }
 
-function ScoreBar({ label, value }: { label: string; value?: number }) {
-  const percentage = value ?? 0
+function ScoreBar({
+  label,
+  value,
+  max = 100,
+  unit = '%',
+}: {
+  label: string
+  value?: number
+  max?: number
+  unit?: string
+}) {
+  const percentage = value !== undefined ? (value / max) * 100 : 0
   const color =
     percentage >= 75
       ? 'bg-green-500'
@@ -20,7 +32,7 @@ function ScoreBar({ label, value }: { label: string; value?: number }) {
     <div className="flex flex-col gap-1">
       <div className="flex justify-between text-xs text-[var(--sea-ink)] opacity-70">
         <span>{label}</span>
-        <span>{value !== undefined ? `${value}%` : '—'}</span>
+        <span>{value !== undefined ? `${value}${unit}` : '—'}</span>
       </div>
       <div className="h-1.5 w-full rounded-full bg-[var(--chip-line)]">
         <div
@@ -32,34 +44,6 @@ function ScoreBar({ label, value }: { label: string; value?: number }) {
   )
 }
 
-function CvssBadge({ cvss }: { cvss?: number }) {
-  if (cvss === undefined) return <span className="text-xs opacity-50">—</span>
-
-  const color =
-    cvss <= 3.9
-      ? 'bg-green-100 text-green-700'
-      : cvss <= 6.9
-        ? 'bg-yellow-100 text-yellow-700'
-        : cvss <= 8.9
-          ? 'bg-orange-100 text-orange-700'
-          : 'bg-red-100 text-red-700'
-
-  const label =
-    cvss <= 3.9
-      ? 'Low'
-      : cvss <= 6.9
-        ? 'Medium'
-        : cvss <= 8.9
-          ? 'High'
-          : 'Critical'
-
-  return (
-    <span className={`rounded-full px-2 py-0.5 text-xs font-semibold ${color}`}>
-      {label} {cvss.toFixed(1)}
-    </span>
-  )
-}
-
 export default function RepositoryCard({
   name,
   ownerName,
@@ -67,6 +51,8 @@ export default function RepositoryCard({
   documentationScore,
   codeCoverage,
   cvss,
+  onRemove,
+  isRemoving,
 }: RepositoryCardProps) {
   const formattedDate = dateScan
     ? new Date(dateScan).toLocaleDateString('it-IT', {
@@ -87,15 +73,26 @@ export default function RepositoryCard({
             {name}
           </h3>
         </div>
-        <div className="flex flex-col items-end gap-1">
-          <span className="text-xs text-[var(--sea-ink)] opacity-50">CVSS</span>
-          <CvssBadge cvss={cvss} />
-        </div>
+        {onRemove && (
+          <button
+            onClick={onRemove}
+            disabled={isRemoving}
+            className="rounded-lg border border-[var(--destructive)] px-3 py-1.5 text-xs font-medium text-[var(--destructive)] transition-opacity hover:opacity-70 disabled:opacity-40"
+          >
+            {isRemoving ? 'Rimozione...' : 'Rimuovi'}
+          </button>
+        )}
       </div>
 
       <div className="flex flex-col gap-2">
-        <ScoreBar label="Documentation" value={documentationScore} />
+        <ScoreBar
+          label="Documentation"
+          value={documentationScore}
+          max={10}
+          unit="/10"
+        />
         <ScoreBar label="Code Coverage" value={codeCoverage} />
+        <ScoreBar label="CVSS" value={cvss} max={10} unit="/10" />
       </div>
 
       {formattedDate && (

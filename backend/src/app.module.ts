@@ -7,8 +7,8 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { UserModule } from './user/user.module';
 import { AuthModule } from './auth/auth.module';
 import { ScanModule } from './scan/scan.module';
-import { WorkspaceRepositoryModule } from './workspace/workspaceRepository/workspaceRepository.module';
 import { MembershipModule } from './membership/membership.module';
+import { ReportModule } from './report/report.module';
 
 @Module({
   imports: [
@@ -18,7 +18,7 @@ import { MembershipModule } from './membership/membership.module';
     MongooseModule.forRootAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
-      useFactory: async (configService: ConfigService) => ({
+      useFactory: (configService: ConfigService) => ({
         uri: `mongodb://${configService.get<string>('DB_USER')}:${configService.get<string>('DB_PASSWORD')}@${configService.get<string>('DB_IP')}:${configService.get<string>('DB_PORT')}/${configService.get<string>('DB_NAME')}?authSource=admin`,
       }),
     }),
@@ -26,8 +26,8 @@ import { MembershipModule } from './membership/membership.module';
     UserModule,
     AuthModule,
     ScanModule,
-    WorkspaceRepositoryModule,
     MembershipModule,
+    ReportModule,
   ],
   controllers: [AppController],
   providers: [AppService],

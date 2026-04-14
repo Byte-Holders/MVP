@@ -6,13 +6,16 @@ type DepsReportUnit = {
 type VulnerabilityUnit = {
   id: string;
   severity: string;
+  description: string;
   packageName: string;
   packageVersion: string;
-  fixedInVersion?: string;
+  fixVersion: string | undefined;
 };
 
 export type DepsReport = {
-  report: DepsReportUnit[];
-  vulnerabilities?: VulnerabilityUnit[];
-  vulnerabilityAnalysis?: string;
+  list: DepsReportUnit[];
+  libraries: DepsReportUnit[];
+  frameworks: DepsReportUnit[];
+  vulnerabilities: VulnerabilityUnit[];
+  vulnerabilityAnalysis: string;
 };
