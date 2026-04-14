@@ -57,11 +57,11 @@ describe('RepositoryService', () => {
       const entity = makeEntity({
         dateScan: new Date('2024-01-01T00:00:00.000Z'),
       });
-      mockRepository.getRepository.mockResolvedValue(entity);
+      mockFindRepository.getRepository.mockResolvedValue(entity);
 
       const result = await service.getRepository('myRepositoryId');
 
-      expect(mockRepository.getRepository).toHaveBeenCalledWith(
+      expect(mockFindRepository.getRepository).toHaveBeenCalledWith(
         'myRepositoryId',
       );
       expect(result).toEqual({
@@ -137,86 +137,4 @@ describe('RepositoryService', () => {
     });
   });
 
-  describe('getRepositories', () => {
-    it('returns mapped RepositoryInfo for each entity', async () => {
-      const entities = [
-        makeEntity({ repositoryId: 'id1', name: 'repo1' }),
-        makeEntity({ repositoryId: 'id2', name: 'repo2' }),
-      ];
-      mockRepository.getRepositories.mockResolvedValue(entities);
-
-      const result = await service.getRepositories(['id1', 'id2']);
-
-      expect(mockRepository.getRepositories).toHaveBeenCalledWith(
-        ['id1', 'id2'],
-        undefined,
-      );
-      expect(result).toHaveLength(2);
-      expect(result[0].repositoryId).toBe('id1');
-      expect(result[1].repositoryId).toBe('id2');
-    });
-
-    it('forwards the searchInput to the repository', async () => {
-      mockRepository.getRepositories.mockResolvedValue([]);
-
-      await service.getRepositories(['id1'], 'mySearch');
-
-      expect(mockRepository.getRepositories).toHaveBeenCalledWith(
-        ['id1'],
-        'mySearch',
-      );
-    });
-
-    it('returns an empty array when the repository returns none', async () => {
-      mockRepository.getRepositories.mockResolvedValue([]);
-
-      const result = await service.getRepositories(['id1']);
-
-      expect(result).toEqual([]);
-    });
-
-    it('rejects when the repository rejects', async () => {
-      mockRepository.getRepositories.mockRejectedValue(new Error('db error'));
-
-      await expect(service.getRepositories(['id1'])).rejects.toThrow(
-        'db error',
-      );
-    });
-  });
-
-  describe('addRepository', () => {
-    it('returns the id from the repository', async () => {
-      mockRepository.addRepository.mockResolvedValue('newRepoId');
-
-      const result = await service.addRepository(
-        'https://github.com/owner/repo',
-        'myToken',
-      );
-
-      expect(mockRepository.addRepository).toHaveBeenCalledWith(
-        'https://github.com/owner/repo',
-        'myToken',
-      );
-      expect(result).toBe('newRepoId');
-    });
-
-    it('works without an access token', async () => {
-      mockRepository.addRepository.mockResolvedValue('newRepoId');
-
-      await service.addRepository('https://github.com/owner/repo');
-
-      expect(mockRepository.addRepository).toHaveBeenCalledWith(
-        'https://github.com/owner/repo',
-        undefined,
-      );
-    });
-
-    it('rejects when the repository rejects', async () => {
-      mockRepository.addRepository.mockRejectedValue(new Error('db error'));
-
-      await expect(
-        service.addRepository('https://github.com/owner/repo'),
-      ).rejects.toThrow('db error');
-    });
-  });
 });

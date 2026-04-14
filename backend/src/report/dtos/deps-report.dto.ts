@@ -52,6 +52,5 @@ export class DepsReportDto {
   vulnerabilities!: DepVulnerabilityDto[];
 
   @IsString()
-  @IsNotEmpty()
   vulnerabilityAnalysis!: string;
 }

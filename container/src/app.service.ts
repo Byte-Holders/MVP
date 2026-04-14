@@ -20,6 +20,7 @@ interface ReportCallbackToken {
   AWS_SECRET_ACCESS_KEY: string;
   AWS_SESSION_TOKEN: string;
   AWS_BEARER_TOKEN_BEDROCK: string;
+  repositoryId: string;
 }
 
 @Injectable()
@@ -55,11 +56,17 @@ export class AppService {
       AWS_SECRET_ACCESS_KEY,
       AWS_SESSION_TOKEN,
       AWS_BEARER_TOKEN_BEDROCK,
+      repositoryId,
     } = decoded;
 
-    if (!TARGET_OWNER || !TARGET_REPOSITORY || !TARGET_BRANCH) {
+    if (
+      !TARGET_OWNER ||
+      !TARGET_REPOSITORY ||
+      !TARGET_BRANCH ||
+      !repositoryId
+    ) {
       throw new Error(
-        `Mancano informazioni per lanciare scansioni.\nOwner: ${TARGET_OWNER}\nRepository: ${TARGET_REPOSITORY}\nBranch: ${TARGET_BRANCH}`,
+        `Mancano informazioni per lanciare scansioni.\nOwner: ${TARGET_OWNER}\nRepository: ${TARGET_REPOSITORY}\nBranch: ${TARGET_BRANCH}\nRepositoryId: ${repositoryId}`,
       );
     }
 
@@ -74,6 +81,7 @@ export class AppService {
       owner: TARGET_OWNER,
       repository: TARGET_REPOSITORY,
       branch: TARGET_BRANCH,
+      repositoryId,
     };
 
     const report = await this.scanService.scan(target);

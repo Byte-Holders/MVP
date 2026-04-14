@@ -237,9 +237,7 @@ export function SecuritySection({ vulnerabilitiesReport, depsReport }: Props) {
                   className="rounded-lg border border-[var(--chip-line)] text-xs"
                 >
                   <button
-                    onClick={() =>
-                      setExpandedVuln(isOpen ? null : key)
-                    }
+                    onClick={() => setExpandedVuln(isOpen ? null : key)}
                     className="flex w-full items-center justify-between gap-2 p-3 text-left"
                   >
                     <div className="flex items-center gap-2 min-w-0">
