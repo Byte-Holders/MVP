@@ -11,7 +11,6 @@ const makeRepositoryInfo = (
   repositoryId: 'myRepositoryId',
   ownerName: 'myOwner',
   name: 'myRepo',
-  branches: ['main'],
   ...overrides,
 });
 
