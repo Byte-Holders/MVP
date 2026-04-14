@@ -14,10 +14,10 @@ export class Membership extends Document {
   @Prop({ required: true, type: mongoose.Schema.Types.ObjectId, ref: 'User' })
   recipientId!: mongoose.Types.ObjectId;
 
-  @Prop({ required: true, enum: WorkspaceRole })
+  @Prop({ required: true, enum: WorkspaceRole, type: String })
   recipientRole!: WorkspaceRole;
 
-  @Prop({ default: MembershipStatus.Pending, enum: MembershipStatus })
+  @Prop({ default: MembershipStatus.Pending, enum: MembershipStatus, type: String })
   status!: MembershipStatus;
 }
 
