@@ -6,7 +6,7 @@ export type VulnerabilityUnit = {
   severity: number;
   impact: string;
   category: string;
-  cwe: string[];
+  cwe: string;
   owasp: string[];
 };
 
