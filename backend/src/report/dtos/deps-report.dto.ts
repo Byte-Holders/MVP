@@ -40,10 +40,11 @@ export class DepVulnerabilityDto {
 }
 
 export class DepsReportDto {
+  @IsOptional()
   @IsArray()
   @ValidateNested({ each: true })
   @Type(() => DependencyDto)
-  list!: DependencyDto[];
+  list?: DependencyDto[];
 
   @IsArray()
   @ValidateNested({ each: true })
