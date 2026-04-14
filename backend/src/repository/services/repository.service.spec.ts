@@ -37,7 +37,10 @@ describe('RepositoryService', () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         RepositoryService,
-        { provide: RepositoryFindRepositoryToken, useValue: mockFindRepository },
+        {
+          provide: RepositoryFindRepositoryToken,
+          useValue: mockFindRepository,
+        },
         { provide: GitHubRepositoryToken, useValue: mockGitHubRepository },
       ],
     }).compile();
@@ -113,8 +116,13 @@ describe('RepositoryService', () => {
 
       const result = await service.getBranches('myRepositoryId');
 
-      expect(mockFindRepository.getRepository).toHaveBeenCalledWith('myRepositoryId');
-      expect(mockGitHubRepository.getBranches).toHaveBeenCalledWith('myOwner', 'myRepo');
+      expect(mockFindRepository.getRepository).toHaveBeenCalledWith(
+        'myRepositoryId',
+      );
+      expect(mockGitHubRepository.getBranches).toHaveBeenCalledWith(
+        'myOwner',
+        'myRepo',
+      );
       expect(result).toEqual(['main', 'develop']);
     });
 
