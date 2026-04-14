@@ -61,11 +61,11 @@ class CodeVulnerabilitySchema {
   @Prop({ required: true, type: String })
   category!: string;
 
-  @Prop({ required: true, type: [String] })
-  cwe!: string[];
+  @Prop({ required: false, type: String })
+  cwe?: string;
 
-  @Prop({ required: true, type: [String] })
-  owasp!: string[];
+  @Prop({ required: false, type: [String] })
+  owasp?: string[];
 }
 const CodeVulnerabilitySchemaDefinition = SchemaFactory.createForClass(
   CodeVulnerabilitySchema,

@@ -47,7 +47,7 @@ export function ReportPage({
   return (
     <div className="flex flex-col gap-6 p-6">
       {/* Header */}
-      <div className="sticky top-[72px] z-30 -mx-6 flex items-center justify-between border-b border-[var(--chip-line)] bg-[var(--h-bg)] px-6 py-3 backdrop-blur-md">
+      <div className="sticky top-[72px] z-30 -mx-6 flex items-center justify-between border-b border-[var(--chip-line)] bg-[var(--header-bg)] px-6 py-3 backdrop-blur-md">
         <div>
           <p className="text-xs text-[var(--sea-ink)] opacity-60">
             {ownerName}
@@ -89,7 +89,7 @@ export function ReportPage({
       )}
 
       {reportError && (
-        <div className="rounded-2xl border border-red-200 bg-red-50 p-5 text-sm text-red-600">
+        <div className="rounded-2xl border border-red-200 bg-red-50 p-5 text-sm text-red-600 dark:border-red-900/50 dark:bg-red-900/20 dark:text-red-400">
           Nessun report disponibile per questo branch.
         </div>
       )}

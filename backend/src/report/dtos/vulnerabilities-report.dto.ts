@@ -2,6 +2,7 @@ import {
   IsArray,
   IsNotEmpty,
   IsNumber,
+  IsOptional,
   IsString,
   Max,
   Min,
@@ -35,15 +36,14 @@ export class CodeVulnerabilityDto {
   @IsString()
   category!: string;
 
-  @Transform(({ value }) => value ?? [])
-  @IsArray()
-  @IsString({ each: true })
-  cwe!: string[];
+  @IsOptional()
+  @IsString()
+  cwe?: string;
 
   @Transform(({ value }) => value ?? [])
   @IsArray()
   @IsString({ each: true })
-  owasp!: string[];
+  owasp?: string[];
 }
 
 export class VulnerabilitiesReportDto {

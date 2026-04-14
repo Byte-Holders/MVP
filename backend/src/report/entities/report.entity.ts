@@ -26,7 +26,7 @@ export class CodeVulnerabilityEntity {
   severity!: number;
   impact!: string;
   category!: string;
-  cwe?: string[];
+  cwe?: string;
   owasp?: string[];
 }
 
