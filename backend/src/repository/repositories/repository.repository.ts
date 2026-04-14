@@ -26,7 +26,8 @@ export class RepositoryRepository
     const objectIds = repositoryIds.map((id) => new Types.ObjectId(id));
     const filter: Record<string, unknown> = { _id: { $in: objectIds } };
     if (searchInput) {
-      filter['name'] = { $regex: searchInput, $options: 'i' };
+      const escaped = searchInput.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+      filter['name'] = { $regex: escaped, $options: 'i' };
     }
     const repositories = await this.repositoryModel.find(filter);
     return repositories.map((r) => this.toRepositoryEntity(r));

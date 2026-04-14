@@ -14,9 +14,10 @@ export class ReportTargetDto {
   @IsNotEmpty()
   owner?: string;
 
+  @IsOptional()
   @IsString()
   @IsNotEmpty()
-  repositoryId!: string;
+  repositoryId?: string;
 
   @IsString()
   @IsNotEmpty()

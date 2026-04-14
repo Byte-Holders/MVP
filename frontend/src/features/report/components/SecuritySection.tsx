@@ -225,19 +225,20 @@ export function SecuritySection({ vulnerabilitiesReport, depsReport }: Props) {
             {vulnerabilitiesReport.vulnerabilities.length})
           </p>
           <div className="flex flex-col gap-2">
-            {vulnerabilitiesReport.vulnerabilities.map((v) => {
+            {vulnerabilitiesReport.vulnerabilities.map((v, i) => {
               const label = codeSeverityLabel(v.severity)
               const cfg = severityConfig(label)
-              const isOpen = expandedVuln === v.id + v.path
+              const key = `${v.id}-${v.path}-${i}`
+              const isOpen = expandedVuln === key
 
               return (
                 <div
-                  key={v.id + v.path}
+                  key={key}
                   className="rounded-lg border border-[var(--chip-line)] text-xs"
                 >
                   <button
                     onClick={() =>
-                      setExpandedVuln(isOpen ? null : v.id + v.path)
+                      setExpandedVuln(isOpen ? null : key)
                     }
                     className="flex w-full items-center justify-between gap-2 p-3 text-left"
                   >
@@ -311,11 +312,11 @@ export function SecuritySection({ vulnerabilitiesReport, depsReport }: Props) {
             Dipendenze vulnerabili ({depsReport.vulnerabilities.length})
           </p>
           <div className="flex flex-col divide-y divide-[var(--chip-line)] rounded-xl border border-[var(--chip-line)] overflow-hidden">
-            {depsReport.vulnerabilities.map((v) => {
+            {depsReport.vulnerabilities.map((v, i) => {
               const cfg = severityConfig(v.severity)
               return (
                 <div
-                  key={v.id + v.packageVersion}
+                  key={`${v.id}-${v.packageName}-${v.packageVersion}-${i}`}
                   className="flex items-center justify-between gap-3 px-3 py-2 text-xs"
                 >
                   <div className="flex items-center gap-2 min-w-0">

@@ -22,8 +22,10 @@ const makeReport = (...overrides: any[]): Report => ({
         {
           id: 'myVulnerabilityId',
           severity: 'HIGH',
+          description: 'myVulnerabilityDescription',
           packageName: 'myPackageName',
           packageVersion: 'myPackageVersion',
+          fixVersion: undefined,
         },
       ],
       vulnerabilityAnalysis: 'myShortSummaryForVulnerabilityAnalysis',
@@ -116,6 +118,7 @@ const makeReport = (...overrides: any[]): Report => ({
       owner: 'myTargetOwner',
       repository: 'myTargetRepository',
       branch: 'myTargetBranch',
+      repositoryId: 'myRepositoryId',
     },
   },
   ...overrides,
