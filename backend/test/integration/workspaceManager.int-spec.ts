@@ -1,5 +1,9 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { MongooseModule, getModelToken, getConnectionToken } from '@nestjs/mongoose';
+import {
+  MongooseModule,
+  getModelToken,
+  getConnectionToken,
+} from '@nestjs/mongoose';
 import { Model, Connection } from 'mongoose';
 import { WorkspaceModule } from '../../src/workspace/workspace.module';
 import { Workspace } from '../../src/workspace/schemas/workspace.schema';
@@ -9,17 +13,19 @@ import { WorkspaceManagerModule } from '../../src/workspace/workspaceManager/wor
 describe('WorkspaceManager Integration Tests', () => {
   let dbConnection: Connection;
   let workspaceModel: Model<Workspace>;
-  
+
   // 2. DICHIARIAMO LA VARIABILE CORRETTA
   let managerService: WorkspaceManagerService;
 
   beforeAll(async () => {
     const mongoUri = process.env.MONGO_URI;
-    
+
     if (!mongoUri) {
-      throw new Error("La variabile d'ambiente MONGO_URI deve essere impostata per i test di integrazione.");
+      throw new Error(
+        "La variabile d'ambiente MONGO_URI deve essere impostata per i test di integrazione.",
+      );
     }
-    
+
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [
         MongooseModule.forRoot(mongoUri),
@@ -29,15 +35,19 @@ describe('WorkspaceManager Integration Tests', () => {
     }).compile();
 
     // 3. ESTRAIAMO IL SERVIZIO GIUSTO
-    // (Nota: se il tuo team usa un Token qui come faceva per le repository, 
+    // (Nota: se il tuo team usa un Token qui come faceva per le repository,
     // potresti dover usare un Token es: moduleFixture.get<WorkspaceManagerService>('IWorkspaceManagerServiceToken'))
-    managerService = moduleFixture.get<WorkspaceManagerService>('IWorkspaceManagerService');  
-    
-    workspaceModel = moduleFixture.get<Model<Workspace>>(getModelToken(Workspace.name));
+    managerService = moduleFixture.get<WorkspaceManagerService>(
+      'IWorkspaceManagerService',
+    );
+
+    workspaceModel = moduleFixture.get<Model<Workspace>>(
+      getModelToken(Workspace.name),
+    );
     dbConnection = moduleFixture.get(getConnectionToken());
   });
 
-  // ... da qui in poi lascia il tuo afterEach, afterAll e tutti i describe() intatti! ... 
+  // ... da qui in poi lascia il tuo afterEach, afterAll e tutti i describe() intatti! ...
 
   // 2. AFTER EACH
   afterEach(async () => {
@@ -68,16 +78,19 @@ describe('WorkspaceManager Integration Tests', () => {
       };
 
       // 2. ACT
-      const workspaceCreato = await managerService.createWorkspace(datiNuovoWorkspace);
+      const workspaceCreato =
+        await managerService.createWorkspace(datiNuovoWorkspace);
 
       // 3. ASSERT
       // Andiamo a leggere il database vero per vedere cos'ha salvato Mongoose
       // (Attenzione: assicurati di usare workspaceCreato.id o workspaceCreato._id a seconda di come è fatto il tuo BO)
-      const documentoNelDb = await workspaceModel.findById(workspaceCreato.id || (workspaceCreato as any)._id).exec();
-      
+      const documentoNelDb = await workspaceModel
+        .findById(workspaceCreato.id || (workspaceCreato as any)._id)
+        .exec();
+
       expect(documentoNelDb).toBeDefined();
       expect(documentoNelDb!.name).toBe('Progetto Gamma');
-      
+
       // Verifichiamo la logica di business del tuo service!
       expect(documentoNelDb!.members.length).toBe(1);
       expect(documentoNelDb!.members[0].userId).toBe('user-123');
@@ -89,16 +102,18 @@ describe('WorkspaceManager Integration Tests', () => {
       const dati = {
         name: 'Progetto Duplicato',
         ownerId: 'user-123',
-        ownerUsername: 'giacomo_dev'
+        ownerUsername: 'giacomo_dev',
       };
-      
+
       // Creiamo il primo con successo
       await managerService.createWorkspace(dati);
 
       // 2 & 3. ACT & ASSERT
-      // Proviamo a ricrearlo identico e ci aspettiamo che il service catturi l'errore 11000 di Mongo 
+      // Proviamo a ricrearlo identico e ci aspettiamo che il service catturi l'errore 11000 di Mongo
       // e lanci la tua ConflictException
-      await expect(managerService.createWorkspace(dati)).rejects.toThrow('Hai già un workspace chiamato "Progetto Duplicato"');
+      await expect(managerService.createWorkspace(dati)).rejects.toThrow(
+        'Hai già un workspace chiamato "Progetto Duplicato"',
+      );
     });
   });
 
@@ -110,7 +125,7 @@ describe('WorkspaceManager Integration Tests', () => {
         name: 'Da Cancellare',
         ownerId: 'user-proprietario',
         creationDate: new Date(),
-        members: []
+        members: [],
       });
       const id = workspaceDaCancellare._id.toString();
 
@@ -130,13 +145,15 @@ describe('WorkspaceManager Integration Tests', () => {
         name: 'Top Secret',
         ownerId: 'user-proprietario',
         creationDate: new Date(),
-        members: []
+        members: [],
       });
       const id = workspaceDaCancellare._id.toString();
 
       // 2 & 3. ACT & ASSERT
       // Passiamo un ID di un utente "intruso"
-      await expect(managerService.deleteWorkspace(id, 'utente-intruso')).rejects.toThrow('Solo il proprietario può cancellare il workspace');
+      await expect(
+        managerService.deleteWorkspace(id, 'utente-intruso'),
+      ).rejects.toThrow('Solo il proprietario può cancellare il workspace');
     });
   });
 });

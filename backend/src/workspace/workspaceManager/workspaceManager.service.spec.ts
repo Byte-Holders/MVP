@@ -1,6 +1,10 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { WorkspaceManagerService } from './workspaceManager.service';
-import { ConflictException, NotFoundException, ForbiddenException } from '@nestjs/common';
+import {
+  ConflictException,
+  NotFoundException,
+  ForbiddenException,
+} from '@nestjs/common';
 import { WorkspaceRole } from '../roles.enum'; // Controlla che il path sia giusto!
 
 describe('WorkspaceManagerService', () => {
@@ -42,27 +46,42 @@ describe('WorkspaceManagerService', () => {
   // TEST: createWorkspace
   // ==========================================
   describe('createWorkspace', () => {
-    
     it('dovrebbe lanciare ConflictException se il nome esiste già (errore 11000)', async () => {
-      const datiCreazione = { name: 'Workspace Doppio', ownerId: 'user1', ownerUsername: 'user1' };
+      const datiCreazione = {
+        name: 'Workspace Doppio',
+        ownerId: 'user1',
+        ownerUsername: 'user1',
+      };
       mockRepository.create.mockRejectedValue({ code: 11000 });
 
-      await expect(service.createWorkspace(datiCreazione)).rejects.toThrow(ConflictException);
+      await expect(service.createWorkspace(datiCreazione)).rejects.toThrow(
+        ConflictException,
+      );
     });
 
     it('dovrebbe creare il workspace con successo', async () => {
-      const datiCreazione = { name: 'Nuovo WS', ownerId: 'user1', ownerUsername: 'user1' };
-      
+      const datiCreazione = {
+        name: 'Nuovo WS',
+        ownerId: 'user1',
+        ownerUsername: 'user1',
+      };
+
       // Simuliamo il documento restituito dal DB (con l'id finto e i dati)
       const fintoDocumentoSalvato = {
         _id: 'id-fittizio-123',
         ...datiCreazione,
         creationDate: new Date(),
         // Usiamo "members" e mettiamo i campi che il mapper si aspetta!
-        members: [{ userId: 'user1', userUsername: 'user1', role: WorkspaceRole.PROJECT_MANAGER }],
-        repositories: []
+        members: [
+          {
+            userId: 'user1',
+            userUsername: 'user1',
+            role: WorkspaceRole.PROJECT_MANAGER,
+          },
+        ],
+        repositories: [],
       };
-      
+
       mockRepository.create.mockResolvedValue(fintoDocumentoSalvato);
 
       const risultato = await service.createWorkspace(datiCreazione);
@@ -78,12 +97,13 @@ describe('WorkspaceManagerService', () => {
   // TEST: deleteWorkspace
   // ==========================================
   describe('deleteWorkspace', () => {
-
     it('dovrebbe lanciare NotFoundException se il workspace non esiste', async () => {
       // Simuliamo che il DB non trovi nulla
       mockRepository.findById.mockResolvedValue(null);
 
-      await expect(service.deleteWorkspace('ws-inesistente', 'user1')).rejects.toThrow(NotFoundException);
+      await expect(
+        service.deleteWorkspace('ws-inesistente', 'user1'),
+      ).rejects.toThrow(NotFoundException);
       // Verifichiamo che la funzione delete non venga MAI chiamata se esplode prima
       expect(mockRepository.delete).not.toHaveBeenCalled();
     });
@@ -94,7 +114,9 @@ describe('WorkspaceManagerService', () => {
       mockRepository.findById.mockResolvedValue(fintoWorkspace);
 
       // Proviamo a cancellarlo con l'id 'Impostore'
-      await expect(service.deleteWorkspace('ws-1', 'Impostore')).rejects.toThrow(ForbiddenException);
+      await expect(
+        service.deleteWorkspace('ws-1', 'Impostore'),
+      ).rejects.toThrow(ForbiddenException);
       expect(mockRepository.delete).not.toHaveBeenCalled();
     });
 
@@ -115,22 +137,33 @@ describe('WorkspaceManagerService', () => {
   // TEST: getWorkspaces
   // ==========================================
   describe('getWorkspaces', () => {
-    
     it('dovrebbe restituire la lista dei workspace', async () => {
       // Simuliamo che il DB trovi 2 workspace a cui l'utente partecipa
       const fintiWorkspaces = [
-        { 
-          _id: 'ws-1', 
-          name: 'WS Alfa', 
-          ownerId: 'user1', 
-          members: [{ userId: 'user1', userUsername: 'user1', role: WorkspaceRole.PROJECT_MANAGER }] 
+        {
+          _id: 'ws-1',
+          name: 'WS Alfa',
+          ownerId: 'user1',
+          members: [
+            {
+              userId: 'user1',
+              userUsername: 'user1',
+              role: WorkspaceRole.PROJECT_MANAGER,
+            },
+          ],
         },
-        { 
-          _id: 'ws-2', 
-          name: 'WS Beta', 
-          ownerId: 'user1', 
-          members: [{ userId: 'user1', userUsername: 'user1', role: WorkspaceRole.PROJECT_MANAGER }] 
-        }
+        {
+          _id: 'ws-2',
+          name: 'WS Beta',
+          ownerId: 'user1',
+          members: [
+            {
+              userId: 'user1',
+              userUsername: 'user1',
+              role: WorkspaceRole.PROJECT_MANAGER,
+            },
+          ],
+        },
       ];
       mockRepository.findByMemberId.mockResolvedValue(fintiWorkspaces);
 
@@ -142,5 +175,4 @@ describe('WorkspaceManagerService', () => {
       expect(risultato.length).toBe(2);
     });
   });
-
 });

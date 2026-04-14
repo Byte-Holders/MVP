@@ -32,13 +32,18 @@ describe('WorkspaceRepositoryService', () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         WorkspaceRepositoryService,
-        { provide: WorkspaceRepositoryToken, useValue: mockWorkspaceRepository },
+        {
+          provide: WorkspaceRepositoryToken,
+          useValue: mockWorkspaceRepository,
+        },
         { provide: RepositoryReaderToken, useValue: mockRepositoryReader },
         { provide: RepositoryWriterToken, useValue: mockRepositoryWriter },
       ],
     }).compile();
 
-    service = module.get<WorkspaceRepositoryService>(WorkspaceRepositoryService);
+    service = module.get<WorkspaceRepositoryService>(
+      WorkspaceRepositoryService,
+    );
   });
 
   // --- BLOCCO: getRepositories ---
@@ -67,7 +72,10 @@ describe('WorkspaceRepositoryService', () => {
 
       // ASSERT: Controlliamo che i dati vengano restituiti e il reader riceva gli ID
       expect(result).toEqual(infoFittizie);
-      expect(mockRepositoryReader.getRepositories).toHaveBeenCalledWith(idsTrovati, undefined);
+      expect(mockRepositoryReader.getRepositories).toHaveBeenCalledWith(
+        idsTrovati,
+        undefined,
+      );
     });
 
     it('passa searchInput a repositoryReader quando fornito', async () => {
@@ -79,16 +87,23 @@ describe('WorkspaceRepositoryService', () => {
       await service.getRepositories('workspace-1', 'ricerca-test');
 
       // ASSERT: Il dettaglio cruciale. Il reader DEVE ricevere la parola chiave come secondo argomento
-      expect(mockRepositoryReader.getRepositories).toHaveBeenCalledWith(['repo-1'], 'ricerca-test');
+      expect(mockRepositoryReader.getRepositories).toHaveBeenCalledWith(
+        ['repo-1'],
+        'ricerca-test',
+      );
     });
 
     it('propaga NotFoundException se il workspace non esiste', async () => {
       // ARRANGE: Simuliamo un errore dal database
       const erroreScatenato = new Error('NotFoundException');
-      mockWorkspaceRepository.getRepositories.mockRejectedValue(erroreScatenato);
+      mockWorkspaceRepository.getRepositories.mockRejectedValue(
+        erroreScatenato,
+      );
 
       // ACT & ASSERT
-      await expect(service.getRepositories('workspace-fantasma')).rejects.toThrow('NotFoundException');
+      await expect(
+        service.getRepositories('workspace-fantasma'),
+      ).rejects.toThrow('NotFoundException');
     });
   });
 
@@ -100,24 +115,39 @@ describe('WorkspaceRepositoryService', () => {
 
       await service.addRepository('ws-1', 'http://repo.pubblica');
 
-      expect(mockRepositoryWriter.addRepository).toHaveBeenCalledWith('http://repo.pubblica', undefined);
-      expect(mockWorkspaceRepository.addRepository).toHaveBeenCalledWith('ws-1', 'newRepoId');
+      expect(mockRepositoryWriter.addRepository).toHaveBeenCalledWith(
+        'http://repo.pubblica',
+        undefined,
+      );
+      expect(mockWorkspaceRepository.addRepository).toHaveBeenCalledWith(
+        'ws-1',
+        'newRepoId',
+      );
     });
 
     it('aggiunge una repository privata con token valido', async () => {
       mockRepositoryWriter.addRepository.mockResolvedValue('newRepoId');
       mockWorkspaceRepository.addRepository.mockResolvedValue(undefined);
 
-      await service.addRepository('ws-1', 'http://repo.privata', 'token-segreto');
+      await service.addRepository(
+        'ws-1',
+        'http://repo.privata',
+        'token-segreto',
+      );
 
-      expect(mockRepositoryWriter.addRepository).toHaveBeenCalledWith('http://repo.privata', 'token-segreto');
+      expect(mockRepositoryWriter.addRepository).toHaveBeenCalledWith(
+        'http://repo.privata',
+        'token-segreto',
+      );
     });
 
     it('propaga eccezione se repositoryWriter fallisce (token non valido)', async () => {
       const erroreScatenato = new Error('UnauthorizedException');
       mockRepositoryWriter.addRepository.mockRejectedValue(erroreScatenato);
 
-      await expect(service.addRepository('ws-1', 'url', 'token-falso')).rejects.toThrow(erroreScatenato);
+      await expect(
+        service.addRepository('ws-1', 'url', 'token-falso'),
+      ).rejects.toThrow(erroreScatenato);
       expect(mockWorkspaceRepository.addRepository).not.toHaveBeenCalled();
     });
 
@@ -126,7 +156,9 @@ describe('WorkspaceRepositoryService', () => {
       const erroreScatenato = new Error('NotFoundException');
       mockWorkspaceRepository.addRepository.mockRejectedValue(erroreScatenato);
 
-      await expect(service.addRepository('ws-inesistente', 'url')).rejects.toThrow(erroreScatenato);
+      await expect(
+        service.addRepository('ws-inesistente', 'url'),
+      ).rejects.toThrow(erroreScatenato);
     });
   });
 
@@ -136,14 +168,19 @@ describe('WorkspaceRepositoryService', () => {
   describe('removeRepository', () => {
     it('delega correttamente la rimozione al repository', async () => {
       // Configuriamo prima che il servizio superi eventuali controlli di esistenza:
-      mockWorkspaceRepository.getRepositories.mockResolvedValue(['repo-1']); 
+      mockWorkspaceRepository.getRepositories.mockResolvedValue(['repo-1']);
       mockWorkspaceRepository.removeRepository.mockResolvedValue(undefined);
       // Simuliamo che la repo serva ancora altrove, così non viene distrutta
-      mockWorkspaceRepository.isRepositoryLinkedToAnyWorkspace.mockResolvedValue(true); 
+      mockWorkspaceRepository.isRepositoryLinkedToAnyWorkspace.mockResolvedValue(
+        true,
+      );
 
       await service.removeRepository('repo-1', 'ws-1');
 
-      expect(mockWorkspaceRepository.removeRepository).toHaveBeenCalledWith('repo-1', 'ws-1');
+      expect(mockWorkspaceRepository.removeRepository).toHaveBeenCalledWith(
+        'repo-1',
+        'ws-1',
+      );
       expect(mockRepositoryWriter.deleteRepository).not.toHaveBeenCalled();
     });
 
@@ -151,27 +188,37 @@ describe('WorkspaceRepositoryService', () => {
       const error = new Error('NotFoundException');
       mockWorkspaceRepository.removeRepository.mockRejectedValue(error);
 
-      await expect(service.removeRepository('repo-1', 'ws-inesistente')).rejects.toThrow(error);
+      await expect(
+        service.removeRepository('repo-1', 'ws-inesistente'),
+      ).rejects.toThrow(error);
     });
 
     it('propaga NotFoundException se repo non presente nel workspace', async () => {
       const error = new Error('Repository non trovata');
       mockWorkspaceRepository.removeRepository.mockRejectedValue(error);
 
-      await expect(service.removeRepository('repo-fantasma', 'ws-1')).rejects.toThrow(error);
+      await expect(
+        service.removeRepository('repo-fantasma', 'ws-1'),
+      ).rejects.toThrow(error);
     });
 
     it('dovrebbe eliminare i dati della repo se non appartiene ad altri workspace', async () => {
       // Dobbiamo assicurarci che il mock restituisca che la repo è nel workspace:
-      mockWorkspaceRepository.getRepositories.mockResolvedValue(['repo-isolata']);
+      mockWorkspaceRepository.getRepositories.mockResolvedValue([
+        'repo-isolata',
+      ]);
       mockWorkspaceRepository.removeRepository.mockResolvedValue(undefined);
-      mockWorkspaceRepository.isRepositoryLinkedToAnyWorkspace.mockResolvedValue(false);
+      mockWorkspaceRepository.isRepositoryLinkedToAnyWorkspace.mockResolvedValue(
+        false,
+      );
       mockRepositoryWriter.deleteRepository.mockResolvedValue(undefined);
 
       await service.removeRepository('repo-isolata', 'ws-1');
 
       // Verifica che la repo venga distrutta completamente
-      expect(mockRepositoryWriter.deleteRepository).toHaveBeenCalledWith('repo-isolata');
+      expect(mockRepositoryWriter.deleteRepository).toHaveBeenCalledWith(
+        'repo-isolata',
+      );
     });
   });
 
@@ -180,12 +227,15 @@ describe('WorkspaceRepositoryService', () => {
     it('dovrebbe aggiornare il token della repository', async () => {
       // Questo test lanciava "NotFoundException" perché il Service verificava l'esistenza:
       mockWorkspaceRepository.getRepositories.mockResolvedValue(['repo-1']);
-      
+
       mockRepositoryWriter.updateToken.mockResolvedValue(undefined);
 
       await service.updateToken('repo-1', 'ws-1', 'nuovo-token');
 
-      expect(mockRepositoryWriter.updateToken).toHaveBeenCalledWith('repo-1', 'nuovo-token');
+      expect(mockRepositoryWriter.updateToken).toHaveBeenCalledWith(
+        'repo-1',
+        'nuovo-token',
+      );
     });
   });
 });

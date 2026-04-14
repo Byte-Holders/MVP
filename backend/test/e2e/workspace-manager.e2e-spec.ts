@@ -5,17 +5,17 @@ import { getModelToken } from '@nestjs/mongoose';
 
 // Mock per la libreria JWT (come fatto in precedenza)
 jest.mock('jwks-rsa', () => ({
-    passportJwtSecret: () => {
-      return (req: any, header: any, payload: any, cb: any) => {
-        if (cb) {
-          cb(null, 'chiave-segreta-finta');
-        }
-      };
-    },
+  passportJwtSecret: () => {
+    return (req: any, header: any, payload: any, cb: any) => {
+      if (cb) {
+        cb(null, 'chiave-segreta-finta');
+      }
+    };
+  },
 }));
 
 import { AppModule } from '../../src/app.module';
-import { JwtAuthGuard } from '../../src/auth/jwt-auth.guard'; 
+import { JwtAuthGuard } from '../../src/auth/jwt-auth.guard';
 
 describe('WorkspaceManagerController (e2e)', () => {
   let app: INestApplication;
@@ -24,17 +24,17 @@ describe('WorkspaceManagerController (e2e)', () => {
 
   beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
-      imports: [AppModule], 
+      imports: [AppModule],
     })
       .overrideGuard(JwtAuthGuard)
       // ATTENZIONE QUI: Oltre a far passare la richiesta, iniettiamo un finto @User()
-      .useValue({ 
-          canActivate: (context: any) => {
-              const req = context.switchToHttp().getRequest();
-              req.user = { userId: 'utente-manager-e2e', username: 'test-manager' };
-              return true;
-          } 
-      }) 
+      .useValue({
+        canActivate: (context: any) => {
+          const req = context.switchToHttp().getRequest();
+          req.user = { userId: 'utente-manager-e2e', username: 'test-manager' };
+          return true;
+        },
+      })
       .compile();
 
     app = moduleFixture.createNestApplication();
@@ -48,7 +48,7 @@ describe('WorkspaceManagerController (e2e)', () => {
     // Pulizia finale: cancelliamo eventuali workspace rimasti orfani dal test
     await workspaceModel.deleteMany({ ownerId: 'utente-manager-e2e' });
     if (app) {
-        await app.close();
+      await app.close();
     }
   });
 
@@ -56,24 +56,24 @@ describe('WorkspaceManagerController (e2e)', () => {
 
   describe('POST /workspaces', () => {
     it('dovrebbe creare un nuovo workspace e restituire 201', () => {
-      return request(app.getHttpServer() as any) 
-        .post('/api/workspaces') 
+      return request(app.getHttpServer() as any)
+        .post('/api/workspaces')
         .send({
           // Il DTO richiede solo il nome, ownerId e username li prende dal nostro mock @User()!
           name: `Workspace Main E2E ${Date.now()}`,
         })
-        .expect(201) 
+        .expect(201)
         .then((response) => {
           // Il server ci risponde col DTO. Salviamo l'ID appena generato
           // Nota: adatta 'id' in base a come il tuo DTO mappa l'ID (potrebbe essere '_id')
-          workspaceAppenaCreatoId = response.body.id || response.body._id; 
+          workspaceAppenaCreatoId = response.body.id || response.body._id;
           expect(workspaceAppenaCreatoId).toBeDefined();
         });
     });
   });
 
   describe('GET /workspaces', () => {
-    it('dovrebbe restituire la lista dei workspace dell\'utente', () => {
+    it("dovrebbe restituire la lista dei workspace dell'utente", () => {
       return request(app.getHttpServer() as any)
         .get('/api/workspaces')
         .expect(200)
@@ -88,10 +88,12 @@ describe('WorkspaceManagerController (e2e)', () => {
 
   describe('DELETE /workspaces/:id', () => {
     it('dovrebbe cancellare il workspace e restituire 200', () => {
-      return request(app.getHttpServer() as any)
-        // Usiamo l'ID salvato durante il test della POST
-        .delete(`/api/workspaces/${workspaceAppenaCreatoId}`)
-        .expect(200);
+      return (
+        request(app.getHttpServer() as any)
+          // Usiamo l'ID salvato durante il test della POST
+          .delete(`/api/workspaces/${workspaceAppenaCreatoId}`)
+          .expect(200)
+      );
     });
   });
 });
