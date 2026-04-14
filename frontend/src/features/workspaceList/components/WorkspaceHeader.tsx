@@ -7,10 +7,25 @@ type Props = {
   workspaceId: string
 }
 
-const ROLE_CONFIG: Record<string, { bg: string; text: string; border: string }> = {
-  OWNER:  { bg: 'bg-amber-500/10  dark:bg-amber-500/20',  text: 'text-amber-600  dark:text-amber-300',  border: 'border-amber-500/40'  },
-  ADMIN:  { bg: 'bg-indigo-500/10 dark:bg-indigo-500/20', text: 'text-indigo-600 dark:text-indigo-300', border: 'border-indigo-500/40' },
-  MEMBER: { bg: 'bg-teal-500/10   dark:bg-teal-500/20',   text: 'text-teal-600   dark:text-teal-300',   border: 'border-teal-500/40'   },
+const ROLE_CONFIG: Record<
+  string,
+  { bg: string; text: string; border: string }
+> = {
+  OWNER: {
+    bg: 'bg-amber-500/10  dark:bg-amber-500/20',
+    text: 'text-amber-600  dark:text-amber-300',
+    border: 'border-amber-500/40',
+  },
+  ADMIN: {
+    bg: 'bg-indigo-500/10 dark:bg-indigo-500/20',
+    text: 'text-indigo-600 dark:text-indigo-300',
+    border: 'border-indigo-500/40',
+  },
+  MEMBER: {
+    bg: 'bg-teal-500/10   dark:bg-teal-500/20',
+    text: 'text-teal-600   dark:text-teal-300',
+    border: 'border-teal-500/40',
+  },
 }
 
 function roleConfig(role: string) {
@@ -68,37 +83,65 @@ export function WorkspaceHeader({ workspaceId }: Props) {
               >
                 {workspace.name}
               </Link>
-              <span className={`rounded-full border px-3 py-0.5 text-xs font-semibold ${cfg.bg} ${cfg.text} ${cfg.border}`}>
+              <span
+                className={`rounded-full border px-3 py-0.5 text-xs font-semibold ${cfg.bg} ${cfg.text} ${cfg.border}`}
+              >
                 {workspace.role}
               </span>
             </div>
 
             <p className="text-sm text-[var(--sea-ink-soft)]">
               Owner:{' '}
-              <span className="font-medium text-[var(--sea-ink)]">{workspace.owner}</span>
+              <span className="font-medium text-[var(--sea-ink)]">
+                {workspace.owner}
+              </span>
             </p>
 
             {/* Stats */}
             <div className="flex flex-wrap gap-4 mt-1">
               {members !== undefined && (
                 <div className="flex items-center gap-1.5 text-xs text-[var(--sea-ink-soft)]">
-                  <svg className="h-3.5 w-3.5 opacity-50" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M17 20h5v-2a4 4 0 00-5-3.5M9 20H4v-2a4 4 0 015-3.5m6-4a4 4 0 11-8 0 4 4 0 018 0z" />
+                  <svg
+                    className="h-3.5 w-3.5 opacity-50"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                    strokeWidth={2}
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M17 20h5v-2a4 4 0 00-5-3.5M9 20H4v-2a4 4 0 015-3.5m6-4a4 4 0 11-8 0 4 4 0 018 0z"
+                    />
                   </svg>
                   <span>
-                    <span className="font-semibold text-[var(--sea-ink)]">{members.length}</span>
-                    {' '}membri
+                    <span className="font-semibold text-[var(--sea-ink)]">
+                      {members.length}
+                    </span>{' '}
+                    membri
                   </span>
                 </div>
               )}
               {repositories !== undefined && (
                 <div className="flex items-center gap-1.5 text-xs text-[var(--sea-ink-soft)]">
-                  <svg className="h-3.5 w-3.5 opacity-50" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M3 7h18M3 12h18M3 17h18" />
+                  <svg
+                    className="h-3.5 w-3.5 opacity-50"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                    strokeWidth={2}
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M3 7h18M3 12h18M3 17h18"
+                    />
                   </svg>
                   <span>
-                    <span className="font-semibold text-[var(--sea-ink)]">{repositories.length}</span>
-                    {' '}repository
+                    <span className="font-semibold text-[var(--sea-ink)]">
+                      {repositories.length}
+                    </span>{' '}
+                    repository
                   </span>
                 </div>
               )}

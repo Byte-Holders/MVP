@@ -23,18 +23,38 @@ const SEVERITY_CONFIG: Record<
   string,
   { color: string; bg: string; text: string }
 > = {
-  Critical:   { color: '#dc2626', bg: 'bg-red-100    dark:bg-red-900/40',    text: 'text-red-700    dark:text-red-300'    },
-  High:       { color: '#ea580c', bg: 'bg-orange-100 dark:bg-orange-900/40', text: 'text-orange-700 dark:text-orange-300' },
-  Medium:     { color: '#d97706', bg: 'bg-yellow-100 dark:bg-yellow-900/40', text: 'text-yellow-700 dark:text-yellow-300' },
-  Low:        { color: '#16a34a', bg: 'bg-green-100  dark:bg-green-900/40',  text: 'text-green-700  dark:text-green-300'  },
-  Negligible: { color: '#6b7280', bg: 'bg-gray-100   dark:bg-gray-700/40',   text: 'text-gray-600   dark:text-gray-300'   },
+  Critical: {
+    color: '#dc2626',
+    bg: 'bg-red-100    dark:bg-red-900/40',
+    text: 'text-red-700    dark:text-red-300',
+  },
+  High: {
+    color: '#ea580c',
+    bg: 'bg-orange-100 dark:bg-orange-900/40',
+    text: 'text-orange-700 dark:text-orange-300',
+  },
+  Medium: {
+    color: '#d97706',
+    bg: 'bg-yellow-100 dark:bg-yellow-900/40',
+    text: 'text-yellow-700 dark:text-yellow-300',
+  },
+  Low: {
+    color: '#16a34a',
+    bg: 'bg-green-100  dark:bg-green-900/40',
+    text: 'text-green-700  dark:text-green-300',
+  },
+  Negligible: {
+    color: '#6b7280',
+    bg: 'bg-gray-100   dark:bg-gray-700/40',
+    text: 'text-gray-600   dark:text-gray-300',
+  },
 }
 
 function severityConfig(s: string) {
   return (
     SEVERITY_CONFIG[s] ?? {
       color: '#6b7280',
-      bg:   'bg-gray-100  dark:bg-gray-700/40',
+      bg: 'bg-gray-100  dark:bg-gray-700/40',
       text: 'text-gray-600 dark:text-gray-300',
     }
   )
@@ -51,14 +71,16 @@ export function SecuritySection({ vulnerabilitiesReport, depsReport }: Props) {
   const [expandedVuln, setExpandedVuln] = useState<string | null>(null)
   const [depsOpen, setDepsOpen] = useState(false)
 
-  const CODE_LEVELS  = ['Critical', 'High', 'Medium', 'Low'] as const
-  const DEPS_LEVELS  = ['Critical', 'High', 'Medium', 'Low'] as const
+  const CODE_LEVELS = ['Critical', 'High', 'Medium', 'Low'] as const
+  const DEPS_LEVELS = ['Critical', 'High', 'Medium', 'Low'] as const
 
   // ── Dipendenze: raggruppa per severity ────────────────────────────────────
-  const depsBySeverity = depsReport.vulnerabilities.reduce<Record<string, number>>(
-    (acc, v) => { acc[v.severity] = (acc[v.severity] ?? 0) + 1; return acc },
-    {},
-  )
+  const depsBySeverity = depsReport.vulnerabilities.reduce<
+    Record<string, number>
+  >((acc, v) => {
+    acc[v.severity] = (acc[v.severity] ?? 0) + 1
+    return acc
+  }, {})
 
   const depsPieData = DEPS_LEVELS.map((name) => ({
     name,
@@ -67,10 +89,13 @@ export function SecuritySection({ vulnerabilitiesReport, depsReport }: Props) {
   }))
 
   // ── Vulnerabilità codice: raggruppa per severity ──────────────────────────
-  const codeVulnsBySeverity = vulnerabilitiesReport.vulnerabilities.reduce<Record<string, number>>(
-    (acc, v) => { const l = codeSeverityLabel(v.severity); acc[l] = (acc[l] ?? 0) + 1; return acc },
-    {},
-  )
+  const codeVulnsBySeverity = vulnerabilitiesReport.vulnerabilities.reduce<
+    Record<string, number>
+  >((acc, v) => {
+    const l = codeSeverityLabel(v.severity)
+    acc[l] = (acc[l] ?? 0) + 1
+    return acc
+  }, {})
 
   const codePieData = CODE_LEVELS.map((name) => ({
     name,
@@ -84,7 +109,10 @@ export function SecuritySection({ vulnerabilitiesReport, depsReport }: Props) {
         Analisi della sicurezza
       </h2>
 
-      <ScoreBar label="Voto" value={parseFloat(vulnerabilitiesReport.mark.toFixed(1))} />
+      <ScoreBar
+        label="Voto"
+        value={parseFloat(vulnerabilitiesReport.mark.toFixed(1))}
+      />
 
       {/* ── Overview ───────────────────────────────────────────────────────── */}
       <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
@@ -148,7 +176,9 @@ export function SecuritySection({ vulnerabilitiesReport, depsReport }: Props) {
                   dataKey="value"
                   radius={[4, 4, 0, 0]}
                   maxBarSize={48}
-                  shape={(props: BarShapeProps) => <Rectangle {...props} fill={props.fill} />}
+                  shape={(props: BarShapeProps) => (
+                    <Rectangle {...props} fill={props.fill} />
+                  )}
                 >
                   <LabelList
                     dataKey="value"
@@ -198,7 +228,9 @@ export function SecuritySection({ vulnerabilitiesReport, depsReport }: Props) {
                   dataKey="value"
                   radius={[4, 4, 0, 0]}
                   maxBarSize={48}
-                  shape={(props: BarShapeProps) => <Rectangle {...props} fill={props.fill} />}
+                  shape={(props: BarShapeProps) => (
+                    <Rectangle {...props} fill={props.fill} />
+                  )}
                 >
                   <LabelList
                     dataKey="value"
@@ -296,77 +328,90 @@ export function SecuritySection({ vulnerabilitiesReport, depsReport }: Props) {
       )}
 
       {/* ── Dipendenze vulnerabili: raggruppate per pacchetto ─────────────── */}
-      {depsReport.vulnerabilities.length > 0 && (() => {
-        const grouped = depsReport.vulnerabilities.reduce<
-          Record<string, typeof depsReport.vulnerabilities>
-        >((acc, v) => {
-          const key = `${v.packageName}@${v.packageVersion}`
-          const existing = acc[key] ?? []
-          if (!existing.some((e) => e.id === v.id)) existing.push(v)
-          acc[key] = existing
-          return acc
-        }, {})
+      {depsReport.vulnerabilities.length > 0 &&
+        (() => {
+          const grouped = depsReport.vulnerabilities.reduce<
+            Record<string, typeof depsReport.vulnerabilities>
+          >((acc, v) => {
+            const key = `${v.packageName}@${v.packageVersion}`
+            const existing = acc[key] ?? []
+            if (!existing.some((e) => e.id === v.id)) existing.push(v)
+            acc[key] = existing
+            return acc
+          }, {})
 
-        const pkgCount = Object.keys(grouped).length
+          const pkgCount = Object.keys(grouped).length
 
-        return (
-          <div className="rounded-lg border border-[var(--chip-line)] overflow-hidden">
-            <button
-              onClick={() => setDepsOpen((o) => !o)}
-              className="flex w-full items-center justify-between gap-2 px-3 py-2 text-left text-xs"
-            >
-              <span className="font-medium text-[var(--sea-ink)] opacity-60">
-                Dipendenze vulnerabili ({pkgCount} pacchetti, {depsReport.vulnerabilities.length} CVE)
-              </span>
-              <span className="opacity-40">{depsOpen ? '▲' : '▼'}</span>
-            </button>
+          return (
+            <div className="rounded-lg border border-[var(--chip-line)] overflow-hidden">
+              <button
+                onClick={() => setDepsOpen((o) => !o)}
+                className="flex w-full items-center justify-between gap-2 px-3 py-2 text-left text-xs"
+              >
+                <span className="font-medium text-[var(--sea-ink)] opacity-60">
+                  Dipendenze vulnerabili ({pkgCount} pacchetti,{' '}
+                  {depsReport.vulnerabilities.length} CVE)
+                </span>
+                <span className="opacity-40">{depsOpen ? '▲' : '▼'}</span>
+              </button>
 
-            {depsOpen && (
-              <table className="w-full text-[11px] border-t border-[var(--chip-line)]">
-                <thead>
-                  <tr className="border-b border-[var(--chip-line)] text-[var(--sea-ink)] opacity-50">
-                    <th className="text-left px-3 py-1.5 font-medium">Pacchetto</th>
-                    <th className="text-left px-3 py-1.5 font-medium">CVE</th>
-                    <th className="text-left px-3 py-1.5 font-medium">Fix</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-[var(--chip-line)]">
-                  {Object.entries(grouped).map(([pkg, vulns]) => {
-                    const fixVersion = vulns.find((v) => v.fixVersion)?.fixVersion
-                    return (
-                      <tr key={pkg}>
-                        <td className="px-3 py-1.5 whitespace-nowrap font-medium text-[var(--sea-ink)]">
-                          {pkg}
-                        </td>
-                        <td className="px-3 py-1.5">
-                          <div className="flex flex-col gap-1">
-                            {vulns.map((v) => {
-                              const cfg = severityConfig(v.severity)
-                              return (
-                                <div key={v.id} className="flex items-center gap-1.5 min-w-0">
-                                  <span className={`flex-shrink-0 rounded-full px-2 py-0.5 text-[10px] font-semibold ${cfg.bg} ${cfg.text}`}>
-                                    {v.severity}
-                                  </span>
-                                  <span className="text-[10px] text-[var(--sea-ink)] opacity-70 truncate">
-                                    {v.description ?? v.id}
-                                  </span>
-                                </div>
-                              )
-                            })}
-                          </div>
-                        </td>
-                        <td className="px-3 py-1.5 whitespace-nowrap text-green-600 dark:text-green-400">
-                          {fixVersion ?? <span className="opacity-30">—</span>}
-                        </td>
-                      </tr>
-                    )
-                  })}
-                </tbody>
-              </table>
-            )}
-          </div>
-        )
-      })()}
+              {depsOpen && (
+                <table className="w-full text-[11px] border-t border-[var(--chip-line)]">
+                  <thead>
+                    <tr className="border-b border-[var(--chip-line)] text-[var(--sea-ink)] opacity-50">
+                      <th className="text-left px-3 py-1.5 font-medium">
+                        Pacchetto
+                      </th>
+                      <th className="text-left px-3 py-1.5 font-medium">CVE</th>
+                      <th className="text-left px-3 py-1.5 font-medium">Fix</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-[var(--chip-line)]">
+                    {Object.entries(grouped).map(([pkg, vulns]) => {
+                      const fixVersion = vulns.find(
+                        (v) => v.fixVersion,
+                      )?.fixVersion
+                      return (
+                        <tr key={pkg}>
+                          <td className="px-3 py-1.5 whitespace-nowrap font-medium text-[var(--sea-ink)]">
+                            {pkg}
+                          </td>
+                          <td className="px-3 py-1.5">
+                            <div className="flex flex-col gap-1">
+                              {vulns.map((v) => {
+                                const cfg = severityConfig(v.severity)
+                                return (
+                                  <div
+                                    key={v.id}
+                                    className="flex items-center gap-1.5 min-w-0"
+                                  >
+                                    <span
+                                      className={`flex-shrink-0 rounded-full px-2 py-0.5 text-[10px] font-semibold ${cfg.bg} ${cfg.text}`}
+                                    >
+                                      {v.severity}
+                                    </span>
+                                    <span className="text-[10px] text-[var(--sea-ink)] opacity-70 truncate">
+                                      {v.description ?? v.id}
+                                    </span>
+                                  </div>
+                                )
+                              })}
+                            </div>
+                          </td>
+                          <td className="px-3 py-1.5 whitespace-nowrap text-green-600 dark:text-green-400">
+                            {fixVersion ?? (
+                              <span className="opacity-30">—</span>
+                            )}
+                          </td>
+                        </tr>
+                      )
+                    })}
+                  </tbody>
+                </table>
+              )}
+            </div>
+          )
+        })()}
 
       {/* ── Analisi testuale ───────────────────────────────────────────────── */}
       {depsReport.vulnerabilityAnalysis && (
