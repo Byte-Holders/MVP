@@ -1,15 +1,16 @@
 import { renderHook, act } from '@testing-library/react'
+import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { useRegister } from './useRegister'
 
-jest.mock('../model/registerApi', () => ({
-  registerUser: jest.fn(),
+vi.mock('../model/registerApi', () => ({
+  registerUser: vi.fn(),
 }))
 
 import { registerUser } from '../model/registerApi'
-const mockRegisterUser = registerUser as jest.Mock
+const mockRegisterUser = registerUser as ReturnType<typeof vi.fn>
 
 describe('useRegister', () => {
-  beforeEach(() => jest.clearAllMocks())
+  beforeEach(() => vi.clearAllMocks())
 
   it('chiama registerUser quando register viene invocato', async () => {
     mockRegisterUser.mockResolvedValue(undefined)

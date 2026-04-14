@@ -9,6 +9,7 @@ import { ReportController } from './controllers/report.controller';
 import { ReportRepositoryToken } from './interfaces/ireport.repository.interface';
 import { ReportServiceToken } from './interfaces/ireport.service.interface';
 import { RepositoryModule } from '../repository/repository.module';
+import { WorkspaceUserModule } from '../workspace/workspaceUser/workspaceUser.module';
 
 @Module({
   imports: [
@@ -28,6 +29,7 @@ import { RepositoryModule } from '../repository/repository.module';
       inject: [ConfigService],
     }),
     RepositoryModule,
+    WorkspaceUserModule,
   ],
   controllers: [ReportController],
   providers: [

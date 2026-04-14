@@ -1,6 +1,6 @@
 import { render, screen, waitFor } from '@testing-library/react'
 import { CallbackPage } from './CallbackPage'
-import { describe, it, expect, vi } from 'vitest'
+import { describe, it, expect, vi, beforeEach } from 'vitest'
 
 vi.mock('@tanstack/react-router', () => ({
   useNavigate: vi.fn(),
@@ -99,7 +99,7 @@ describe('CallbackPage', () => {
     })
   })
 
-  it('naviga a / se register fallisce', async () => {
+  it('naviga a / con error param se register fallisce', async () => {
     mockFetchCurrentUser.mockResolvedValue({ username: 'user1' })
     mockRegister.mockRejectedValue(new Error('Errore registrazione'))
 
@@ -108,6 +108,7 @@ describe('CallbackPage', () => {
     await waitFor(() => {
       expect(mockNavigate).toHaveBeenCalledWith({
         to: '/',
+        search: { error: 'registration_failed' },
         replace: true,
       })
     })

@@ -3,6 +3,8 @@ import { NotFoundException } from '@nestjs/common';
 import { ReportService } from './report.service';
 import { ReportRepositoryToken } from '../interfaces/ireport.repository.interface';
 import { RepositoryScoreWriterToken } from '../../repository/interfaces/repository.score-writer.interface';
+import { IWorkspaceUserServiceToken } from '../../workspace/workspaceUser/interfaces/IWorkspaceUserService';
+import { WorkspaceRole } from '../../workspace/roles.enum';
 import type { ReportInfo } from '../types/report.type';
 
 const makeReport = (...overrides: any[]): ReportInfo => ({
@@ -36,7 +38,7 @@ const makeReport = (...overrides: any[]): ReportInfo => ({
           severity: 5,
           impact: 'MEDIUM',
           category: 'myVulnerabilityCategory1',
-          cwe: ['CWE-0-0'],
+          cwe: 'CWE-0-0',
           owasp: ['OWASP-top-10-2025'],
         },
         {
@@ -47,7 +49,7 @@ const makeReport = (...overrides: any[]): ReportInfo => ({
           severity: 10,
           impact: 'LOW',
           category: 'myVulnerabilityCategory',
-          cwe: ['CWE-0-0'],
+          cwe: 'CWE-0-0',
           owasp: ['OWASP-top-10-2025'],
         },
       ],
@@ -106,11 +108,15 @@ describe('ReportService', () => {
     save: jest.Mock;
     findLatestByTarget: jest.Mock;
   };
+  let mockWorkspaceUserService: { getUserRoleForRepository: jest.Mock };
 
   beforeEach(async () => {
     mockRepository = {
       save: jest.fn(),
       findLatestByTarget: jest.fn(),
+    };
+    mockWorkspaceUserService = {
+      getUserRoleForRepository: jest.fn().mockResolvedValue(null),
     };
 
     const module: TestingModule = await Test.createTestingModule({
@@ -120,6 +126,10 @@ describe('ReportService', () => {
         {
           provide: RepositoryScoreWriterToken,
           useValue: { updateScores: jest.fn() },
+        },
+        {
+          provide: IWorkspaceUserServiceToken,
+          useValue: mockWorkspaceUserService,
         },
       ],
     }).compile();
@@ -147,26 +157,91 @@ describe('ReportService', () => {
   });
 
   describe('getReport', () => {
-    it('returns the report when found', async () => {
+    it('returns full report with vulnCounts for non-PM users', async () => {
       const report = makeReport();
       const { repositoryId, branch } = report.metadata!.target;
       mockRepository.findLatestByTarget.mockResolvedValue(report);
+      mockWorkspaceUserService.getUserRoleForRepository.mockResolvedValue(
+        WorkspaceRole.TECH_LEAD,
+      );
 
-      const result = await service.getReport(repositoryId, branch);
+      const result = await service.getReport(repositoryId, branch, 'user-1');
 
-      expect(result).toEqual({
-        summary: report.summary,
-        data: report.data,
-        metadata: report.metadata,
+      expect(result.data.depsReport.list).toEqual(report.data.depsReport.list);
+      expect(result.data.depsReport.vulnerabilities).toEqual(
+        report.data.depsReport.vulnerabilities,
+      );
+      expect(result.data.depsReport.vulnCounts).toEqual({
+        critical: 0,
+        high: 1,
+        medium: 0,
+        low: 0,
       });
+      expect(result.data.vulnerabilitiesReport.vulnerabilities).toEqual(
+        report.data.vulnerabilitiesReport.vulnerabilities,
+      );
+      expect(result.data.vulnerabilitiesReport.vulnCounts).toEqual({
+        critical: 0,
+        high: 0,
+        medium: 1,
+        low: 1,
+      });
+    });
+
+    it('hides dep list and vuln lists for PROJECT_MANAGER but keeps counts and marks', async () => {
+      const report = makeReport();
+      const { repositoryId, branch } = report.metadata!.target;
+      mockRepository.findLatestByTarget.mockResolvedValue(report);
+      mockWorkspaceUserService.getUserRoleForRepository.mockResolvedValue(
+        WorkspaceRole.PROJECT_MANAGER,
+      );
+
+      const result = await service.getReport(repositoryId, branch, 'pm-user');
+
+      expect(result.data.depsReport.list).toBeUndefined();
+      expect(result.data.depsReport.vulnerabilities).toEqual([]);
+      expect(result.data.depsReport.vulnCounts).toEqual({
+        critical: 0,
+        high: 1,
+        medium: 0,
+        low: 0,
+      });
+      expect(result.data.vulnerabilitiesReport.vulnerabilities).toEqual([]);
+      expect(result.data.vulnerabilitiesReport.mark).toBe(
+        report.data.vulnerabilitiesReport.mark,
+      );
+      expect(result.data.vulnerabilitiesReport.vulnCounts).toEqual({
+        critical: 0,
+        high: 0,
+        medium: 1,
+        low: 1,
+      });
+    });
+
+    it('returns full report with vulnCounts when user has no workspace role', async () => {
+      const report = makeReport();
+      const { repositoryId, branch } = report.metadata!.target;
+      mockRepository.findLatestByTarget.mockResolvedValue(report);
+      mockWorkspaceUserService.getUserRoleForRepository.mockResolvedValue(null);
+
+      const result = await service.getReport(repositoryId, branch, 'user-x');
+
+      expect(result.data.depsReport.vulnerabilities).toEqual(
+        report.data.depsReport.vulnerabilities,
+      );
+      expect(result.data.depsReport.vulnCounts).toBeDefined();
+      expect(result.data.vulnerabilitiesReport.vulnerabilities).toEqual(
+        report.data.vulnerabilitiesReport.vulnerabilities,
+      );
+      expect(result.data.vulnerabilitiesReport.vulnCounts).toBeDefined();
     });
 
     it('throws NotFoundException when report is not found', async () => {
       mockRepository.findLatestByTarget.mockResolvedValue(null);
 
-      await expect(service.getReport('myRepositoryId', 'main')).rejects.toThrow(
-        NotFoundException,
-      );
+      await expect(
+        service.getReport('myRepositoryId', 'main', 'user-1'),
+      ).rejects.toThrow(NotFoundException);
     });
   });
 });

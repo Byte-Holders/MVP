@@ -16,7 +16,7 @@ describe('CodeVulnerabilityDto', () => {
     severity: 7,
     impact: 'Data breach',
     category: 'Injection',
-    cwe: ['CWE-89'],
+    cwe: 'CWE-89',
     owasp: ['A03:2021'],
   };
 
@@ -132,41 +132,70 @@ describe('CodeVulnerabilityDto', () => {
     });
   });
 
-  describe.each([['cwe'], ['owasp']])('%s', (field) => {
-    it(`should pass if ${field} is missing`, async () => {
+  describe('cwe', () => {
+    it('should pass if cwe is missing', async () => {
       const dto = plainToInstance(CodeVulnerabilityDto, {
         ...mockCodeVulnerabilityDto,
-        [field]: undefined,
+        cwe: undefined,
       });
       const errors = await validate(dto);
-      expect(errors.some((e) => e.property === field)).toBe(false);
+      expect(errors.some((e) => e.property === 'cwe')).toBe(false);
     });
 
-    it(`should fail if ${field} is not an array`, async () => {
+    it('should pass with a valid cwe string', async () => {
       const dto = plainToInstance(CodeVulnerabilityDto, {
         ...mockCodeVulnerabilityDto,
-        [field]: 'not-an-array',
+        cwe: 'CWE-89',
       });
       const errors = await validate(dto);
-      expect(errors.some((e) => e.property === field)).toBe(true);
+      expect(errors.some((e) => e.property === 'cwe')).toBe(false);
     });
 
-    it(`should fail if ${field} contains a non-string item`, async () => {
+    it('should fail if cwe is not a string', async () => {
       const dto = plainToInstance(CodeVulnerabilityDto, {
         ...mockCodeVulnerabilityDto,
-        [field]: [123],
+        cwe: 123,
       });
       const errors = await validate(dto);
-      expect(errors.some((e) => e.property === field)).toBe(true);
+      expect(errors.some((e) => e.property === 'cwe')).toBe(true);
+    });
+  });
+
+  describe('owasp', () => {
+    it('should pass if owasp is missing', async () => {
+      const dto = plainToInstance(CodeVulnerabilityDto, {
+        ...mockCodeVulnerabilityDto,
+        owasp: undefined,
+      });
+      const errors = await validate(dto);
+      expect(errors.some((e) => e.property === 'owasp')).toBe(false);
     });
 
-    it(`should pass with empty ${field} array`, async () => {
+    it('should fail if owasp is not an array', async () => {
       const dto = plainToInstance(CodeVulnerabilityDto, {
         ...mockCodeVulnerabilityDto,
-        [field]: [],
+        owasp: 'not-an-array',
       });
       const errors = await validate(dto);
-      expect(errors.some((e) => e.property === field)).toBe(false);
+      expect(errors.some((e) => e.property === 'owasp')).toBe(true);
+    });
+
+    it('should fail if owasp contains a non-string item', async () => {
+      const dto = plainToInstance(CodeVulnerabilityDto, {
+        ...mockCodeVulnerabilityDto,
+        owasp: [123],
+      });
+      const errors = await validate(dto);
+      expect(errors.some((e) => e.property === 'owasp')).toBe(true);
+    });
+
+    it('should pass with empty owasp array', async () => {
+      const dto = plainToInstance(CodeVulnerabilityDto, {
+        ...mockCodeVulnerabilityDto,
+        owasp: [],
+      });
+      const errors = await validate(dto);
+      expect(errors.some((e) => e.property === 'owasp')).toBe(false);
     });
   });
 });
@@ -184,7 +213,7 @@ describe('VulnerabilitiesReportDto', () => {
         severity: 7,
         impact: 'Data breach',
         category: 'Injection',
-        cwe: ['CWE-89'],
+        cwe: 'CWE-89',
         owasp: ['A03:2021'],
       },
     ],
@@ -237,7 +266,7 @@ describe('VulnerabilitiesReportDto', () => {
         severity: 5,
         impact: 'low',
         category: 'cat',
-        cwe: [],
+        cwe: undefined,
         owasp: [],
       };
       const dto = plainToInstance(VulnerabilitiesReportDto, {

@@ -6,6 +6,10 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { RepositoryList } from './RepositoryList'
 import { getRepositoriesData } from '../model/getRepositoriesData'
 
+vi.mock('@tanstack/react-router', () => ({
+  Link: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
+}))
+
 // 1. Mockiamo l'API di recupero dati
 vi.mock('../model/getRepositoriesData', () => ({
   getRepositoriesData: vi.fn(),

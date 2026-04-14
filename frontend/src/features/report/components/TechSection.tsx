@@ -7,14 +7,14 @@ type Props = {
 }
 
 const PIE_COLORS = [
-  '#4fb8b2',
-  '#2f6a4a',
-  '#328f97',
-  '#6ec89a',
-  '#173a40',
-  '#8de5db',
-  '#b8efe5',
-]
+  '#3a0ca3', // Indaco profondo
+  '#560bad', // Viola intenso
+  '#7209b7', // Viola brillante
+  '#b5179e', // Fucsia scuro
+  '#f72585', // Rosa magenta acceso
+  '#ff9ebb', // Rosa tenue
+  '#e0aaff', // Lilla freddo
+];
 
 export function TechSection({ techReport, allDeps }: Props) {
   const langData = techReport.languages

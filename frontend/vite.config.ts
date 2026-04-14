@@ -58,6 +58,7 @@ export default mergeConfig(
           branches: 70, // % di rami if/else/ternary coperti
           statements: 70, // % di statement eseguiti (simile a lines)
         },
+        reportOnFailure: true,
         include: ['src/**/*.{ts,tsx}'], // Da quali file misurare la coverage
         exclude: [
           // File da NON contare nel denominatore della coverage

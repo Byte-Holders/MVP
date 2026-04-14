@@ -5,7 +5,7 @@ export interface ReportInfo {
   }
   data: {
     depsReport: {
-      list: { name: string; version: string }[]
+      list?: { name: string; version: string }[]
       vulnerabilities: {
         id: string
         severity: string
@@ -15,6 +15,12 @@ export interface ReportInfo {
         fixVersion?: string
       }[]
       vulnerabilityAnalysis: string
+      vulnCounts?: {
+        critical: number
+        high: number
+        medium: number
+        low: number
+      }
     }
     vulnerabilitiesReport: {
       vulnerabilities: {
@@ -29,6 +35,12 @@ export interface ReportInfo {
         owasp?: string[]
       }[]
       mark: number
+      vulnCounts?: {
+        critical: number
+        high: number
+        medium: number
+        low: number
+      }
     }
     docsReport: {
       readmeReport: string
