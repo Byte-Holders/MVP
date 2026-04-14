@@ -17,7 +17,7 @@ const renderWithClient = (ui: ReactElement) => {
     defaultOptions: { queries: { retry: false } },
   })
   return render(
-    <QueryClientProvider client={queryClient}>{ui}</QueryClientProvider>
+    <QueryClientProvider client={queryClient}>{ui}</QueryClientProvider>,
   )
 }
 

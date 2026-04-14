@@ -16,11 +16,11 @@ const createTestQueryClient = () =>
     defaultOptions: { queries: { retry: false } },
   })
 
-  const wrapper = ({ children }: { children: ReactNode }) => (
-    <QueryClientProvider client={createTestQueryClient()}>
-      {children}
-    </QueryClientProvider>
-  )
+const wrapper = ({ children }: { children: ReactNode }) => (
+  <QueryClientProvider client={createTestQueryClient()}>
+    {children}
+  </QueryClientProvider>
+)
 
 describe('useAddRepositoryForm Hook', () => {
   const workspaceId = 'workspace-123'
