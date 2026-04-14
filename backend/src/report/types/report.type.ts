@@ -1,3 +1,10 @@
+export type VulnCounts = {
+  critical: number;
+  high: number;
+  medium: number;
+  low: number;
+};
+
 export type ReportInfo = {
   summary?: {
     summary: string;
@@ -14,6 +21,7 @@ export type ReportInfo = {
         fixVersion?: string;
       }[];
       vulnerabilityAnalysis: string;
+      vulnCounts?: VulnCounts;
     };
     vulnerabilitiesReport: {
       vulnerabilities: {
@@ -28,6 +36,7 @@ export type ReportInfo = {
         owasp?: string[];
       }[];
       mark: number;
+      vulnCounts?: VulnCounts;
     };
     docsReport: {
       readmeReport: string;

@@ -6,6 +6,7 @@ import {
   ValidateNested,
 } from 'class-validator';
 import { Type } from 'class-transformer';
+import { VulnCountsDto } from './vuln-counts.dto';
 
 export class DependencyDto {
   @IsString()
@@ -57,4 +58,9 @@ export class DepsReportDto {
 
   @IsString()
   vulnerabilityAnalysis!: string;
+
+  @IsOptional()
+  @ValidateNested()
+  @Type(() => VulnCountsDto)
+  vulnCounts?: VulnCountsDto;
 }

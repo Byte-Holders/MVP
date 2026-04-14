@@ -75,12 +75,17 @@ export function SecuritySection({ vulnerabilitiesReport, depsReport }: Props) {
   const DEPS_LEVELS = ['Critical', 'High', 'Medium', 'Low'] as const
 
   // ── Dipendenze: raggruppa per severity ────────────────────────────────────
-  const depsBySeverity = depsReport.vulnerabilities.reduce<
-    Record<string, number>
-  >((acc, v) => {
-    acc[v.severity] = (acc[v.severity] ?? 0) + 1
-    return acc
-  }, {})
+  const depsBySeverity: Record<string, number> = depsReport.vulnCounts
+    ? {
+        Critical: depsReport.vulnCounts.critical,
+        High: depsReport.vulnCounts.high,
+        Medium: depsReport.vulnCounts.medium,
+        Low: depsReport.vulnCounts.low,
+      }
+    : depsReport.vulnerabilities.reduce<Record<string, number>>((acc, v) => {
+        acc[v.severity] = (acc[v.severity] ?? 0) + 1
+        return acc
+      }, {})
 
   const depsPieData = DEPS_LEVELS.map((name) => ({
     name,
@@ -89,13 +94,30 @@ export function SecuritySection({ vulnerabilitiesReport, depsReport }: Props) {
   }))
 
   // ── Vulnerabilità codice: raggruppa per severity ──────────────────────────
-  const codeVulnsBySeverity = vulnerabilitiesReport.vulnerabilities.reduce<
-    Record<string, number>
-  >((acc, v) => {
-    const l = codeSeverityLabel(v.severity)
-    acc[l] = (acc[l] ?? 0) + 1
-    return acc
-  }, {})
+  const codeVulnsBySeverity: Record<string, number> =
+    vulnerabilitiesReport.vulnCounts
+      ? {
+          Critical: vulnerabilitiesReport.vulnCounts.critical,
+          High: vulnerabilitiesReport.vulnCounts.high,
+          Medium: vulnerabilitiesReport.vulnCounts.medium,
+          Low: vulnerabilitiesReport.vulnCounts.low,
+        }
+      : vulnerabilitiesReport.vulnerabilities.reduce<Record<string, number>>(
+          (acc, v) => {
+            const l = codeSeverityLabel(v.severity)
+            acc[l] = (acc[l] ?? 0) + 1
+            return acc
+          },
+          {},
+        )
+
+  const totalCodeVulns = vulnerabilitiesReport.vulnCounts
+    ? Object.values(codeVulnsBySeverity).reduce((a, b) => a + b, 0)
+    : vulnerabilitiesReport.vulnerabilities.length
+
+  const totalDepsVulns = depsReport.vulnCounts
+    ? Object.values(depsBySeverity).reduce((a, b) => a + b, 0)
+    : depsReport.vulnerabilities.length
 
   const codePieData = CODE_LEVELS.map((name) => ({
     name,
@@ -118,11 +140,8 @@ export function SecuritySection({ vulnerabilitiesReport, depsReport }: Props) {
       <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
         {(
           [
-            [
-              'Vulnerabilità codice',
-              vulnerabilitiesReport.vulnerabilities.length,
-            ],
-            ['Dipendenze vulnerabili', depsReport.vulnerabilities.length],
+            ['Vulnerabilità codice', totalCodeVulns],
+            ['Dipendenze vulnerabili', totalDepsVulns],
             ['Critiche (codice)', codeVulnsBySeverity['Critical'] ?? 0],
             ['Critiche (dipendenze)', depsBySeverity['Critical'] ?? 0],
           ] as [string, number][]
@@ -425,8 +444,7 @@ export function SecuritySection({ vulnerabilitiesReport, depsReport }: Props) {
         </div>
       )}
 
-      {vulnerabilitiesReport.vulnerabilities.length === 0 &&
-        depsReport.vulnerabilities.length === 0 && (
+      {totalCodeVulns === 0 && totalDepsVulns === 0 && (
           <p className="text-xs text-green-600 dark:text-green-400">
             Nessuna vulnerabilità rilevata.
           </p>

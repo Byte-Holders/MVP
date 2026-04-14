@@ -4,8 +4,8 @@ import { ReportPage } from '@/features/report/pages/ReportPage'
 import { ProtectedRoute } from '@/features/auth/components/ProtectedRoute'
 
 const searchSchema = z.object({
-  ownerName: z.string(),
-  name: z.string(),
+  ownerName: z.string().catch(''),
+  name: z.string().catch(''),
 })
 
 export const Route = createFileRoute(

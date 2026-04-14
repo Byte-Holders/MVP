@@ -9,6 +9,7 @@ import {
   ValidateNested,
 } from 'class-validator';
 import { Transform, Type } from 'class-transformer';
+import { VulnCountsDto } from './vuln-counts.dto';
 
 export class CodeVulnerabilityDto {
   @IsString()
@@ -56,4 +57,9 @@ export class VulnerabilitiesReportDto {
   @Min(0)
   @Max(10)
   mark!: number;
+
+  @IsOptional()
+  @ValidateNested()
+  @Type(() => VulnCountsDto)
+  vulnCounts?: VulnCountsDto;
 }

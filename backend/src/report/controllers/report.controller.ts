@@ -17,6 +17,7 @@ import { SaveReportDto } from '../dtos/save-report.dto';
 import { ReportResponseDto } from '../dtos/report-response.dto';
 import type { ReportInfo } from '../types/report.type';
 import { JwtAuthGuard } from '../../auth/jwt-auth.guard';
+import { User } from '../../auth/customDecorators/user.decorator';
 
 @Controller('reports')
 export class ReportController {
@@ -61,8 +62,13 @@ export class ReportController {
   async getReport(
     @Param('repositoryId') repositoryId: string,
     @Param('branch') branch: string,
+    @User() user: { userId: string },
   ): Promise<ReportResponseDto> {
-    const report = await this.reportService.getReport(repositoryId, branch);
+    const report = await this.reportService.getReport(
+      repositoryId,
+      branch,
+      user.userId,
+    );
     return { ...report };
   }
 }

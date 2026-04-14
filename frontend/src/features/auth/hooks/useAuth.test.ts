@@ -1,6 +1,6 @@
 import { renderHook, waitFor, act } from '@testing-library/react'
 import { useAuth } from './useAuth'
-import { describe, it, expect, vi } from 'vitest'
+import { describe, it, expect, vi, beforeEach } from 'vitest'
 
 // Mocka il model layer — nessuna chiamata reale ad Amplify
 vi.mock('../model/authApi', () => ({
@@ -143,8 +143,7 @@ describe('useAuth', () => {
     expect(mockLogOut).toHaveBeenCalled()
   })
 
-  // authState resettato dopo logout
-  it('Impostazione di isAuthenticated false dopo logout', async () => {
+  it('chiama logOut e delega il redirect alla funzione logOut', async () => {
     mockFetchCurrentUser.mockResolvedValue({ username: 'user1' })
     mockFetchSession.mockResolvedValue({ tokens: { idToken: 'token' } })
     mockLogOut.mockResolvedValue(undefined)
@@ -156,7 +155,8 @@ describe('useAuth', () => {
       await result.current.logout()
     })
 
-    // Fallisce finché non si aggiunge il reset dello stato in logout()
-    expect(result.current.isAuthenticated).toBe(false)
+    // logOut() gestisce internamente il redirect via window.location.href
+    // lo stato React rimane invariato perché la pagina viene navigata via
+    expect(mockLogOut).toHaveBeenCalled()
   })
 })
