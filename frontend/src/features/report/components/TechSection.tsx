@@ -14,7 +14,7 @@ const PIE_COLORS = [
   '#f72585', // Rosa magenta acceso
   '#ff9ebb', // Rosa tenue
   '#e0aaff', // Lilla freddo
-];
+]
 
 export function TechSection({ techReport, allDeps }: Props) {
   const langData = techReport.languages
