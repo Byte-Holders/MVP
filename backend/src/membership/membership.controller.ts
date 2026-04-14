@@ -1,4 +1,3 @@
-// ...existing code...
 import {
   Controller,
   Post,
@@ -7,6 +6,8 @@ import {
   Query,
   UseGuards,
   Inject,
+  ValidationPipe,
+  UsePipes,
 } from '@nestjs/common';
 import { MembershipService } from './membership.service';
 import {
@@ -30,6 +31,7 @@ export class MembershipController {
   ) {}
 
   @Post('invite')
+  @UsePipes(new ValidationPipe())
   async inviteUser(
     @Body() inviteUserDto: InviteUserDto,
     @User() user: RequestUser,
@@ -44,11 +46,13 @@ export class MembershipController {
   }
 
   @Get('invites')
+  @UsePipes(new ValidationPipe())
   async getInvites(@User() user: RequestUser): Promise<GetInviteResponseDto[]> {
     return this.membershipService.getInvites(user.userId);
   }
 
   @Post('manage')
+  @UsePipes(new ValidationPipe())
   async manageInvite(@Body() manageInviteDto: ManageInviteDto): Promise<void> {
     const manageInviteInfo: ManageInviteInfo = {
       id: manageInviteDto.membershipId,
