@@ -165,7 +165,7 @@ export class DocsNodeHelper {
       ]);
       const text = (response.content as string).trim();
       const match = text.match(/\b(\d+(?:\.\d+)?)\b/);
-      return match ? Math.min(10, Math.max(0, parseFloat(match[1]))) : 0;
+      return match ? parseFloat(match[1]) : 0;
     } catch (err) {
       this.logger.error('Errore nel calcolo del voto:', err);
       return 0;
