@@ -10,6 +10,9 @@ import { Workspace } from '../../src/workspace/schemas/workspace.schema';
 import { WorkspaceManagerService } from '../../src/workspace/workspaceManager/workspaceManager.service';
 import { WorkspaceManagerModule } from '../../src/workspace/workspaceManager/workspaceManager.module'; // Importalo se esiste un modulo separato
 
+import * as dotenv from 'dotenv';
+dotenv.config(); // Carica le variabili d'ambiente dal file .env
+
 describe('WorkspaceManager Integration Tests', () => {
   let dbConnection: Connection;
   let workspaceModel: Model<Workspace>;
