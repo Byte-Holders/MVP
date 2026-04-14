@@ -1,4 +1,12 @@
-import { Controller, Delete, Get, Inject, Param, Post, UseGuards } from '@nestjs/common';
+import {
+  Controller,
+  Delete,
+  Get,
+  Inject,
+  Param,
+  Post,
+  UseGuards,
+} from '@nestjs/common';
 import {
   type IWorkspaceUserService,
   IWorkspaceUserServiceToken,

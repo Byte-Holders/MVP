@@ -105,7 +105,11 @@ describe('ReportController', () => {
       body.metadata = {
         startScanTime: '2024-01-01T00:00:00Z',
         endScanTime: '2024-01-01T01:00:00Z',
-        target: { branch: 'feature/x', owner: 'owner', repositoryId: 'ignored' },
+        target: {
+          branch: 'feature/x',
+          owner: 'owner',
+          repositoryId: 'ignored',
+        },
       } as any;
       dto.report = body;
 

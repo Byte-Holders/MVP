@@ -31,8 +31,14 @@ export class GitHubRepository implements IGitHubRepository {
         'Rate limit GitHub superato o accesso negato',
       );
     }
-    if (response.status === 502 || response.status === 503 || response.status === 504) {
-      throw new ServiceUnavailableException('GitHub API temporaneamente non disponibile');
+    if (
+      response.status === 502 ||
+      response.status === 503 ||
+      response.status === 504
+    ) {
+      throw new ServiceUnavailableException(
+        'GitHub API temporaneamente non disponibile',
+      );
     }
     if (!response.ok) {
       throw new Error(`GitHub API error: ${response.status}`);
@@ -58,8 +64,14 @@ export class GitHubRepository implements IGitHubRepository {
         'Token GitHub non valido o non autorizzato per questo repository',
       );
     }
-    if (response.status === 502 || response.status === 503 || response.status === 504) {
-      throw new ServiceUnavailableException('GitHub API temporaneamente non disponibile');
+    if (
+      response.status === 502 ||
+      response.status === 503 ||
+      response.status === 504
+    ) {
+      throw new ServiceUnavailableException(
+        'GitHub API temporaneamente non disponibile',
+      );
     }
     if (!response.ok) {
       throw new Error(`GitHub API error: ${response.status}`);

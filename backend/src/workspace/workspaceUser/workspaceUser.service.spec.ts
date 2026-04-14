@@ -7,7 +7,7 @@ import { WorkspaceRole } from '../roles.enum';
 
 describe('WorkspaceUserService', () => {
   let service: WorkspaceUserService;
-  
+
   // Creiamo un oggetto mock che simulerà il comportamento del repository
   const mockWorkspaceUserRepository = {
     getUsersOfWorkspace: jest.fn(),
@@ -41,14 +41,22 @@ describe('WorkspaceUserService', () => {
     it('dovrebbe restituire la lista degli utenti del workspace', async () => {
       const workspaceId = 'workspace-123';
       const mockUsers = [
-        { userId: 'user-1', username: 'testuser', role: WorkspaceRole.DEVELOPER },
+        {
+          userId: 'user-1',
+          username: 'testuser',
+          role: WorkspaceRole.DEVELOPER,
+        },
       ];
 
-      mockWorkspaceUserRepository.getUsersOfWorkspace.mockResolvedValueOnce(mockUsers);
+      mockWorkspaceUserRepository.getUsersOfWorkspace.mockResolvedValueOnce(
+        mockUsers,
+      );
 
       const result = await service.getUsersOfWorkspace(workspaceId);
 
-      expect(mockWorkspaceUserRepository.getUsersOfWorkspace).toHaveBeenCalledWith(workspaceId);
+      expect(
+        mockWorkspaceUserRepository.getUsersOfWorkspace,
+      ).toHaveBeenCalledWith(workspaceId);
       expect(result).toEqual(mockUsers);
     });
   });
@@ -59,41 +67,58 @@ describe('WorkspaceUserService', () => {
       const userId = 'user-1';
 
       // Simuliamo che l'utente esista nel workspace
-      mockWorkspaceUserRepository.checkIfUserIsInWorkspace.mockResolvedValueOnce(true);
+      mockWorkspaceUserRepository.checkIfUserIsInWorkspace.mockResolvedValueOnce(
+        true,
+      );
 
       await service.removeUserFromWorkspace(workspaceId, userId);
 
-      expect(mockWorkspaceUserRepository.checkIfUserIsInWorkspace).toHaveBeenCalledWith(workspaceId, userId);
-      expect(mockWorkspaceUserRepository.removeUserFromWorkspace).toHaveBeenCalledWith(workspaceId, userId);
+      expect(
+        mockWorkspaceUserRepository.checkIfUserIsInWorkspace,
+      ).toHaveBeenCalledWith(workspaceId, userId);
+      expect(
+        mockWorkspaceUserRepository.removeUserFromWorkspace,
+      ).toHaveBeenCalledWith(workspaceId, userId);
     });
 
-    it('dovrebbe lanciare NotFoundException se l\'utente NON è presente nel workspace', async () => {
+    it("dovrebbe lanciare NotFoundException se l'utente NON è presente nel workspace", async () => {
       const workspaceId = 'workspace-123';
       const userId = 'user-invalid';
 
       // Simuliamo che l'utente NON esista nel workspace
-      mockWorkspaceUserRepository.checkIfUserIsInWorkspace.mockResolvedValueOnce(false);
-
-      await expect(service.removeUserFromWorkspace(workspaceId, userId)).rejects.toThrow(
-        NotFoundException,
+      mockWorkspaceUserRepository.checkIfUserIsInWorkspace.mockResolvedValueOnce(
+        false,
       );
 
+      await expect(
+        service.removeUserFromWorkspace(workspaceId, userId),
+      ).rejects.toThrow(NotFoundException);
+
       // Verifichiamo che il metodo di rimozione non sia mai stato chiamato
-      expect(mockWorkspaceUserRepository.removeUserFromWorkspace).not.toHaveBeenCalled();
+      expect(
+        mockWorkspaceUserRepository.removeUserFromWorkspace,
+      ).not.toHaveBeenCalled();
     });
   });
 
   describe('getUserRoleForRepository', () => {
-    it('dovrebbe restituire il ruolo dell\'utente per il repository specifico', async () => {
+    it("dovrebbe restituire il ruolo dell'utente per il repository specifico", async () => {
       const repositoryId = 'repo-123';
       const userId = 'user-1';
       const mockRole = WorkspaceRole.DEVELOPER;
 
-      mockWorkspaceUserRepository.getUserRoleForRepository.mockResolvedValueOnce(mockRole);
+      mockWorkspaceUserRepository.getUserRoleForRepository.mockResolvedValueOnce(
+        mockRole,
+      );
 
-      const result = await service.getUserRoleForRepository(repositoryId, userId);
+      const result = await service.getUserRoleForRepository(
+        repositoryId,
+        userId,
+      );
 
-      expect(mockWorkspaceUserRepository.getUserRoleForRepository).toHaveBeenCalledWith(repositoryId, userId);
+      expect(
+        mockWorkspaceUserRepository.getUserRoleForRepository,
+      ).toHaveBeenCalledWith(repositoryId, userId);
       expect(result).toBe(mockRole);
     });
   });
@@ -108,15 +133,21 @@ describe('WorkspaceUserService', () => {
       };
 
       // L'utente non è nel workspace, quindi l'inserimento è valido
-      mockWorkspaceUserRepository.checkIfUserIsInWorkspace.mockResolvedValueOnce(false);
+      mockWorkspaceUserRepository.checkIfUserIsInWorkspace.mockResolvedValueOnce(
+        false,
+      );
 
       await service.addUserToWorkspace(mockUser, workspaceId);
 
-      expect(mockWorkspaceUserRepository.checkIfUserIsInWorkspace).toHaveBeenCalledWith(workspaceId, mockUser.userId);
-      expect(mockWorkspaceUserRepository.addUserToWorkspace).toHaveBeenCalledWith(mockUser, workspaceId);
+      expect(
+        mockWorkspaceUserRepository.checkIfUserIsInWorkspace,
+      ).toHaveBeenCalledWith(workspaceId, mockUser.userId);
+      expect(
+        mockWorkspaceUserRepository.addUserToWorkspace,
+      ).toHaveBeenCalledWith(mockUser, workspaceId);
     });
 
-    it('dovrebbe lanciare PreconditionFailedException se l\'utente è già nel workspace', async () => {
+    it("dovrebbe lanciare PreconditionFailedException se l'utente è già nel workspace", async () => {
       const workspaceId = 'workspace-123';
       const mockUser: UserOfWorkspaceInfo = {
         userId: 'user-2',
@@ -125,14 +156,18 @@ describe('WorkspaceUserService', () => {
       };
 
       // L'utente è già nel workspace
-      mockWorkspaceUserRepository.checkIfUserIsInWorkspace.mockResolvedValueOnce(true);
-
-      await expect(service.addUserToWorkspace(mockUser, workspaceId)).rejects.toThrow(
-        PreconditionFailedException,
+      mockWorkspaceUserRepository.checkIfUserIsInWorkspace.mockResolvedValueOnce(
+        true,
       );
 
+      await expect(
+        service.addUserToWorkspace(mockUser, workspaceId),
+      ).rejects.toThrow(PreconditionFailedException);
+
       // Verifichiamo che il metodo per aggiungere l'utente non sia mai stato chiamato
-      expect(mockWorkspaceUserRepository.addUserToWorkspace).not.toHaveBeenCalled();
+      expect(
+        mockWorkspaceUserRepository.addUserToWorkspace,
+      ).not.toHaveBeenCalled();
     });
   });
 });
