@@ -3,6 +3,7 @@ import { WorkspaceUserController } from './workspaceUser.controller';
 import { IWorkspaceUserServiceToken } from './interfaces/IWorkspaceUserService';
 import { GetUsersOfWorkspaceResponseDto } from './dto/getUserOfWorkspace.responseDto';
 import { JwtAuthGuard } from '../../auth/jwt-auth.guard'; 
+import { WorkspaceRole } from '../roles.enum';
 
 describe('WorkspaceUserController', () => {
   let controller: WorkspaceUserController;
@@ -40,7 +41,7 @@ describe('WorkspaceUserController', () => {
     it('dovrebbe restituire la lista degli utenti tramite il service', async () => {
       const workspaceId = 'workspace-123';
       const mockUsers: GetUsersOfWorkspaceResponseDto[] = [
-        { userId: 'user-1', username: 'testuser', role: 'ADMIN' as any },
+        { userId: 'user-1', username: 'testuser', role: WorkspaceRole.DEVELOPER },
       ];
 
       mockWorkspaceUserService.getUsersOfWorkspace.mockResolvedValueOnce(

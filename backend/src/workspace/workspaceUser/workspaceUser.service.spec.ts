@@ -3,6 +3,7 @@ import { WorkspaceUserService } from './workspaceUser.service';
 import { IWorkspaceUserRepositoryToken } from './interfaces/IWorkspaceUserRepository.interface';
 import { NotFoundException, PreconditionFailedException } from '@nestjs/common';
 import { UserOfWorkspaceInfo } from './type/userOfWorkspace.type';
+import { WorkspaceRole } from '../roles.enum';
 
 describe('WorkspaceUserService', () => {
   let service: WorkspaceUserService;
@@ -40,7 +41,7 @@ describe('WorkspaceUserService', () => {
     it('dovrebbe restituire la lista degli utenti del workspace', async () => {
       const workspaceId = 'workspace-123';
       const mockUsers = [
-        { userId: 'user-1', username: 'testuser', role: 'ADMIN' },
+        { userId: 'user-1', username: 'testuser', role: WorkspaceRole.DEVELOPER },
       ];
 
       mockWorkspaceUserRepository.getUsersOfWorkspace.mockResolvedValueOnce(mockUsers);
@@ -86,7 +87,7 @@ describe('WorkspaceUserService', () => {
     it('dovrebbe restituire il ruolo dell\'utente per il repository specifico', async () => {
       const repositoryId = 'repo-123';
       const userId = 'user-1';
-      const mockRole = 'ADMIN';
+      const mockRole = WorkspaceRole.DEVELOPER;
 
       mockWorkspaceUserRepository.getUserRoleForRepository.mockResolvedValueOnce(mockRole);
 
@@ -103,7 +104,7 @@ describe('WorkspaceUserService', () => {
       const mockUser: UserOfWorkspaceInfo = {
         userId: 'user-2',
         username: 'newuser',
-        role: 'MEMBER' as any, // Castato se usi un enum specifico
+        role: WorkspaceRole.DEVELOPER, // Castato se usi un enum specifico
       };
 
       // L'utente non è nel workspace, quindi l'inserimento è valido
@@ -120,7 +121,7 @@ describe('WorkspaceUserService', () => {
       const mockUser: UserOfWorkspaceInfo = {
         userId: 'user-2',
         username: 'newuser',
-        role: 'MEMBER' as any,
+        role: WorkspaceRole.DEVELOPER,
       };
 
       // L'utente è già nel workspace

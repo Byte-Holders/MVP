@@ -50,7 +50,7 @@ describe('WorkspaceUserRepository', () => {
       const mockWorkspace = {
         _id: workspaceId,
         members: [
-          { userId: 'user-1', userUsername: 'testuser', role: 'ADMIN' },
+          { userId: 'user-1', userUsername: 'testuser', role: WorkspaceRole.DEVELOPER },
         ],
       };
 
@@ -60,7 +60,7 @@ describe('WorkspaceUserRepository', () => {
 
       expect(model.findById).toHaveBeenCalledWith(workspaceId);
       expect(result).toEqual([
-        { userId: 'user-1', username: 'testuser', role: 'ADMIN' },
+        { userId: 'user-1', username: 'testuser', role: WorkspaceRole.DEVELOPER },
       ]);
     });
 
@@ -124,7 +124,7 @@ describe('WorkspaceUserRepository', () => {
       const repositoryId = 'repo-123';
       const userId = 'user-1';
       const mockWorkspace = {
-        members: [{ userId: 'user-1', role: 'ADMIN' }],
+        members: [{ userId: 'user-1', role: WorkspaceRole.DEVELOPER }],
       };
 
       mockExec.mockResolvedValueOnce(mockWorkspace);
@@ -138,7 +138,7 @@ describe('WorkspaceUserRepository', () => {
         'repositories.repoId': repositoryId,
         'members.userId': userId,
       });
-      expect(result).toBe('ADMIN');
+      expect(result).toBe(WorkspaceRole.DEVELOPER);
     });
 
     it('dovrebbe restituire null se il workspace non viene trovato', async () => {
@@ -154,7 +154,7 @@ describe('WorkspaceUserRepository', () => {
 
     it('dovrebbe restituire null se l\'utente non è tra i membri (edge case)', async () => {
       const mockWorkspace = {
-        members: [{ userId: 'another-user', role: 'ADMIN' }],
+        members: [{ userId: 'another-user', role: WorkspaceRole.DEVELOPER }],
       };
       mockExec.mockResolvedValueOnce(mockWorkspace);
 
