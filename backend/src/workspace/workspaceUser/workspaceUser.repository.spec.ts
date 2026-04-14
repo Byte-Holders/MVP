@@ -50,7 +50,11 @@ describe('WorkspaceUserRepository', () => {
       const mockWorkspace = {
         _id: workspaceId,
         members: [
-          { userId: 'user-1', userUsername: 'testuser', role: WorkspaceRole.DEVELOPER },
+          {
+            userId: 'user-1',
+            userUsername: 'testuser',
+            role: WorkspaceRole.DEVELOPER,
+          },
         ],
       };
 
@@ -60,7 +64,11 @@ describe('WorkspaceUserRepository', () => {
 
       expect(model.findById).toHaveBeenCalledWith(workspaceId);
       expect(result).toEqual([
-        { userId: 'user-1', username: 'testuser', role: WorkspaceRole.DEVELOPER },
+        {
+          userId: 'user-1',
+          username: 'testuser',
+          role: WorkspaceRole.DEVELOPER,
+        },
       ]);
     });
 
@@ -152,7 +160,7 @@ describe('WorkspaceUserRepository', () => {
       expect(result).toBeNull();
     });
 
-    it('dovrebbe restituire null se l\'utente non è tra i membri (edge case)', async () => {
+    it("dovrebbe restituire null se l'utente non è tra i membri (edge case)", async () => {
       const mockWorkspace = {
         members: [{ userId: 'another-user', role: WorkspaceRole.DEVELOPER }],
       };
@@ -168,7 +176,7 @@ describe('WorkspaceUserRepository', () => {
   });
 
   describe('checkIfUserIsInWorkspace', () => {
-    it('dovrebbe restituire true se l\'utente fa parte del workspace', async () => {
+    it("dovrebbe restituire true se l'utente fa parte del workspace", async () => {
       const workspaceId = 'workspace-123';
       const userId = 'user-1';
       const mockWorkspace = {
@@ -185,7 +193,7 @@ describe('WorkspaceUserRepository', () => {
       expect(result).toBe(true);
     });
 
-    it('dovrebbe restituire false se l\'utente NON fa parte del workspace', async () => {
+    it("dovrebbe restituire false se l'utente NON fa parte del workspace", async () => {
       const workspaceId = 'workspace-123';
       const userId = 'user-1';
       const mockWorkspace = {

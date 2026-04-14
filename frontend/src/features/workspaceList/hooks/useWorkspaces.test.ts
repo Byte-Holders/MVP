@@ -12,7 +12,7 @@ describe('useWorkspaces Hook', () => {
     vi.clearAllMocks()
   })
 
-  it("dovrebbe iniziare con isLoading true e workspaces vuoti", () => {
+  it('dovrebbe iniziare con isLoading true e workspaces vuoti', () => {
     vi.mocked(getWorkspaces).mockReturnValue(new Promise(() => {}))
     const { result } = renderHook(() => useWorkspaces())
     expect(result.current.isLoading).toBe(true)
@@ -44,7 +44,9 @@ describe('useWorkspaces Hook', () => {
   })
 
   it('dovrebbe aggiornare i dati quando si chiama refresh()', async () => {
-    const initialData = [{ id: 'ws-1', name: 'Alpha', owner: 'alice', role: 'owner' }]
+    const initialData = [
+      { id: 'ws-1', name: 'Alpha', owner: 'alice', role: 'owner' },
+    ]
     const refreshedData = [
       { id: 'ws-1', name: 'Alpha', owner: 'alice', role: 'owner' },
       { id: 'ws-2', name: 'Beta', owner: 'bob', role: 'member' },

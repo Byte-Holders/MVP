@@ -19,7 +19,7 @@ export function RepositoryList({ workspaceId }: Props) {
   return (
     <div className="flex flex-col gap-4">
       <div className="flex items-center justify-between">
-        <h2 className="display-title text-xl">Repository</h2>
+        <h2 className="display-title text-xl">Lista repository</h2>
         <Link
           to="/workspaces/$workspaceId/members"
           params={{ workspaceId }}

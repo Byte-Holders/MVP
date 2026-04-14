@@ -445,10 +445,10 @@ export function SecuritySection({ vulnerabilitiesReport, depsReport }: Props) {
       )}
 
       {totalCodeVulns === 0 && totalDepsVulns === 0 && (
-          <p className="text-xs text-green-600 dark:text-green-400">
-            Nessuna vulnerabilità rilevata.
-          </p>
-        )}
+        <p className="text-xs text-green-600 dark:text-green-400">
+          Nessuna vulnerabilità rilevata.
+        </p>
+      )}
     </section>
   )
 }

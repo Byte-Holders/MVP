@@ -41,31 +41,42 @@ describe('RepositoryItem Component', () => {
   })
 
   it('dovrebbe mostrare il nome della repository', () => {
-    renderWithClient(<RepositoryItem repository={mockRepo} workspaceId={workspaceId} />)
+    renderWithClient(
+      <RepositoryItem repository={mockRepo} workspaceId={workspaceId} />,
+    )
     expect(screen.getByText('test-repo')).toBeInTheDocument()
   })
 
   it("dovrebbe mostrare il bottone 'Rimuovi'", () => {
-    renderWithClient(<RepositoryItem repository={mockRepo} workspaceId={workspaceId} />)
+    renderWithClient(
+      <RepositoryItem repository={mockRepo} workspaceId={workspaceId} />,
+    )
     expect(screen.getByRole('button', { name: /rimuovi/i })).toBeInTheDocument()
   })
 
   it('dovrebbe chiamare removeRepositoryData al click del bottone Rimuovi', async () => {
     const user = userEvent.setup()
     vi.mocked(removeRepositoryData).mockResolvedValue(undefined)
-    renderWithClient(<RepositoryItem repository={mockRepo} workspaceId={workspaceId} />)
+    renderWithClient(
+      <RepositoryItem repository={mockRepo} workspaceId={workspaceId} />,
+    )
 
     await user.click(screen.getByRole('button', { name: /rimuovi/i }))
 
     await waitFor(() => {
-      expect(removeRepositoryData).toHaveBeenCalledWith(workspaceId, mockRepo.repositoryId)
+      expect(removeRepositoryData).toHaveBeenCalledWith(
+        workspaceId,
+        mockRepo.repositoryId,
+      )
     })
   })
 
-  it("dovrebbe disabilitare il bottone durante la rimozione", async () => {
+  it('dovrebbe disabilitare il bottone durante la rimozione', async () => {
     const user = userEvent.setup()
     vi.mocked(removeRepositoryData).mockReturnValue(new Promise(() => {}))
-    renderWithClient(<RepositoryItem repository={mockRepo} workspaceId={workspaceId} />)
+    renderWithClient(
+      <RepositoryItem repository={mockRepo} workspaceId={workspaceId} />,
+    )
 
     await user.click(screen.getByRole('button', { name: /rimuovi/i }))
 
