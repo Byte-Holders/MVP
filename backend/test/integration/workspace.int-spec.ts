@@ -35,10 +35,8 @@ describe('Workspace Integration Tests', () => {
       return;
     }
 
-    const collections = dbConnection.collections;
-    for (const key in collections) {
-      await collections[key].deleteMany({});
-    }
+    // Pulisce solo i documenti della collezione legata a questo test
+    await workspaceModel.deleteMany({});
   });
 
   // 3. AFTER ALL: Viene eseguito UNA SOLA VOLTA alla fine di tutto

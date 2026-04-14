@@ -3,6 +3,7 @@ import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { useAddRepositoryForm } from './useAddRepositoryForm'
 import { addRepositoryData } from '../model/addRepositoryData'
+import type { ReactNode } from 'react'
 
 // 1. Mockiamo la chiamata API vera
 vi.mock('../model/addRepositoryData', () => ({
@@ -15,11 +16,11 @@ const createTestQueryClient = () =>
     defaultOptions: { queries: { retry: false } },
   })
 
-const wrapper = ({ children }: { children: React.ReactNode }) => (
-  <QueryClientProvider client={createTestQueryClient()}>
-    {children}
-  </QueryClientProvider>
-)
+  const wrapper = ({ children }: { children: ReactNode }) => (
+    <QueryClientProvider client={createTestQueryClient()}>
+      {children}
+    </QueryClientProvider>
+  )
 
 describe('useAddRepositoryForm Hook', () => {
   const workspaceId = 'workspace-123'

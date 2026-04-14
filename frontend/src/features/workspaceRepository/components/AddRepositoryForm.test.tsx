@@ -5,18 +5,19 @@ import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { AddRepositoryForm } from './AddRepositoryForm'
 import { addRepositoryData } from '../model/addRepositoryData'
+import type { ReactElement } from 'react'
 
 // Mock della chiamata API
 vi.mock('../model/addRepositoryData', () => ({
   addRepositoryData: vi.fn(),
 }))
 
-const renderWithClient = (ui: React.ReactElement) => {
+const renderWithClient = (ui: ReactElement) => {
   const queryClient = new QueryClient({
     defaultOptions: { queries: { retry: false } },
   })
   return render(
-    <QueryClientProvider client={queryClient}>{ui}</QueryClientProvider>,
+    <QueryClientProvider client={queryClient}>{ui}</QueryClientProvider>
   )
 }
 
