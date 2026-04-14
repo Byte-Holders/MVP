@@ -155,10 +155,7 @@ describe('WorkspaceRepositoryService', () => {
       );
 
       await expect(
-        service.addRepository(
-          'myWorkspaceId',
-          'https://github.com/owner/repo',
-        ),
+        service.addRepository('myWorkspaceId', 'https://github.com/owner/repo'),
       ).rejects.toThrow('writer error');
 
       expect(

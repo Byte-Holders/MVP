@@ -28,9 +28,7 @@ describe('RepositoryController', () => {
 
     const module: TestingModule = await Test.createTestingModule({
       controllers: [RepositoryController],
-      providers: [
-        { provide: RepositoryServiceToken, useValue: mockService },
-      ],
+      providers: [{ provide: RepositoryServiceToken, useValue: mockService }],
     }).compile();
 
     controller = module.get<RepositoryController>(RepositoryController);
@@ -73,9 +71,9 @@ describe('RepositoryController', () => {
         new Error('Repository non trovata'),
       );
 
-      await expect(
-        controller.getRepository('myRepositoryId'),
-      ).rejects.toThrow('Repository non trovata');
+      await expect(controller.getRepository('myRepositoryId')).rejects.toThrow(
+        'Repository non trovata',
+      );
     });
   });
 
@@ -102,9 +100,9 @@ describe('RepositoryController', () => {
         new Error('Repository non trovata'),
       );
 
-      await expect(
-        controller.getBranches('myRepositoryId'),
-      ).rejects.toThrow('Repository non trovata');
+      await expect(controller.getBranches('myRepositoryId')).rejects.toThrow(
+        'Repository non trovata',
+      );
     });
   });
 });
