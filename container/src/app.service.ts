@@ -59,7 +59,12 @@ export class AppService {
       repositoryId,
     } = decoded;
 
-    if (!TARGET_OWNER || !TARGET_REPOSITORY || !TARGET_BRANCH || !repositoryId) {
+    if (
+      !TARGET_OWNER ||
+      !TARGET_REPOSITORY ||
+      !TARGET_BRANCH ||
+      !repositoryId
+    ) {
       throw new Error(
         `Mancano informazioni per lanciare scansioni.\nOwner: ${TARGET_OWNER}\nRepository: ${TARGET_REPOSITORY}\nBranch: ${TARGET_BRANCH}\nRepositoryId: ${repositoryId}`,
       );
