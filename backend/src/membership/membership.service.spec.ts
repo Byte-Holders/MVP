@@ -1,6 +1,10 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { MembershipService } from './membership.service';
-import { BadRequestException, NotFoundException, PreconditionFailedException } from '@nestjs/common';
+import {
+  BadRequestException,
+  NotFoundException,
+  PreconditionFailedException,
+} from '@nestjs/common';
 import { ManageInviteAction, MembershipStatus } from './dto/membership.dto';
 
 // Importa i Token esatti che usi nel Service
@@ -76,10 +80,12 @@ describe('MembershipService', () => {
       recipientRole: WorkspaceRole.DEVELOPER,
     };
 
-    it('dovrebbe lanciare NotFoundException se l\'utente non esiste', async () => {
+    it("dovrebbe lanciare NotFoundException se l'utente non esiste", async () => {
       mockFindUserByUsername.findByUsername.mockResolvedValue(null);
 
-      await expect(service.inviteUser(mockInviteInfo)).rejects.toThrow(NotFoundException);
+      await expect(service.inviteUser(mockInviteInfo)).rejects.toThrow(
+        NotFoundException,
+      );
     });
 
     it('dovrebbe lanciare BadRequestException se esiste già un invito pendente', async () => {
@@ -87,7 +93,9 @@ describe('MembershipService', () => {
       // Simuliamo che il db trovi un invito già esistente
       mockRepository.findPendingInvite.mockResolvedValue({ _id: 'invite1' });
 
-      await expect(service.inviteUser(mockInviteInfo)).rejects.toThrow(BadRequestException);
+      await expect(service.inviteUser(mockInviteInfo)).rejects.toThrow(
+        BadRequestException,
+      );
     });
 
     it('dovrebbe creare un nuovo invito con successo', async () => {
@@ -110,7 +118,9 @@ describe('MembershipService', () => {
   // --- TEST PER: getInvites ---
   describe('getInvites', () => {
     it('dovrebbe restituire la lista degli inviti pendenti', async () => {
-      const mockPopulatedInvites = [{ _id: 'inv1', status: MembershipStatus.Pending }];
+      const mockPopulatedInvites = [
+        { _id: 'inv1', status: MembershipStatus.Pending },
+      ];
       mockRepository.findPendingInvites.mockResolvedValue(mockPopulatedInvites);
 
       const result = await service.getInvites('u1');
@@ -122,75 +132,126 @@ describe('MembershipService', () => {
 
   // --- TEST PER: manageInvite ---
   describe('manageInvite', () => {
-    const mockManageActionAccept = { id: 'inv1', action: ManageInviteAction.Accept };
-    const mockManageActionReject = { id: 'inv1', action: ManageInviteAction.Reject };
+    const mockManageActionAccept = {
+      id: 'inv1',
+      action: ManageInviteAction.Accept,
+    };
+    const mockManageActionReject = {
+      id: 'inv1',
+      action: ManageInviteAction.Reject,
+    };
 
-    it('dovrebbe lanciare BadRequestException se l\'invito non esiste', async () => {
+    it("dovrebbe lanciare BadRequestException se l'invito non esiste", async () => {
       mockRepository.findPendingInviteById.mockResolvedValue(null);
 
-      await expect(service.manageInvite(mockManageActionAccept)).rejects.toThrow(BadRequestException);
+      await expect(
+        service.manageInvite(mockManageActionAccept),
+      ).rejects.toThrow(BadRequestException);
     });
 
-    it('dovrebbe lanciare Error se non riesce a recuperare l\'username del destinatario', async () => {
-      mockRepository.findPendingInviteById.mockResolvedValue({ recipientId: 'u1' });
+    it("dovrebbe lanciare Error se non riesce a recuperare l'username del destinatario", async () => {
+      mockRepository.findPendingInviteById.mockResolvedValue({
+        recipientId: 'u1',
+      });
       // Simuliamo che la lista non contenga il nostro invito o manchi l'username
       mockRepository.findPendingInvites.mockResolvedValue([{ _id: 'inv2' }]);
 
-      await expect(service.manageInvite(mockManageActionAccept)).rejects.toThrow("errore nel recupero dell'username");
+      await expect(
+        service.manageInvite(mockManageActionAccept),
+      ).rejects.toThrow("errore nel recupero dell'username");
     });
 
     describe('Azione: Accept', () => {
       beforeEach(() => {
         // Setup di base valido per tutti i test "Accept"
-        mockRepository.findPendingInviteById.mockResolvedValue({ recipientId: 'u1', workspaceId: 'w1', recipientRole: WorkspaceRole.DEVELOPER });
-        mockRepository.findPendingInvites.mockResolvedValue([{ _id: 'inv1', recipientUsername: 'mario.rossi' }]);
+        mockRepository.findPendingInviteById.mockResolvedValue({
+          recipientId: 'u1',
+          workspaceId: 'w1',
+          recipientRole: WorkspaceRole.DEVELOPER,
+        });
+        mockRepository.findPendingInvites.mockResolvedValue([
+          { _id: 'inv1', recipientUsername: 'mario.rossi' },
+        ]);
       });
 
-      it('dovrebbe lanciare NotFoundException se l\'utente da aggiungere non viene trovato', async () => {
+      it("dovrebbe lanciare NotFoundException se l'utente da aggiungere non viene trovato", async () => {
         mockFindUserByUsername.findByUsername.mockResolvedValue(null);
 
-        await expect(service.manageInvite(mockManageActionAccept)).rejects.toThrow(NotFoundException);
+        await expect(
+          service.manageInvite(mockManageActionAccept),
+        ).rejects.toThrow(NotFoundException);
       });
 
-      it('dovrebbe rifiutare l\'invito e lanciare PreconditionFailedException se l\'utente è già nel workspace', async () => {
-        mockFindUserByUsername.findByUsername.mockResolvedValue({ _id: 'u1', username: 'mario.rossi' });
-        
+      it("dovrebbe rifiutare l'invito e lanciare PreconditionFailedException se l'utente è già nel workspace", async () => {
+        mockFindUserByUsername.findByUsername.mockResolvedValue({
+          _id: 'u1',
+          username: 'mario.rossi',
+        });
+
         // Simuliamo l'errore del workspace service
-        mockAddUserToWorkspace.addUserToWorkspace.mockRejectedValue(new PreconditionFailedException());
+        mockAddUserToWorkspace.addUserToWorkspace.mockRejectedValue(
+          new PreconditionFailedException(),
+        );
 
-        await expect(service.manageInvite(mockManageActionAccept)).rejects.toThrow(PreconditionFailedException);
-        
+        await expect(
+          service.manageInvite(mockManageActionAccept),
+        ).rejects.toThrow(PreconditionFailedException);
+
         // Verifica cruciale: ci assicuriamo che in caso di errore, lo status sia stato messo su Rejected
-        expect(mockRepository.updateInvite).toHaveBeenCalledWith('inv1', MembershipStatus.Rejected);
+        expect(mockRepository.updateInvite).toHaveBeenCalledWith(
+          'inv1',
+          MembershipStatus.Rejected,
+        );
       });
 
-      it('dovrebbe aggiungere l\'utente al workspace e aggiornare l\'invito ad Accepted', async () => {
-        mockFindUserByUsername.findByUsername.mockResolvedValue({ _id: 'u1', sub: "sub123", username: 'mario.rossi', email: "email@example.com" });
+      it("dovrebbe aggiungere l'utente al workspace e aggiornare l'invito ad Accepted", async () => {
+        mockFindUserByUsername.findByUsername.mockResolvedValue({
+          _id: 'u1',
+          sub: 'sub123',
+          username: 'mario.rossi',
+          email: 'email@example.com',
+        });
         mockAddUserToWorkspace.addUserToWorkspace.mockResolvedValue(true); // Successo
 
         await service.manageInvite(mockManageActionAccept);
 
         // Verifichiamo che il service per aggiungere l'utente sia stato chiamato
         expect(mockAddUserToWorkspace.addUserToWorkspace).toHaveBeenCalledWith(
-          { userId: 'u1', username: 'mario.rossi', role: WorkspaceRole.DEVELOPER  },
-          'w1'
+          {
+            userId: 'u1',
+            username: 'mario.rossi',
+            role: WorkspaceRole.DEVELOPER,
+          },
+          'w1',
         );
         // Verifichiamo che l'invito sia stato salvato come accettato
-        expect(mockRepository.updateInvite).toHaveBeenCalledWith('inv1', MembershipStatus.Accepted);
+        expect(mockRepository.updateInvite).toHaveBeenCalledWith(
+          'inv1',
+          MembershipStatus.Accepted,
+        );
       });
     });
 
     describe('Azione: Reject', () => {
-      it('dovrebbe aggiornare l\'invito a Rejected in caso di azione Reject', async () => {
+      it("dovrebbe aggiornare l'invito a Rejected in caso di azione Reject", async () => {
         // Setup di base
-        mockRepository.findPendingInviteById.mockResolvedValue({ recipientId: 'u1' });
-        mockRepository.findPendingInvites.mockResolvedValue([{ _id: 'inv1', recipientUsername: 'mario.rossi' }]);
+        mockRepository.findPendingInviteById.mockResolvedValue({
+          recipientId: 'u1',
+        });
+        mockRepository.findPendingInvites.mockResolvedValue([
+          { _id: 'inv1', recipientUsername: 'mario.rossi' },
+        ]);
 
         await service.manageInvite(mockManageActionReject);
 
         // Verifichiamo che salti tutta la logica di 'Accept' e vada diretto al Reject
-        expect(mockAddUserToWorkspace.addUserToWorkspace).not.toHaveBeenCalled();
-        expect(mockRepository.updateInvite).toHaveBeenCalledWith('inv1', MembershipStatus.Rejected);
+        expect(
+          mockAddUserToWorkspace.addUserToWorkspace,
+        ).not.toHaveBeenCalled();
+        expect(mockRepository.updateInvite).toHaveBeenCalledWith(
+          'inv1',
+          MembershipStatus.Rejected,
+        );
       });
     });
   });

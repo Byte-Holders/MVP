@@ -1,5 +1,5 @@
-import { WorkspaceRole } from "../../workspace/roles.enum";
-import { IsEnum, IsNotEmpty, IsString } from "class-validator";
+import { WorkspaceRole } from '../../workspace/roles.enum';
+import { IsEnum, IsNotEmpty, IsString } from 'class-validator';
 
 export enum ManageInviteAction {
   Accept = 'Accept',

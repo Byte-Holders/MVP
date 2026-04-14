@@ -21,7 +21,11 @@ export class Membership extends Document {
   @Prop({ required: true, enum: WorkspaceRole, type: String })
   recipientRole!: WorkspaceRole;
 
-  @Prop({ default: MembershipStatus.Pending, enum: MembershipStatus, type: String })
+  @Prop({
+    default: MembershipStatus.Pending,
+    enum: MembershipStatus,
+    type: String,
+  })
   status!: MembershipStatus;
 }
 

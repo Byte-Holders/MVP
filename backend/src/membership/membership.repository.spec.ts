@@ -20,7 +20,7 @@ class MockMembershipModel {
   constructor(private data: any) {
     this.save = jest.fn().mockResolvedValue(this.data);
   }
-  
+
   // Simuliamo i metodi statici usati dal Repository
   static updateOne = jest.fn();
   static find = jest.fn();
@@ -57,7 +57,6 @@ describe('MembershipRepository', () => {
 
       // Essendo un metodo void, ci basta verificare che non lanci errori
       await expect(repository.addInvite(mockParams)).resolves.not.toThrow();
-      
     });
   });
 
@@ -69,13 +68,13 @@ describe('MembershipRepository', () => {
       });
 
       await expect(
-        repository.updateInvite('id123', MembershipStatus.Accepted)
+        repository.updateInvite('id123', MembershipStatus.Accepted),
       ).resolves.not.toThrow();
 
       // Verifichiamo che updateOne sia stato chiamato con i parametri corretti
       expect(MockMembershipModel.updateOne).toHaveBeenCalledWith(
         { _id: 'id123' },
-        { $set: { status: MembershipStatus.Accepted } }
+        { $set: { status: MembershipStatus.Accepted } },
       );
     });
 
@@ -86,7 +85,7 @@ describe('MembershipRepository', () => {
       });
 
       await expect(
-        repository.updateInvite('id123', MembershipStatus.Accepted)
+        repository.updateInvite('id123', MembershipStatus.Accepted),
       ).rejects.toThrow(NotFoundException);
     });
   });
@@ -122,7 +121,7 @@ describe('MembershipRepository', () => {
           status: MembershipStatus.Pending,
         },
       ]);
-      
+
       // Verifichiamo che find sia stato chiamato coi filtri giusti
       expect(MockMembershipModel.find).toHaveBeenCalledWith({
         recipientId: 'user123',
@@ -132,7 +131,7 @@ describe('MembershipRepository', () => {
   });
 
   describe('findPendingInviteById', () => {
-    it('dovrebbe restituire null se l\'invito non esiste', async () => {
+    it("dovrebbe restituire null se l'invito non esiste", async () => {
       // Mongoose restituisce null se findOne non trova nulla
       mockQueryChain.exec.mockResolvedValue(null);
       MockMembershipModel.findOne.mockReturnValue(mockQueryChain);
@@ -142,7 +141,7 @@ describe('MembershipRepository', () => {
       expect(result).toBeNull();
     });
 
-    it('dovrebbe restituire un MembershipEntity mappato se l\'invito esiste', async () => {
+    it("dovrebbe restituire un MembershipEntity mappato se l'invito esiste", async () => {
       const mockDbResult = {
         _id: 'mongo_id_2',
         workspaceId: 'workspace123',

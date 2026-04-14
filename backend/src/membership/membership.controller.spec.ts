@@ -2,7 +2,12 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { MembershipController } from './membership.controller';
 import { MembershipService } from './membership.service';
 import { IMembershipServiceToken } from './interfaces/IMembershipService.interface';
-import { InviteUserDto, ManageInviteDto, ManageInviteAction, MembershipStatus } from './dto/membership.dto';
+import {
+  InviteUserDto,
+  ManageInviteDto,
+  ManageInviteAction,
+  MembershipStatus,
+} from './dto/membership.dto';
 import type { RequestUser } from '../auth/types/requestUser.type';
 
 describe('MembershipController', () => {
@@ -36,7 +41,7 @@ describe('MembershipController', () => {
   });
 
   describe('inviteUser', () => {
-    it('dovrebbe mappare correttamente il DTO e l\'utente, e chiamare il service', async () => {
+    it("dovrebbe mappare correttamente il DTO e l'utente, e chiamare il service", async () => {
       // Arrange: Prepariamo i finti dati in ingresso
       const mockDto: InviteUserDto = {
         workspaceId: 'workspace123',
@@ -56,23 +61,32 @@ describe('MembershipController', () => {
       // Assert: Verifichiamo la trasformazione da DTO a "InviteUserInfo"
       expect(mockMembershipService.inviteUser).toHaveBeenCalledWith({
         workspaceId: 'workspace123',
-        senderId: 'user-sender-1',           // Preso dal @User()
-        recipientUsername: 'luigi.verdi',    // Preso dal DTO
-        recipientRole: 'Admin',              // Preso dal DTO
+        senderId: 'user-sender-1', // Preso dal @User()
+        recipientUsername: 'luigi.verdi', // Preso dal DTO
+        recipientRole: 'Admin', // Preso dal DTO
       });
     });
   });
 
   describe('getInvites', () => {
-    it('dovrebbe restituire la lista degli inviti per l\'utente corrente', async () => {
+    it("dovrebbe restituire la lista degli inviti per l'utente corrente", async () => {
       // Arrange
       const mockUser: RequestUser = {
         sub: 'sub123',
         userId: 'user123',
         username: 'mario',
       };
-      
-      const mockServiceResponse = [{ _id: 'inv1', workspaceName: "Workspace 1", senderUsername: 'mario.rossi', recipientUsername: 'luigi.verdi', recipientRole: 'Admin', status: MembershipStatus.Pending }];
+
+      const mockServiceResponse = [
+        {
+          _id: 'inv1',
+          workspaceName: 'Workspace 1',
+          senderUsername: 'mario.rossi',
+          recipientUsername: 'luigi.verdi',
+          recipientRole: 'Admin',
+          status: MembershipStatus.Pending,
+        },
+      ];
       mockMembershipService.getInvites.mockResolvedValue(mockServiceResponse);
 
       // Act

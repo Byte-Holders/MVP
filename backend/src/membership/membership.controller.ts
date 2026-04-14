@@ -1,4 +1,14 @@
-import { Controller, Post, Get, Body, Query, UseGuards, Inject, ValidationPipe, UsePipes } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  Get,
+  Body,
+  Query,
+  UseGuards,
+  Inject,
+  ValidationPipe,
+  UsePipes,
+} from '@nestjs/common';
 import { MembershipService } from './membership.service';
 import {
   InviteUserDto,
@@ -37,17 +47,13 @@ export class MembershipController {
 
   @Get('invites')
   @UsePipes(new ValidationPipe())
-  async getInvites(
-    @User() user: RequestUser,
-  ): Promise<GetInviteResponseDto[]> {
+  async getInvites(@User() user: RequestUser): Promise<GetInviteResponseDto[]> {
     return this.membershipService.getInvites(user.userId);
   }
 
   @Post('manage')
   @UsePipes(new ValidationPipe())
-  async manageInvite(
-    @Body() manageInviteDto: ManageInviteDto,
-  ): Promise<void> {
+  async manageInvite(@Body() manageInviteDto: ManageInviteDto): Promise<void> {
     const manageInviteInfo: ManageInviteInfo = {
       id: manageInviteDto.membershipId,
       action: manageInviteDto.action,
