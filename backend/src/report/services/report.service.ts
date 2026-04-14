@@ -31,10 +31,7 @@ export class ReportService implements IReportService {
     }
   }
 
-  async getReport(
-    repositoryId: string,
-    branch: string,
-  ): Promise<ReportInfo> {
+  async getReport(repositoryId: string, branch: string): Promise<ReportInfo> {
     const entity = await this.reportRepository.findLatestByTarget(
       repositoryId,
       branch,

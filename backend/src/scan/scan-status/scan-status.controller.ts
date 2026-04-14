@@ -28,11 +28,10 @@ export class ScanStatusController {
   @Get('/repositories/:repositoryId/branches/:branch')
   @UsePipes(new ValidationPipe())
   async getScanStatus(@Param() dto: GetScanStatusDto): Promise<ScanStatus> {
-    console.log('Called');
     return await this.scanStatusService.getScanStatus(dto.scanId);
   }
 
-  // TODO guardia container
+  // TODO guardia che permette solo al container di interagire
   // UpdateScanStatusFromContainerDto ~ UpdateScanStatusDto
   @Put('/')
   @UsePipes(new ValidationPipe())

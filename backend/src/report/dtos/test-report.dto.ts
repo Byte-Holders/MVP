@@ -1,5 +1,6 @@
 import {
   IsArray,
+  IsDefined,
   IsInt,
   IsNotEmpty,
   IsNumber,
@@ -47,6 +48,7 @@ export class FailedTestDto {
 }
 
 export class TestReportDto {
+  @IsDefined()
   @ValidateNested()
   @Type(() => CoverageReportDto)
   coverageReport!: CoverageReportDto;

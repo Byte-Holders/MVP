@@ -28,12 +28,24 @@ export class RepositoryWriterService implements IRepositoryWriter {
     if (accessToken) {
       await this.gitHubRepository.verifyAccess(ownerName, name, accessToken);
     }
-    return this.repositoryPersistRepository.addRepository(ownerName, name, accessToken);
+    return this.repositoryPersistRepository.addRepository(
+      ownerName,
+      name,
+      accessToken,
+    );
   }
 
   async updateToken(repositoryId: string, accessToken: string): Promise<void> {
-    const entity = await this.repositoryFindRepository.getRepository(repositoryId);
-    await this.gitHubRepository.verifyAccess(entity.ownerName, entity.name, accessToken);
-    return this.repositoryPersistRepository.updateToken(repositoryId, accessToken);
+    const entity =
+      await this.repositoryFindRepository.getRepository(repositoryId);
+    await this.gitHubRepository.verifyAccess(
+      entity.ownerName,
+      entity.name,
+      accessToken,
+    );
+    return this.repositoryPersistRepository.updateToken(
+      repositoryId,
+      accessToken,
+    );
   }
 }

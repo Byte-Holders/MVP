@@ -15,4 +15,5 @@ module.exports = {
   coverageDirectory: '../coverage',
   coverageThreshold: { global: { lines: 70 } },
   testEnvironment: 'node',
+  setupFiles: ['reflect-metadata'],
 };

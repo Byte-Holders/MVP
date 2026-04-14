@@ -19,11 +19,9 @@ export class CodeVulnerabilityDto {
   path!: string;
 
   @IsString()
-  @IsNotEmpty()
   description!: string;
 
   @IsString()
-  @IsNotEmpty()
   remediation!: string;
 
   @IsNumber()
@@ -32,11 +30,9 @@ export class CodeVulnerabilityDto {
   severity!: number;
 
   @IsString()
-  @IsNotEmpty()
   impact!: string;
 
   @IsString()
-  @IsNotEmpty()
   category!: string;
 
   @IsArray()

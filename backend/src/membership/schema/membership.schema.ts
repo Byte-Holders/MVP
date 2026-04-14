@@ -5,7 +5,11 @@ import { WorkspaceRole } from '../../workspace/roles.enum';
 
 @Schema({ timestamps: true })
 export class Membership extends Document {
-  @Prop({ required: true, type: mongoose.Schema.Types.ObjectId, ref: 'Workspace'  })
+  @Prop({
+    required: true,
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Workspace',
+  })
   workspaceId!: mongoose.Types.ObjectId;
 
   @Prop({ required: true, type: mongoose.Schema.Types.ObjectId, ref: 'User' })

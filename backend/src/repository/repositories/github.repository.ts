@@ -8,9 +8,15 @@ import type { IGitHubRepository } from '../interfaces/github.repository.interfac
 
 @Injectable()
 export class GitHubRepository implements IGitHubRepository {
-  async getBranches(ownerName: string, name: string, accessToken?: string): Promise<string[]> {
+  async getBranches(
+    ownerName: string,
+    name: string,
+    accessToken?: string,
+  ): Promise<string[]> {
     const url = `https://api.github.com/repos/${ownerName}/${name}/branches`;
-    const headers: Record<string, string> = { Accept: 'application/vnd.github+json' };
+    const headers: Record<string, string> = {
+      Accept: 'application/vnd.github+json',
+    };
     if (accessToken) headers['Authorization'] = `Bearer ${accessToken}`;
 
     const response = await fetch(url, { headers });
@@ -31,7 +37,11 @@ export class GitHubRepository implements IGitHubRepository {
     return data.map((b) => b.name);
   }
 
-  async verifyAccess(ownerName: string, name: string, accessToken: string): Promise<void> {
+  async verifyAccess(
+    ownerName: string,
+    name: string,
+    accessToken: string,
+  ): Promise<void> {
     const url = `https://api.github.com/repos/${ownerName}/${name}`;
     const response = await fetch(url, {
       headers: {
@@ -40,7 +50,9 @@ export class GitHubRepository implements IGitHubRepository {
       },
     });
     if (response.status === 401 || response.status === 403) {
-      throw new UnauthorizedException('Token GitHub non valido o non autorizzato per questo repository');
+      throw new UnauthorizedException(
+        'Token GitHub non valido o non autorizzato per questo repository',
+      );
     }
     if (!response.ok) {
       throw new Error(`GitHub API error: ${response.status}`);

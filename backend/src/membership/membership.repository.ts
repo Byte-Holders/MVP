@@ -14,22 +14,31 @@ export class MembershipRepository implements IMembershipRepository {
     @InjectModel(Membership.name) private membershipModel: Model<Membership>,
   ) {}
 
-  async addInvite(createMembershipEntityParams: CreateMembershipEntityParams): Promise<void> {
+  async addInvite(
+    createMembershipEntityParams: CreateMembershipEntityParams,
+  ): Promise<void> {
     const newInvite = new this.membershipModel(createMembershipEntityParams);
     await newInvite.save();
   }
 
-  async updateInvite(membershipId: string, status: MembershipStatus): Promise<void> {
+  async updateInvite(
+    membershipId: string,
+    status: MembershipStatus,
+  ): Promise<void> {
     const result = await this.membershipModel
       .updateOne({ _id: membershipId }, { $set: { status: status } })
       .exec();
 
     if (result.matchedCount === 0) {
-      throw new NotFoundException('Nessun invito pendente trovato per questo utente');
+      throw new NotFoundException(
+        'Nessun invito pendente trovato per questo utente',
+      );
     }
   }
 
-  async findPendingInvites(recipientId: string): Promise<MembershipPopulatedEntity[]> {
+  async findPendingInvites(
+    recipientId: string,
+  ): Promise<MembershipPopulatedEntity[]> {
     const pendingInvites = await this.membershipModel
       .find({
         recipientId: recipientId,
@@ -41,14 +50,15 @@ export class MembershipRepository implements IMembershipRepository {
       .lean()
       .exec();
 
-    const populatedMemberships: MembershipPopulatedEntity[] = pendingInvites.map((membership: any) => ({
-      _id: membership._id.toString(),
-      workspaceName: membership.workspaceId?.name,
-      senderUsername: membership.senderId?.username,
-      recipientUsername: membership.recipientId?.username,
-      recipientRole: membership.recipientRole,
-      status: membership.status,
-    }));
+    const populatedMemberships: MembershipPopulatedEntity[] =
+      pendingInvites.map((membership: any) => ({
+        _id: membership._id.toString(),
+        workspaceName: membership.workspaceId?.name,
+        senderUsername: membership.senderId?.username,
+        recipientUsername: membership.recipientId?.username,
+        recipientRole: membership.recipientRole,
+        status: membership.status,
+      }));
 
     return populatedMemberships;
   }
@@ -65,7 +75,7 @@ export class MembershipRepository implements IMembershipRepository {
       })
       .lean()
       .exec();
-    
+
     if (!membership) {
       return null;
     }
@@ -82,7 +92,9 @@ export class MembershipRepository implements IMembershipRepository {
     return membershipEntity;
   }
 
-  async findPendingInviteById(membershipId: string): Promise<MembershipEntity | null> {
+  async findPendingInviteById(
+    membershipId: string,
+  ): Promise<MembershipEntity | null> {
     const membership = await this.membershipModel
       .findOne({
         _id: membershipId,

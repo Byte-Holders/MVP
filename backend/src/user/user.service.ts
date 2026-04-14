@@ -19,7 +19,7 @@ export class UserService
   }
 
   async findByUsername(username: string): Promise<UserInfo | null> {
-     return await this.findUser.findByUsername(username);
+    return await this.findUser.findByUsername(username);
   }
 
   async create(

@@ -2,8 +2,9 @@ import { useState } from 'react'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { inviteMemberData } from '../model/inviteMemberData'
 import { WORKSPACE_ROLES, type WorkspaceRole } from '../types/workspaceMember'
+import type { IInviteMemberViewModel } from '../types/viewModels'
 
-export function useInviteMember(workspaceId: string) {
+export function useInviteMember(workspaceId: string): IInviteMemberViewModel {
   const [username, setUsername] = useState('')
   const [role, setRole] = useState<WorkspaceRole>(WORKSPACE_ROLES[0])
   const queryClient = useQueryClient()
@@ -17,7 +18,7 @@ export function useInviteMember(workspaceId: string) {
     },
   })
 
-  function handleSubmit(e: React.FormEvent) {
+  function handleSubmit(e: SubmitEvent) {
     e.preventDefault()
     if (!username.trim()) return
     mutate()

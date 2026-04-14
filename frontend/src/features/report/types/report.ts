@@ -11,6 +11,7 @@ export interface ReportInfo {
         severity: string
         packageName: string
         packageVersion: string
+        fixVersion?: string
       }[]
       vulnerabilityAnalysis: string
     }

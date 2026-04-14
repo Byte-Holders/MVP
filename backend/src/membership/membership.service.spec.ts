@@ -49,6 +49,14 @@ describe('MembershipService', () => {
           provide: IAddUserToWorkspaceToken,
           useValue: mockAddUserToWorkspace,
         },
+        {
+          provide: FindUserByUsernameToken,
+          useValue: { findByUsername: jest.fn() },
+        },
+        {
+          provide: IAddUserToWorkspaceToken,
+          useValue: { addUserToWorkspace: jest.fn() },
+        },
       ],
     }).compile();
 

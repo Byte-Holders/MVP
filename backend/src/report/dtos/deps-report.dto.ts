@@ -1,4 +1,10 @@
-import { IsArray, IsNotEmpty, IsString, ValidateNested } from 'class-validator';
+import {
+  IsArray,
+  IsNotEmpty,
+  IsOptional,
+  IsString,
+  ValidateNested,
+} from 'class-validator';
 import { Type } from 'class-transformer';
 
 export class DependencyDto {
@@ -27,6 +33,10 @@ export class DepVulnerabilityDto {
   @IsString()
   @IsNotEmpty()
   packageVersion!: string;
+
+  @IsOptional()
+  @IsString()
+  fixVersion?: string;
 }
 
 export class DepsReportDto {

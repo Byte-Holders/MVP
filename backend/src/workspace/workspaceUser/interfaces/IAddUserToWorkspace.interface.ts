@@ -1,7 +1,10 @@
-import { UserOfWorkspaceInfo } from "../type/userOfWorkspace.type";
+import { UserOfWorkspaceInfo } from '../type/userOfWorkspace.type';
 
 export interface IAddUserToWorkspace {
-    addUserToWorkspace(user: UserOfWorkspaceInfo, workspaceId: string): Promise<void>;
+  addUserToWorkspace(
+    user: UserOfWorkspaceInfo,
+    workspaceId: string,
+  ): Promise<void>;
 }
 
 export const IAddUserToWorkspaceToken = 'IAddUserToWorkspace';

@@ -19,14 +19,16 @@ export class RepositoryReaderService implements IRepositoryReader {
       repositoryIds,
       searchInput,
     );
-    return entities.map((entity): RepositoryInfo => ({
-      repositoryId: entity.repositoryId,
-      ownerName: entity.ownerName,
-      name: entity.name,
-      dateScan: entity.dateScan?.toISOString(),
-      documentationScore: entity.documentationScore,
-      codeCoverage: entity.codeCoverage,
-      cvss: entity.cvss,
-    }));
+    return entities.map(
+      (entity): RepositoryInfo => ({
+        repositoryId: entity.repositoryId,
+        ownerName: entity.ownerName,
+        name: entity.name,
+        dateScan: entity.dateScan?.toISOString(),
+        documentationScore: entity.documentationScore,
+        codeCoverage: entity.codeCoverage,
+        cvss: entity.cvss,
+      }),
+    );
   }
 }

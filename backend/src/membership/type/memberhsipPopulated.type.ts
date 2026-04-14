@@ -1,5 +1,5 @@
-import { WorkspaceRole } from "../../workspace/roles.enum";
-import { MembershipStatus } from "../dto/membership.dto";
+import { WorkspaceRole } from '../../workspace/roles.enum';
+import { MembershipStatus } from '../dto/membership.dto';
 
 export type MembershipPopulatedInfo = {
   _id: string;
@@ -8,4 +8,4 @@ export type MembershipPopulatedInfo = {
   recipientUsername: string;
   recipientRole: WorkspaceRole;
   status: MembershipStatus;
-}
+};

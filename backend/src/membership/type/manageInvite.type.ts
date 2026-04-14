@@ -1,6 +1,6 @@
-import { ManageInviteAction } from "../dto/membership.dto";
+import { ManageInviteAction } from '../dto/membership.dto';
 
 export type ManageInviteInfo = {
-    id: string;
-    action: ManageInviteAction;
-}
+  id: string;
+  action: ManageInviteAction;
+};

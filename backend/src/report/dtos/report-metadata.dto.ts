@@ -1,7 +1,19 @@
-import { IsDateString, IsNotEmpty, IsString, ValidateNested } from 'class-validator';
+import {
+  IsDefined,
+  IsDateString,
+  IsNotEmpty,
+  IsOptional,
+  IsString,
+  ValidateNested,
+} from 'class-validator';
 import { Type } from 'class-transformer';
 
 export class ReportTargetDto {
+  @IsOptional()
+  @IsString()
+  @IsNotEmpty()
+  owner?: string;
+
   @IsString()
   @IsNotEmpty()
   repositoryId!: string;
@@ -18,6 +30,7 @@ export class ReportMetadataDto {
   @IsDateString()
   endScanTime!: string;
 
+  @IsDefined()
   @ValidateNested()
   @Type(() => ReportTargetDto)
   target!: ReportTargetDto;

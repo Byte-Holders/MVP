@@ -1,8 +1,11 @@
 import { useState } from 'react'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { addRepositoryData } from '../model/addRepositoryData'
+import type { IAddRepositoryFormViewModel } from '../types/viewModels'
 
-export function useAddRepositoryForm(workspaceId: string) {
+export function useAddRepositoryForm(
+  workspaceId: string,
+): IAddRepositoryFormViewModel {
   const [url, setUrl] = useState('')
   const [token, setToken] = useState('')
   const [isPrivate, setIsPrivate] = useState(false)

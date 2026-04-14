@@ -16,7 +16,8 @@ import { IMembershipServiceToken } from './interfaces/IMembershipService.interfa
 @Controller('membership')
 export class MembershipController {
   constructor(
-    @Inject(IMembershipServiceToken) private readonly membershipService: MembershipService,
+    @Inject(IMembershipServiceToken)
+    private readonly membershipService: MembershipService,
   ) {}
 
   @Post('invite')
@@ -50,7 +51,7 @@ export class MembershipController {
     const manageInviteInfo: ManageInviteInfo = {
       id: manageInviteDto.membershipId,
       action: manageInviteDto.action,
-    }
+    };
     return this.membershipService.manageInvite(manageInviteInfo);
   }
 }

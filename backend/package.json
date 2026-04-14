@@ -25,7 +25,7 @@
     "*.{ts,js,json,md}": "prettier --write ."
   },
   "dependencies": {
-    "@aws-sdk/client-ecs": "^3.1024.0",
+    "@aws-sdk/client-ecs": "^3.1029.0",
     "@nestjs/common": "^11.0.1",
     "@nestjs/config": "^4.0.3",
     "@nestjs/core": "^11.0.1",

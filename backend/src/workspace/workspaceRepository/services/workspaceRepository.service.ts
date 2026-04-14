@@ -64,9 +64,7 @@ export class WorkspaceRepositoryService implements IWorkspaceRepositoryService {
     const ids =
       await this.workspaceRepositoryRepository.getRepositories(workspaceId);
     if (!ids.includes(repositoryId)) {
-      throw new NotFoundException(
-        'Repository non trovata nel workspace',
-      );
+      throw new NotFoundException('Repository non trovata nel workspace');
     }
     await this.repositoryWriter.updateToken(repositoryId, accessToken);
   }

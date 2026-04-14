@@ -1,10 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
-import {
-  Repository,
-  RepositoryDocument,
-} from '../schemas/repository.schema';
+import { Repository, RepositoryDocument } from '../schemas/repository.schema';
 import type { IRepositoryFindRepository } from '../interfaces/repository.find-repository.interface';
 import type { IRepositoryPersistRepository } from '../interfaces/repository.persist-repository.interface';
 import type { IRepositoryScoreRepository } from '../interfaces/repository.score-repository.interface';

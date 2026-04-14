@@ -8,10 +8,11 @@ export class DepVulnerabilityEntity {
   severity!: string;
   packageName!: string;
   packageVersion!: string;
+  fixVersion?: string;
 }
 
 export class DepsReportEntity {
-  list!: DependencyEntity[];
+  list?: DependencyEntity[];
   vulnerabilities!: DepVulnerabilityEntity[];
   vulnerabilityAnalysis!: string;
 }
