@@ -61,13 +61,11 @@ describe('RepositoryScoreService', () => {
     });
 
     it('rejects when the score repository rejects', async () => {
-      mockScoreRepository.updateScores.mockRejectedValue(
-        new Error('db error'),
-      );
+      mockScoreRepository.updateScores.mockRejectedValue(new Error('db error'));
 
-      await expect(
-        service.updateScores('myRepositoryId', {}),
-      ).rejects.toThrow('db error');
+      await expect(service.updateScores('myRepositoryId', {})).rejects.toThrow(
+        'db error',
+      );
     });
   });
 });

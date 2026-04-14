@@ -53,14 +53,6 @@ describe('MembershipService', () => {
           provide: IAddUserToWorkspaceToken,
           useValue: mockAddUserToWorkspace,
         },
-        {
-          provide: FindUserByUsernameToken,
-          useValue: { findByUsername: jest.fn() },
-        },
-        {
-          provide: IAddUserToWorkspaceToken,
-          useValue: { addUserToWorkspace: jest.fn() },
-        },
       ],
     }).compile();
 
@@ -89,7 +81,12 @@ describe('MembershipService', () => {
     });
 
     it('dovrebbe lanciare BadRequestException se esiste già un invito pendente', async () => {
-      mockFindUserByUsername.findByUsername.mockResolvedValue({ _id: 'u1' });
+      mockFindUserByUsername.findByUsername.mockResolvedValue({
+        _id: 'u1',
+        sub: 'sub123',
+        username: 'mario.rossi',
+        email: 'mario.rossi@example.com',
+      });
       // Simuliamo che il db trovi un invito già esistente
       mockRepository.findPendingInvite.mockResolvedValue({ _id: 'invite1' });
 
@@ -99,7 +96,12 @@ describe('MembershipService', () => {
     });
 
     it('dovrebbe creare un nuovo invito con successo', async () => {
-      mockFindUserByUsername.findByUsername.mockResolvedValue({ _id: 'u1' });
+      mockFindUserByUsername.findByUsername.mockResolvedValue({
+        _id: 'u1',
+        sub: 'sub123',
+        username: 'mario.rossi',
+        email: 'mario.rossi@example.com',
+      });
       mockRepository.findPendingInvite.mockResolvedValue(null); // Nessun invito pendente trovato
 
       await service.inviteUser(mockInviteInfo);
