@@ -1,4 +1,4 @@
-import type { ReportInfo } from './report'
+import type { ReportInfo } from '../types/report'
 
 export interface IReportPageViewModel {
   branches: string[]

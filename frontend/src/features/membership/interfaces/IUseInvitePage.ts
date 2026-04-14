@@ -1,4 +1,4 @@
-import type { Invite, InviteAction } from './index'
+import type { Invite, InviteAction } from '../types/index'
 
 export interface IInvitePageViewModel {
   invites: Invite[]

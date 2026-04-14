@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { getWorkspaces } from '../model/getWorkspacesApi'
 import type { WorkspaceListItem } from '../types/Workspace'
-import type { IWorkspacesViewModel } from '../types/viewModels'
+import type { IWorkspacesViewModel } from '../interfaces/IUseWorkspaces'
 
 export function useWorkspaces(): IWorkspacesViewModel {
   const [workspaces, setWorkspaces] = useState<WorkspaceListItem[]>([])

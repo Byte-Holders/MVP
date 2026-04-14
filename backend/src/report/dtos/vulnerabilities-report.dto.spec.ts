@@ -133,13 +133,13 @@ describe('CodeVulnerabilityDto', () => {
   });
 
   describe.each([['cwe'], ['owasp']])('%s', (field) => {
-    it(`should fail if ${field} is missing`, async () => {
+    it(`should pass if ${field} is missing`, async () => {
       const dto = plainToInstance(CodeVulnerabilityDto, {
         ...mockCodeVulnerabilityDto,
         [field]: undefined,
       });
       const errors = await validate(dto);
-      expect(errors.some((e) => e.property === field)).toBe(true);
+      expect(errors.some((e) => e.property === field)).toBe(false);
     });
 
     it(`should fail if ${field} is not an array`, async () => {
