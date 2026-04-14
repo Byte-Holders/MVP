@@ -1,20 +1,17 @@
-import { Controller, Delete, Get, Inject, Param, Post } from '@nestjs/common';
-import { WorkspaceUserRepository } from './workspaceUser.repository';
-import { WorkspaceRole } from '../roles.enum';
+import { Controller, Delete, Get, Inject, Param, Post, UseGuards } from '@nestjs/common';
 import {
   type IWorkspaceUserService,
   IWorkspaceUserServiceToken,
 } from './interfaces/IWorkspaceUserService';
-import { IWorkspaceUserRepositoryToken } from './interfaces/IWorkspaceUserRepository.interface';
 import { GetUsersOfWorkspaceResponseDto } from './dto/getUserOfWorkspace.responseDto';
+import { JwtAuthGuard } from '../../auth/jwt-auth.guard';
 
+@UseGuards(JwtAuthGuard)
 @Controller('workspace')
 export class WorkspaceUserController {
   constructor(
     @Inject(IWorkspaceUserServiceToken)
     private workspaceUserService: IWorkspaceUserService,
-    @Inject(IWorkspaceUserRepositoryToken)
-    private workspaceUserRepository: WorkspaceUserRepository,
   ) {}
 
   @Get(':workspaceId/users')
