@@ -2,6 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { NotFoundException } from '@nestjs/common';
 import { ReportService } from './report.service';
 import { ReportRepositoryToken } from '../interfaces/ireport.repository.interface';
+import { RepositoryScoreWriterToken } from '../../repository/interfaces/repository.score-writer.interface';
 import type { ReportInfo } from '../types/report.type';
 
 const makeReport = (...overrides: any[]): ReportInfo => ({
@@ -92,8 +93,7 @@ const makeReport = (...overrides: any[]): ReportInfo => ({
     startScanTime: new Date(0).toISOString(),
     endScanTime: new Date(10).toISOString(),
     target: {
-      owner: 'myTargetOwner',
-      repository: 'myTargetRepository',
+      repositoryId: 'myTargetRepositoryId',
       branch: 'myTargetBranch',
     },
   },
@@ -117,6 +117,10 @@ describe('ReportService', () => {
       providers: [
         ReportService,
         { provide: ReportRepositoryToken, useValue: mockRepository },
+        {
+          provide: RepositoryScoreWriterToken,
+          useValue: { updateScores: jest.fn() },
+        },
       ],
     }).compile();
 
@@ -145,10 +149,10 @@ describe('ReportService', () => {
   describe('getReport', () => {
     it('returns the report when found', async () => {
       const report = makeReport();
-      const { owner, repository, branch } = report.metadata!.target;
+      const { repositoryId, branch } = report.metadata!.target;
       mockRepository.findLatestByTarget.mockResolvedValue(report);
 
-      const result = await service.getReport(owner, repository, branch);
+      const result = await service.getReport(repositoryId, branch);
 
       expect(result).toEqual({
         summary: report.summary,
@@ -160,7 +164,7 @@ describe('ReportService', () => {
     it('throws NotFoundException when report is not found', async () => {
       mockRepository.findLatestByTarget.mockResolvedValue(null);
 
-      await expect(service.getReport('owner', 'repo', 'main')).rejects.toThrow(
+      await expect(service.getReport('myRepositoryId', 'main')).rejects.toThrow(
         NotFoundException,
       );
     });

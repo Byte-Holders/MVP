@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { MembershipController } from './membership.controller';
-import { MembershipService } from './membership.service';
+import { IMembershipServiceToken } from './interfaces/IMembershipService.interface';
 
 describe('MembershipController', () => {
   let controller: MembershipController;
@@ -10,7 +10,7 @@ describe('MembershipController', () => {
       controllers: [MembershipController],
       providers: [
         {
-          provide: MembershipService,
+          provide: IMembershipServiceToken,
           useValue: {
             inviteUser: jest.fn(),
             getInvites: jest.fn(),

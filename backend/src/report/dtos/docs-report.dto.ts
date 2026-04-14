@@ -1,10 +1,12 @@
-import { IsNumber, IsString, Max, Min } from 'class-validator';
+import { IsNotEmpty, IsNumber, IsString, Max, Min } from 'class-validator';
 
 export class DocsReportDto {
   @IsString()
+  @IsNotEmpty()
   readmeReport!: string;
 
   @IsString()
+  @IsNotEmpty()
   commentReport!: string;
 
   @IsNumber()

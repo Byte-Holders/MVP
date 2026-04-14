@@ -23,7 +23,10 @@ describe('WorkspaceRepositoryService', () => {
     removeRepository: jest.Mock;
   };
   let mockRepositoryReader: { getRepositories: jest.Mock };
-  let mockRepositoryWriter: { addRepository: jest.Mock };
+  let mockRepositoryWriter: {
+    addRepository: jest.Mock;
+    updateToken: jest.Mock;
+  };
 
   beforeEach(async () => {
     mockWorkspaceRepositoryRepository = {
@@ -32,7 +35,7 @@ describe('WorkspaceRepositoryService', () => {
       removeRepository: jest.fn(),
     };
     mockRepositoryReader = { getRepositories: jest.fn() };
-    mockRepositoryWriter = { addRepository: jest.fn() };
+    mockRepositoryWriter = { addRepository: jest.fn(), updateToken: jest.fn() };
 
     const module: TestingModule = await Test.createTestingModule({
       providers: [
@@ -189,10 +192,35 @@ describe('WorkspaceRepositoryService', () => {
   });
 
   describe('updateToken', () => {
-    it('resolves without doing anything (stub)', async () => {
+    it('delegates to the repository writer after verifying ownership', async () => {
+      mockWorkspaceRepositoryRepository.getRepositories.mockResolvedValue([
+        'myRepositoryId',
+      ]);
+      mockRepositoryWriter.updateToken.mockResolvedValue(undefined);
+
       await expect(
         service.updateToken('myRepositoryId', 'myWorkspaceId', 'myToken'),
       ).resolves.toBeUndefined();
+
+      expect(
+        mockWorkspaceRepositoryRepository.getRepositories,
+      ).toHaveBeenCalledWith('myWorkspaceId');
+      expect(mockRepositoryWriter.updateToken).toHaveBeenCalledWith(
+        'myRepositoryId',
+        'myToken',
+      );
+    });
+
+    it('throws NotFoundException when repository is not in the workspace', async () => {
+      mockWorkspaceRepositoryRepository.getRepositories.mockResolvedValue([
+        'otherId',
+      ]);
+
+      await expect(
+        service.updateToken('myRepositoryId', 'myWorkspaceId', 'myToken'),
+      ).rejects.toThrow('Repository non trovata nel workspace');
+
+      expect(mockRepositoryWriter.updateToken).not.toHaveBeenCalled();
     });
   });
 });

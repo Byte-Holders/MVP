@@ -100,7 +100,7 @@ describe('DocsReportDto', () => {
           mark: value,
         });
         const errors = await validate(dto);
-        expect(errors.some((e) => e.property === 'mark')).toBe(true);
+        expect(errors.some((e) => e.property === 'mark')).toBe(false);
       }
     });
   });

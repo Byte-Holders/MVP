@@ -43,7 +43,7 @@ describe('ReportTargetDto', () => {
 
   describe('branch', () => {
     it('should fail if branch is missing', async () => {
-      const dto = plainToInstance(ReportMetadataDto, {
+      const dto = plainToInstance(ReportTargetDto, {
         ...mockReportTargetDto,
         branch: undefined,
       });

@@ -1,8 +1,8 @@
 import { validate } from 'class-validator';
 import { plainToInstance } from 'class-transformer';
-import { SaveReportDto } from './save-report.dto';
+import { ReportBodyDto } from './save-report.dto';
 
-describe('SaveReportDto', () => {
+describe('ReportBodyDto', () => {
   const mockSaveReportData: object = {
     depsReport: {
       list: [{ name: 'name', version: '1.0.0' }],
@@ -35,7 +35,7 @@ describe('SaveReportDto', () => {
     },
   };
 
-  const mockSaveReportDto: object = {
+  const mockReportBodyDto: object = {
     summary: {
       summary: 'Overall the project is in good shape.',
       mark: 8,
@@ -49,21 +49,21 @@ describe('SaveReportDto', () => {
   };
 
   it('should pass validation with valid data', async () => {
-    const dto = plainToInstance(SaveReportDto, mockSaveReportDto);
+    const dto = plainToInstance(ReportBodyDto, mockReportBodyDto);
     const errors = await validate(dto);
     expect(errors.length).toBe(0);
   });
 
   it('should pass validation without optional fields (summary and metadata)', async () => {
-    const dto = plainToInstance(SaveReportDto, { data: mockSaveReportData });
+    const dto = plainToInstance(ReportBodyDto, { data: mockSaveReportData });
     const errors = await validate(dto);
     expect(errors.length).toBe(0);
   });
 
   describe('data', () => {
     it('should fail if data is missing', async () => {
-      const dto = plainToInstance(SaveReportDto, {
-        ...mockSaveReportDto,
+      const dto = plainToInstance(ReportBodyDto, {
+        ...mockReportBodyDto,
         data: undefined,
       });
       const errors = await validate(dto);
@@ -71,8 +71,8 @@ describe('SaveReportDto', () => {
     });
 
     it('should fail if data is not an object', async () => {
-      const dto = plainToInstance(SaveReportDto, {
-        ...mockSaveReportDto,
+      const dto = plainToInstance(ReportBodyDto, {
+        ...mockReportBodyDto,
         data: 'not-an-object',
       });
       const errors = await validate(dto);
@@ -80,8 +80,8 @@ describe('SaveReportDto', () => {
     });
 
     it('should fail if data has an invalid nested field', async () => {
-      const dto = plainToInstance(SaveReportDto, {
-        ...mockSaveReportDto,
+      const dto = plainToInstance(ReportBodyDto, {
+        ...mockReportBodyDto,
         data: { ...mockSaveReportData, depsReport: undefined },
       });
       const errors = await validate(dto);
@@ -94,15 +94,15 @@ describe('SaveReportDto', () => {
 
   describe('summary (optional)', () => {
     it('should pass if summary is not provided', async () => {
-      const { summary, ...withoutSummary } = mockSaveReportDto as any;
-      const dto = plainToInstance(SaveReportDto, withoutSummary);
+      const { summary, ...withoutSummary } = mockReportBodyDto as any;
+      const dto = plainToInstance(ReportBodyDto, withoutSummary);
       const errors = await validate(dto);
       expect(errors.some((e) => e.property === 'summary')).toBe(false);
     });
 
     it('should fail if summary is provided but has an invalid field', async () => {
-      const dto = plainToInstance(SaveReportDto, {
-        ...mockSaveReportDto,
+      const dto = plainToInstance(ReportBodyDto, {
+        ...mockReportBodyDto,
         summary: { summary: '', mark: 8 },
       });
       const errors = await validate(dto);
@@ -115,15 +115,15 @@ describe('SaveReportDto', () => {
 
   describe('metadata (optional)', () => {
     it('should pass if metadata is not provided', async () => {
-      const { metadata, ...withoutMetadata } = mockSaveReportDto as any;
-      const dto = plainToInstance(SaveReportDto, withoutMetadata);
+      const { metadata, ...withoutMetadata } = mockReportBodyDto as any;
+      const dto = plainToInstance(ReportBodyDto, withoutMetadata);
       const errors = await validate(dto);
       expect(errors.some((e) => e.property === 'metadata')).toBe(false);
     });
 
     it('should fail if metadata is provided but has an invalid field', async () => {
-      const dto = plainToInstance(SaveReportDto, {
-        ...mockSaveReportDto,
+      const dto = plainToInstance(ReportBodyDto, {
+        ...mockReportBodyDto,
         metadata: {
           startScanTime: 'not-a-date',
           endScanTime: '2024-01-01T10:05:00.000Z',

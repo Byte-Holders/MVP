@@ -30,7 +30,7 @@ const mockDepsReportDto = (): object => ({
 
 describe('DependencyDto', () => {
   it('Should pass validation with valid data', async () => {
-    const dto = plainToInstance(DependencyDto, mockDependencyDto);
+    const dto = plainToInstance(DependencyDto, mockDependencyDto());
     const errors = await validate(dto);
     expect(errors.length).toBe(0);
   });

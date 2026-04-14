@@ -7,7 +7,7 @@ import {
   Min,
   ValidateNested,
 } from 'class-validator';
-import { Transform, Type } from 'class-transformer';
+import { Type } from 'class-transformer';
 
 export class CodeVulnerabilityDto {
   @IsString()
@@ -35,12 +35,10 @@ export class CodeVulnerabilityDto {
   @IsString()
   category!: string;
 
-  @Transform(({ value }) => (typeof value === 'string' ? [value] : value))
   @IsArray()
   @IsString({ each: true })
   cwe!: string[];
 
-  @Transform(({ value }) => (typeof value === 'string' ? [value] : value))
   @IsArray()
   @IsString({ each: true })
   owasp!: string[];

@@ -1,4 +1,5 @@
 import {
+  IsDefined,
   IsDateString,
   IsNotEmpty,
   IsOptional,
@@ -10,11 +11,12 @@ import { Type } from 'class-transformer';
 export class ReportTargetDto {
   @IsOptional()
   @IsString()
+  @IsNotEmpty()
   owner?: string;
 
-  @IsOptional()
   @IsString()
-  repository?: string;
+  @IsNotEmpty()
+  repositoryId!: string;
 
   @IsString()
   @IsNotEmpty()
@@ -28,6 +30,7 @@ export class ReportMetadataDto {
   @IsDateString()
   endScanTime!: string;
 
+  @IsDefined()
   @ValidateNested()
   @Type(() => ReportTargetDto)
   target!: ReportTargetDto;
