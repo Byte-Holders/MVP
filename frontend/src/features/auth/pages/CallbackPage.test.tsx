@@ -1,31 +1,36 @@
 import { render, screen, waitFor } from '@testing-library/react'
 import { CallbackPage } from './CallbackPage'
+import { describe, it, expect, vi } from 'vitest'
 
-jest.mock('@tanstack/react-router', () => ({
-  useNavigate: jest.fn(),
+vi.mock('@tanstack/react-router', () => ({
+  useNavigate: vi.fn(),
 }))
 
-jest.mock('../model/authApi', () => ({
-  fetchCurrentUser: jest.fn(),
+vi.mock('../model/authApi', () => ({
+  fetchCurrentUser: vi.fn(),
+  removeCurrentUser: vi.fn(),
 }))
 
-jest.mock('../hooks/useRegister', () => ({
-  useRegister: jest.fn(),
+vi.mock('../hooks/useRegister', () => ({
+  useRegister: vi.fn(),
 }))
 
 import { useNavigate } from '@tanstack/react-router'
-import { fetchCurrentUser } from '../model/authApi'
+import { fetchCurrentUser, removeCurrentUser } from '../model/authApi'
 import { useRegister } from '../hooks/useRegister'
 
-const mockNavigate = jest.fn()
-const mockRegister = jest.fn()
-const mockFetchCurrentUser = fetchCurrentUser as jest.Mock
-
+const mockNavigate = vi.fn()
+const mockRegister = vi.fn()
+const mockFetchCurrentUser = fetchCurrentUser as ReturnType<typeof vi.fn>
+const mockRemoveCurrentUser = removeCurrentUser as ReturnType<typeof vi.fn>
 beforeEach(() => {
-  jest.clearAllMocks()
+  vi.clearAllMocks()
   sessionStorage.clear()
-  ;(useNavigate as jest.Mock).mockReturnValue(mockNavigate)
-  ;(useRegister as jest.Mock).mockReturnValue({ register: mockRegister })
+  ;(useNavigate as ReturnType<typeof vi.fn>).mockReturnValue(mockNavigate)
+  ;(useRegister as ReturnType<typeof vi.fn>).mockReturnValue({
+    register: mockRegister,
+  })
+  mockRemoveCurrentUser.mockResolvedValue(undefined)
 })
 
 describe('CallbackPage', () => {
@@ -39,7 +44,7 @@ describe('CallbackPage', () => {
     expect(screen.getByText('Accesso in corso...')).toBeInTheDocument()
   })
 
-  it("naviga a / se non c'è un redirectTo in sessionStorage", async () => {
+  it("naviga a /workspaces se non c'è un redirectTo in sessionStorage", async () => {
     mockFetchCurrentUser.mockResolvedValue({ username: 'user1' })
     mockRegister.mockResolvedValue(undefined)
 
@@ -47,7 +52,7 @@ describe('CallbackPage', () => {
 
     await waitFor(() => {
       expect(mockNavigate).toHaveBeenCalledWith({
-        to: '/',
+        to: '/workspaces',
         replace: true,
       })
     })
@@ -66,9 +71,6 @@ describe('CallbackPage', () => {
         replace: true,
       })
     })
-
-    // Verifica che sessionStorage venga pulito dopo il redirect
-    expect(sessionStorage.getItem('auth_redirect')).toBeNull()
   })
 
   it('rimuove auth_redirect da sessionStorage dopo averlo letto', async () => {
@@ -98,7 +100,7 @@ describe('CallbackPage', () => {
   })
 
   it('naviga a / se register fallisce', async () => {
-    mockFetchCurrentUser.mockResolvedValue({ username: 'giulia' })
+    mockFetchCurrentUser.mockResolvedValue({ username: 'user1' })
     mockRegister.mockRejectedValue(new Error('Errore registrazione'))
 
     render(<CallbackPage />)
@@ -112,7 +114,7 @@ describe('CallbackPage', () => {
   })
 
   it('chiama register dopo fetchCurrentUser', async () => {
-    mockFetchCurrentUser.mockResolvedValue({ username: 'giulia' })
+    mockFetchCurrentUser.mockResolvedValue({ username: 'user1' })
     mockRegister.mockResolvedValue(undefined)
 
     render(<CallbackPage />)
@@ -140,5 +142,19 @@ describe('CallbackPage', () => {
 
     // L'utente NON deve essere reindirizzato a /
     expect(mockNavigate).not.toHaveBeenCalledWith({ to: '/', replace: true })
+  })
+
+  it('cancella l utente da Cognito se la registrazione nel DB fallisce', async () => {
+    // Arrange — Cognito ok, ma il nostro backend fallisce
+    mockFetchCurrentUser.mockResolvedValue({ username: 'giulia' })
+    mockRegister.mockRejectedValue(
+      new Error('Errore durante la registrazione utente'),
+    )
+
+    render(<CallbackPage />)
+
+    await waitFor(() => {
+      expect(mockRemoveCurrentUser).toHaveBeenCalledTimes(1)
+    })
   })
 })

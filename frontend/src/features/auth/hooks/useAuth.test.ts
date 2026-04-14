@@ -1,12 +1,13 @@
 import { renderHook, waitFor, act } from '@testing-library/react'
 import { useAuth } from './useAuth'
+import { describe, it, expect, vi } from 'vitest'
 
 // Mocka il model layer — nessuna chiamata reale ad Amplify
-jest.mock('../model/authApi', () => ({
-  fetchCurrentUser: jest.fn(),
-  fetchSession: jest.fn(),
-  signIn: jest.fn(),
-  logOut: jest.fn(),
+vi.mock('../model/authApi', () => ({
+  fetchCurrentUser: vi.fn(),
+  fetchSession: vi.fn(),
+  signIn: vi.fn(),
+  logOut: vi.fn(),
 }))
 
 import {
@@ -16,14 +17,14 @@ import {
   logOut,
 } from '../model/authApi'
 
-const mockFetchCurrentUser = fetchCurrentUser as jest.Mock
-const mockFetchSession = fetchSession as jest.Mock
-const mockSignIn = signIn as jest.Mock
-const mockLogOut = logOut as jest.Mock
+const mockFetchCurrentUser = fetchCurrentUser as ReturnType<typeof vi.fn>
+const mockFetchSession = fetchSession as ReturnType<typeof vi.fn>
+const mockSignIn = signIn as ReturnType<typeof vi.fn>
+const mockLogOut = logOut as ReturnType<typeof vi.fn>
 
 describe('useAuth', () => {
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
     sessionStorage.clear()
   })
 

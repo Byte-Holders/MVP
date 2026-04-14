@@ -1,30 +1,31 @@
 import { render, screen } from '@testing-library/react'
 import { ProtectedRoute } from './ProtectedRoute'
+import { describe, it, expect, vi } from 'vitest'
 
 // Mocka useAuthContext per controllare lo stato auth nei test
-jest.mock('../AuthContext', () => ({
-  useAuthContext: jest.fn(),
+vi.mock('../AuthContext', () => ({
+  useAuthContext: vi.fn(),
 }))
 
 // Mocka TanStack Router — non serve il routing reale per testare ProtectedRoute
-jest.mock('@tanstack/react-router', () => ({
-  useNavigate: () => jest.fn(),
+vi.mock('@tanstack/react-router', () => ({
+  useNavigate: () => vi.fn(),
   useRouterState: () => ({
     location: { pathname: '/workspaces' },
   }),
 }))
 
 import { useAuthContext } from '../AuthContext'
-const mockUseAuthContext = useAuthContext as jest.Mock
+const mockUseAuthContext = useAuthContext as ReturnType<typeof vi.fn>
 
 describe('ProtectedRoute', () => {
-  beforeEach(() => jest.clearAllMocks())
+  beforeEach(() => vi.clearAllMocks())
 
   it('mostra il loader mentre isLoading è true', () => {
     mockUseAuthContext.mockReturnValue({
       isAuthenticated: false,
       isLoading: true,
-      login: jest.fn(),
+      login: vi.fn(),
     })
 
     render(
@@ -41,7 +42,7 @@ describe('ProtectedRoute', () => {
     mockUseAuthContext.mockReturnValue({
       isAuthenticated: false,
       isLoading: false,
-      login: jest.fn(),
+      login: vi.fn(),
     })
 
     const { container } = render(
@@ -55,7 +56,7 @@ describe('ProtectedRoute', () => {
   })
 
   it('chiama login con il path corrente se non autenticato', () => {
-    const mockLogin = jest.fn()
+    const mockLogin = vi.fn()
     mockUseAuthContext.mockReturnValue({
       isAuthenticated: false,
       isLoading: false,
@@ -73,7 +74,7 @@ describe('ProtectedRoute', () => {
   })
 
   it('non chiama login se isLoading è true', () => {
-    const mockLogin = jest.fn()
+    const mockLogin = vi.fn()
     mockUseAuthContext.mockReturnValue({
       isAuthenticated: false,
       isLoading: true,
@@ -93,7 +94,7 @@ describe('ProtectedRoute', () => {
     mockUseAuthContext.mockReturnValue({
       isAuthenticated: true,
       isLoading: false,
-      login: jest.fn(),
+      login: vi.fn(),
     })
 
     render(
@@ -107,7 +108,7 @@ describe('ProtectedRoute', () => {
   })
 
   it('non chiama login se già autenticato', () => {
-    const mockLogin = jest.fn()
+    const mockLogin = vi.fn()
     mockUseAuthContext.mockReturnValue({
       isAuthenticated: true,
       isLoading: false,
