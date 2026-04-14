@@ -8,6 +8,7 @@ export class DepVulnerabilityEntity {
   severity!: string;
   packageName!: string;
   packageVersion!: string;
+  description?: string;
   fixVersion?: string;
 }
 

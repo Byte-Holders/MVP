@@ -36,6 +36,10 @@ export class DepVulnerabilityDto {
 
   @IsOptional()
   @IsString()
+  description?: string;
+
+  @IsOptional()
+  @IsString()
   fixVersion?: string;
 }
 
