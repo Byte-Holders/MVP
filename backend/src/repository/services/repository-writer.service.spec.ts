@@ -116,10 +116,7 @@ describe('RepositoryWriterService', () => {
       );
 
       await expect(
-        service.addRepository(
-          'https://github.com/myOwner/myRepo',
-          'badToken',
-        ),
+        service.addRepository('https://github.com/myOwner/myRepo', 'badToken'),
       ).rejects.toThrow('unauthorized');
 
       expect(mockPersistRepository.addRepository).not.toHaveBeenCalled();
@@ -163,9 +160,9 @@ describe('RepositoryWriterService', () => {
         new Error('not found'),
       );
 
-      await expect(
-        service.updateToken('unknownId', 'token'),
-      ).rejects.toThrow('not found');
+      await expect(service.updateToken('unknownId', 'token')).rejects.toThrow(
+        'not found',
+      );
 
       expect(mockGitHubRepository.verifyAccess).not.toHaveBeenCalled();
     });
