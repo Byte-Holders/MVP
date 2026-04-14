@@ -1,9 +1,10 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { OrchestratorService } from './nodes/orchestrator/orchestrator.service';
 import { Target } from './target.types';
+import { IScanService } from './iscan-service.interface';
 
 @Injectable()
-export class ScanService {
+export class ScanService implements IScanService {
   private readonly logger = new Logger(ScanService.name);
 
   constructor(private readonly orchestratorService: OrchestratorService) {}

@@ -35,15 +35,8 @@ describe('UserController', () => {
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       controllers: [UserController],
-      providers: [{ provide: CreateUserToken, useFactory: mockUserService }],
-    })
-      // Il guard viene bypassato nei test unitari del controller
-      // perché si testa solo la logica del controller, non l'autenticazione
-      .overrideGuard(
-        require('../auth/jwt-registration.guard').JwtRegistrationGuard,
-      )
-      .useValue({ canActivate: () => true })
-      .compile();
+      providers: [{ provide: 'CREATE_USER', useValue: { execute: jest.fn() } }],
+    }).compile();
 
     controller = module.get<UserController>(UserController);
     service = module.get<MockUserService>(CreateUserToken);

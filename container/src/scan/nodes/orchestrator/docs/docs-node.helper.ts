@@ -3,12 +3,15 @@ import path from 'path';
 import fs from 'fs';
 import { SystemMessage, HumanMessage } from '@langchain/core/messages';
 import { ChatBedrockConverse } from '@langchain/aws';
+import { DocsReport } from './docs-report.type';
+
+type Section = { header: string; content: string; sizeBytes: number };
 
 @Injectable()
 export class DocsNodeHelper {
   private readonly logger = new Logger(DocsNodeHelper.name);
 
-  createModel() {
+  createModel(): ChatBedrockConverse {
     return new ChatBedrockConverse({
       model: process.env.BEDROCK_MODEL_ID ?? 'deepseek.v3.2',
       region: process.env.BEDROCK_AWS_REGION ?? 'eu-north-1',
@@ -17,57 +20,24 @@ export class DocsNodeHelper {
     });
   }
 
-  // ─── Analisi completa della repo con batching ────────────────────────────────
-  async analyzeRepoDocumentation(
-    repoPath: string,
-    allFiles: string[],
-  ): Promise<{
-    report: string;
-    // inputTokens: number;
-    // outputTokens: number;
-    // totalTokens: number;
-  }> {
-    // const allFiles = this.collectTextFiles(repoPath);
-    this.logger.log(`Avvio scansione di ${allFiles.length} file`);
+  buildSections(repoPath: string, allFiles: string[]): Section[] {
+    return allFiles
+      .map((filePath) => {
+        const relativePath = path.relative(repoPath, filePath);
+        if (relativePath === 'README.md') return null;
 
-    type Section = { header: string; content: string; sizeBytes: number };
-    const sections: Section[] = [];
+        const raw = fs.readFileSync(filePath, 'utf-8');
+        const content = `### File: ${relativePath}\n\`\`\`\n${raw}\n\`\`\``;
+        return {
+          header: relativePath,
+          content,
+          sizeBytes: Buffer.byteLength(content, 'utf-8'),
+        };
+      })
+      .filter((s): s is Section => s !== null);
+  }
 
-    // README sempre per primo
-    const readmePath = path.join(repoPath, 'README.md');
-
-    if (fs.existsSync(readmePath)) {
-      const raw = fs.readFileSync(readmePath, 'utf-8');
-      const content = `### README.md\n\`\`\`markdown\n${raw}\n\`\`\``;
-      sections.push({
-        header: 'README.md',
-        content,
-        sizeBytes: Buffer.byteLength(content, 'utf-8'),
-      });
-      this.logger.log(`README incluso`);
-    } else {
-      const content = `### README.md\n*(assente nella repository)*`;
-      sections.push({
-        header: 'README.md',
-        content,
-        sizeBytes: Buffer.byteLength(content, 'utf-8'),
-      });
-      this.logger.warn(`README non trovato`);
-    }
-
-    for (const filePath of allFiles) {
-      const relativePath = path.relative(repoPath, filePath);
-      if (relativePath === 'README.md') continue;
-      const raw = fs.readFileSync(filePath, 'utf-8');
-      const content = `### File: ${relativePath}\n\`\`\`\n${raw}\n\`\`\``;
-      sections.push({
-        header: relativePath,
-        content,
-        sizeBytes: Buffer.byteLength(content, 'utf-8'),
-      });
-    }
-
-    // Suddivide le sezioni in batch da BATCH_SIZE_BYTES
+  createBatches(sections: Section[]): Section[][] {
     const batches: Section[][] = [];
     let currentBatch: Section[] = [];
     let currentSize = 0;
@@ -84,134 +54,151 @@ export class DocsNodeHelper {
       currentBatch.push(section);
       currentSize += section.sizeBytes;
     }
+
     if (currentBatch.length > 0) batches.push(currentBatch);
 
     this.logger.debug(
       `Suddiviso in ${batches.length} batch (limite ${BATCH_SIZE_BYTES / 1024 / 1024} MB ciascuno)`,
     );
-    batches.forEach((batch, i) => {
-      const batchSizeKB = Math.round(
-        batch.reduce((acc, s) => acc + s.sizeBytes, 0) / 1024,
-      );
-      this.logger.debug(
-        `Batch ${i + 1}/${batches.length} — ${batch.length} file, ~${batchSizeKB} KB`,
-      );
-    });
+    return batches;
+  }
 
-    // Processa tutti i batch in parallelo
-    const batchResults = await Promise.all(
-      batches.map(async (batch, i) => {
-        const payload = batch.map((s) => s.content).join('\n\n');
-        try {
-          const response = await this.createModel().invoke([
-            new SystemMessage(SYS_BATCH),
-            new HumanMessage(
-              `Batch ${i + 1}/${batches.length} — file della repository:\n\n${payload}`,
-            ),
-          ]);
+  async processBatch(
+    batch: Section[],
+    index: number,
+    total: number,
+    systemPrompt: string,
+  ): Promise<string> {
+    const payload = batch.map((s) => s.content).join('\n\n');
+    try {
+      const response = await this.createModel().invoke([
+        new SystemMessage(systemPrompt),
+        new HumanMessage(
+          `Batch ${index + 1}/${total} — file della repository:\n\n${payload}`,
+        ),
+      ]);
+      this.logger.debug(`✓ Batch ${index + 1}/${total} completato`);
+      return response.content as string;
+    } catch (err) {
+      this.logger.error(`Errore nel batch ${index + 1}:`, err);
+      return `*Errore durante l'analisi del batch ${index + 1}.*`;
+    }
+  }
 
-          // const usage = (response as any).usage_metadata ?? {};
-          // const inputTok: number = usage.input_tokens ?? 0;
-          // const outputTok: number = usage.output_tokens ?? 0;
+  async synthesizeReports(
+    reports: string[],
+    systemPrompt: string,
+  ): Promise<string> {
+    if (reports.length === 1) return reports[0];
 
-          this.logger.debug(
-            `✓ Batch ${i + 1}/${batches.length} completato — `,
-            // `input: ${inputTok.toLocaleString('it-IT')} tok | output: ${outputTok.toLocaleString('it-IT')} tok`,
-          );
+    this.logger.debug(`Avvio sintesi di ${reports.length} batch...`);
+    const payload = reports
+      .map((r, i) => `=== Batch ${i + 1} ===\n${r}`)
+      .join('\n\n');
 
-          return {
-            report: response.content as string /* , inputTok, outputTok */,
-          };
-        } catch (err) {
-          this.logger.error(`Errore nel batch ${i + 1}:`, err);
-          return {
-            report: `*Errore durante l'analisi del batch ${i + 1}.*`,
-            inputTok: 0,
-            outputTok: 0,
-          };
-        }
-      }),
+    try {
+      const response = await this.createModel().invoke([
+        new SystemMessage(systemPrompt),
+        new HumanMessage(`Report parziali:\n\n${payload}`),
+      ]);
+      this.logger.log('Sintesi completata');
+      return response.content as string;
+    } catch (err) {
+      this.logger.error('Errore nella sintesi:', err);
+      return reports.join('\n\n---\n\n');
+    }
+  }
+
+  async analyzeReadme(repoPath: string): Promise<string> {
+    const readmePath = path.join(repoPath, 'README.md');
+
+    if (!fs.existsSync(readmePath)) {
+      this.logger.warn('README non trovato');
+      return '*README assente nella repository. Si consiglia di crearne uno.*';
+    }
+
+    const raw = fs.readFileSync(readmePath, 'utf-8');
+    this.logger.log('Analisi README avviata');
+
+    try {
+      const response = await this.createModel().invoke([
+        new SystemMessage(SYS_README),
+        new HumanMessage(`### README.md\n\`\`\`markdown\n${raw}\n\`\`\``),
+      ]);
+      return response.content as string;
+    } catch (err) {
+      this.logger.error("Errore nell'analisi del README:", err);
+      return `*Errore durante l'analisi del README.*`;
+    }
+  }
+
+  async analyzeCodeComments(
+    repoPath: string,
+    allFiles: string[],
+  ): Promise<string> {
+    const sections = this.buildSections(repoPath, allFiles);
+    const batches = this.createBatches(sections);
+
+    this.logger.debug(
+      `Analisi commenti: ${batches.length} batch su ${sections.length} file`,
     );
 
-    // Aggrega token
-    // let totalInputTokens = 0;
-    // let totalOutputTokens = 0;
-    const batchReports: string[] = [];
+    const batchReports = await Promise.all(
+      batches.map((batch, i) =>
+        this.processBatch(batch, i, batches.length, SYS_COMMENTS_BATCH),
+      ),
+    );
 
-    for (const result of batchResults) {
-      // totalInputTokens += result.inputTok;
-      // totalOutputTokens += result.outputTok;
-      batchReports.push(result.report);
+    return this.synthesizeReports(batchReports, SYS_COMMENTS_SYNTHESIS);
+  }
+
+  async extractMark(
+    readmeReport: string,
+    commentReport: string,
+  ): Promise<number> {
+    try {
+      const response = await this.createModel().invoke([
+        new SystemMessage(SYS_MARK),
+        new HumanMessage(
+          `README Report:\n${readmeReport}\n\nComment Report:\n${commentReport}`,
+        ),
+      ]);
+      const text = (response.content as string).trim();
+      const match = text.match(/\b(\d+(?:\.\d+)?)\b/);
+      return match ? parseFloat(match[1]) : 0;
+    } catch (err) {
+      this.logger.error('Errore nel calcolo del voto:', err);
+      return 0;
     }
+  }
 
-    // Sintesi finale (solo se ci sono più batch)
-    let finalReport: string;
+  async analyzeRepoDocumentation(
+    repoPath: string,
+    allFiles: string[],
+  ): Promise<DocsReport> {
+    this.logger.log(`Avvio scansione di ${allFiles.length} file`);
 
-    if (batchReports.length === 1) {
-      finalReport = batchReports[0];
-    } else {
-      this.logger.debug(
-        `\nAvvio sintesi finale di ${batchReports.length} batch...`,
-      );
+    const [readmeReport, commentReport] = await Promise.all([
+      this.analyzeReadme(repoPath),
+      this.analyzeCodeComments(repoPath, allFiles),
+    ]);
 
-      const synthesisPayload = batchReports
-        .map((r, idx) => `=== Batch ${idx + 1} ===\n${r}`)
-        .join('\n\n');
-
-      try {
-        const synthesisResponse = await this.createModel().invoke([
-          new SystemMessage(SYS_SYNTHESIS),
-          new HumanMessage(`Report parziali:\n\n${synthesisPayload}`),
-        ]);
-
-        // const usage = (synthesisResponse as any).usage_metadata ?? {};
-        // const inputTok: number = usage.input_tokens ?? 0;
-        // const outputTok: number = usage.output_tokens ?? 0;
-        // totalInputTokens += inputTok;
-        // totalOutputTokens += outputTok;
-
-        this.logger.log(
-          `Sintesi completata — `,
-          // `input: ${inputTok.toLocaleString('it-IT')} tok | output: ${outputTok.toLocaleString('it-IT')} tok`,
-        );
-
-        finalReport = synthesisResponse.content as string;
-      } catch (err) {
-        this.logger.error('Errore nella sintesi finale:', err);
-        finalReport = batchReports.join('\n\n---\n\n');
-      }
-    }
-
-    // const totalTokens = totalInputTokens + totalOutputTokens;
+    const mark = await this.extractMark(readmeReport, commentReport);
 
     console.log(`\n${'═'.repeat(60)}`);
     console.log(`[ANALISI REPO] ✅ Analisi completata`);
     console.log(`  File analizzati : ${allFiles.length}`);
-    console.log(`  Batch eseguiti  : ${batches.length}`);
-    // console.log(
-    //   `  Token input     : ${totalInputTokens.toLocaleString('it-IT')}`,
-    // );
-    // console.log(
-    //   `  Token output    : ${totalOutputTokens.toLocaleString('it-IT')}`,
-    // );
-    // console.log(`  Token totali    : ${totalTokens.toLocaleString('it-IT')}`);
+    console.log(`  Voto finale     : ${mark}`);
     console.log(`${'═'.repeat(60)}\n`);
 
-    return {
-      report: finalReport,
-      // inputTokens: totalInputTokens,
-      // outputTokens: totalOutputTokens,
-      // totalTokens,
-    };
+    return { readmeReport, commentReport, mark };
   }
 
-  // ─── Raccoglie ricorsivamente tutti i file di testo analizzabili ─────────────
   collectTextFiles(dirPath: string): string[] {
     const results: string[] = [];
 
     const walk = (current: string) => {
       let entries: fs.Dirent[];
-
       try {
         entries = fs.readdirSync(current, { withFileTypes: true });
       } catch {
@@ -232,8 +219,8 @@ export class DocsNodeHelper {
           try {
             const stat = fs.statSync(fullPath);
             if (stat.size > MAX_FILE_SIZE_BYTES) {
-              console.log(
-                `  [SKIP] File troppo grande (${Math.round(stat.size / 1024)}KB): ${fullPath}`,
+              this.logger.warn(
+                `[SKIP] File troppo grande (${Math.round(stat.size / 1024)}KB): ${fullPath}`,
               );
               continue;
             }
@@ -250,7 +237,11 @@ export class DocsNodeHelper {
   }
 }
 
-// Estensioni considerate file di testo analizzabili
+//Costanti di dimensione batch e file
+
+const MAX_FILE_SIZE_BYTES = 100 * 1024;
+const BATCH_SIZE_BYTES = 512 * 1024;
+
 const TEXT_EXTENSIONS = new Set([
   '.ts',
   '.js',
@@ -274,24 +265,19 @@ const TEXT_EXTENSIONS = new Set([
   '.html',
   '.css',
   '.scss',
-  '.less',
-  '.json',
   '.yaml',
   '.yml',
   '.toml',
   '.xml',
-  '.env.example',
+  '.env',
   '.md',
-  '.txt',
   '.sh',
   '.bash',
   '.dockerfile',
   '.sql',
   '.graphql',
-  '.proto',
 ]);
 
-// Directory da ignorare durante la scansione
 const IGNORED_DIRS = new Set([
   'node_modules',
   '.git',
@@ -314,25 +300,28 @@ const IGNORED_DIRS = new Set([
   '.vscode',
 ]);
 
-// Dimensione massima per singolo file (100KB)
-const MAX_FILE_SIZE_BYTES = 100 * 1024;
+// Prompts
 
-// Dimensione massima per batch inviato al modello (1MB)
-const BATCH_SIZE_BYTES = 1024 * 1024;
+const SYS_README = `Sei un technical writer esperto. Analizza il README di una repository e produci un report strutturato con le seguenti sezioni:
 
-const SYS_BATCH = `Sei un esperto di qualità del codice, documentazione e best practice.
-Ricevi un sottoinsieme dei file di una repository. Per ogni file fornisci:
-- Correttezza logica: bug, edge case non gestiti, logica errata
-- Qualità del codice: leggibilità, naming, complessità
-- Best practice: gestione errori, pattern architetturali, sicurezza di base
-- Suggerimenti: massimo 3 miglioramenti prioritari per file
-Se presente il README, valuta anche chiarezza, completezza e struttura della documentazione.
-Sii conciso e diretto. Usa il percorso relativo del file come intestazione di sezione.`;
+1. **Panoramica** — Il README descrive chiaramente lo scopo del progetto?
+2. **Completezza** — Sono presenti: installazione, utilizzo, configurazione, esempi, contribuzione, licenza?
+3. **Chiarezza** — Il linguaggio è chiaro e accessibile? La struttura è logica e navigabile?
+4. **Esempi di codice** — Sono presenti, aggiornati e funzionanti?
+5. **Punti di miglioramento** — Elenca i 3 interventi prioritari con motivazione.
 
-const SYS_SYNTHESIS = `Sei un tech lead esperto. Ricevi i report parziali di analisi di una repository, suddivisi in batch.
-Produci un unico report finale strutturato:
-1. **Analisi del README** (se presente in uno dei batch)
-2. **Analisi per file** — consolida e deduplicati i risultati per-file dei batch
-3. **Problemi ricorrenti** — pattern trasversali a più file
-4. **Valutazione complessiva** — voto da 1 a 10 con motivazione
-5. **Top 5 azioni di miglioramento** per l'intera codebase`;
+Sii diretto e costruttivo. Valuta come se dovessi onboardare un nuovo sviluppatore con solo questo README.`;
+
+const SYS_COMMENTS_BATCH = `Sei un esperto di qualità del codice. Analizza la qualità della documentazione inline (commenti, JSDoc/TSDoc, docstring) nei file ricevuti.
+Usa il percorso relativo del file come intestazione di sezione. Sii conciso e diretto.`;
+
+const SYS_COMMENTS_SYNTHESIS = `Sei un tech lead esperto. Ricevi report parziali sulla qualità dei commenti di una codebase, suddivisi in batch.
+Produci un unico report consolidato strutturato così:
+
+1. **Pattern ricorrenti** — problemi o buone pratiche trasversali a più file
+2. **Aree critiche** — file o moduli che richiedono intervento urgente
+3. **Top 5 azioni di miglioramento** per elevare la qualità della documentazione inline`;
+
+const SYS_MARK = `Sei un valutatore tecnico. Ricevi due report: uno sulla qualità del README e uno sulla qualità dei commenti nel codice.
+Restituisci ESCLUSIVAMENTE un numero decimale da 1 a 10 che rappresenta il voto complessivo della documentazione del progetto.
+Non aggiungere testo, spiegazioni o simboli. Solo il numero (es: 6.5).`;

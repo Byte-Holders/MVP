@@ -16,6 +16,7 @@ export class ScanManagerController {
   ) {}
 
   @Post()
+  // TODO chiamata dall'utente
   async startScan(
     @Body() startScanDto: StartScanDto,
   ): Promise<StartScanResponseDto> {
@@ -24,6 +25,7 @@ export class ScanManagerController {
   }
 
   @Patch()
+  // TODO chiamata dall'utente
   async stopScan(@Body() stopScanDto: StopScanDto) {
     await this.scanManagerService.stopScan(stopScanDto.scanId);
   }

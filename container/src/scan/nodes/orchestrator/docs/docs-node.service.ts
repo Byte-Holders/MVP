@@ -21,18 +21,10 @@ export class DocsNodeService implements INodeScanService {
 
     const files = this.helper.collectTextFiles(repoPath);
 
-    const { report /*, totalTokens */ } =
-      await this.helper.analyzeRepoDocumentation(repoPath, files);
-
-    // console.log(
-    //   `[DocsNode] Token totali usati: ${totalTokens.toLocaleString('it-IT')}`,
-    // );
-
-    const docsReport: DocsReport = {
-      readmeReport: { analysis: { analysis: report } },
-      commentReport: [],
-      mark: 5,
-    };
+    const docsReport: DocsReport = await this.helper.analyzeRepoDocumentation(
+      repoPath,
+      files,
+    );
 
     return { docsReport };
   }

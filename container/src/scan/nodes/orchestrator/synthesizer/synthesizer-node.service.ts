@@ -16,9 +16,9 @@ export class SynthesizerNodeService {
     const context = JSON.stringify(
       {
         vulnerabilities: state.vulnerabilitiesReport,
-        coverage: state.coverageReport,
+        testReport: state.testReport,
         documentation: state.docsReport,
-        languages: state.languageBreakdown,
+        languages: state.languages,
       },
       null,
       2,
@@ -53,24 +53,43 @@ Restituisci SOLO un JSON con questa struttura, senza markdown:
       };
     }
 
+    // `list` è là solamente per essere tirata fuori dal report finale quindi non è utilizzata
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { libraries, frameworks, list, ...depsReport } = state.depsReport ?? {
+      list: [],
+      libraries: [],
+      frameworks: [],
+      vulnerabilities: [],
+      vulnerabilityAnalysis: '',
+    };
+
     const report: Report = {
       summary: reportSummary,
       data: {
-        depsReport: state.depsReport ?? { report: [] },
+        depsReport,
         vulnerabilitiesReport: state.vulnerabilitiesReport ?? {
           vulnerabilities: [],
           mark: 10,
         },
         docsReport: state.docsReport ?? {
-          readmeReport: { analysis: { analysis: '' } },
-          commentReport: [],
+          readmeReport: '',
+          commentReport: '',
           mark: 0,
         },
-        coverageReport: state.coverageReport ?? {
-          statements: 0,
-          branches: 0,
-          functions: 0,
-          lines: 0,
+        testReport: state.testReport ?? {
+          coverageReport: {
+            statements: 0,
+            branches: 0,
+            functions: 0,
+            lines: 0,
+          },
+          failedTests: [],
+          testsRun: 0,
+        },
+        techReport: {
+          libraries,
+          frameworks,
+          languages: state.languages ?? [],
         },
       },
       metadata: {

@@ -1,17 +1,20 @@
 import { HttpService } from '@nestjs/axios';
 import { Injectable } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { Report } from '../scan/nodes/orchestrator/synthesizer/synthesizer.types';
 import * as rx from 'rxjs';
+import { IReporterService } from './ireporter-service.interface';
 
 @Injectable()
-export class ReporterService {
-  constructor(private readonly httpService: HttpService) {}
+export class ReporterService implements IReporterService {
+  constructor(
+    private readonly httpService: HttpService,
+    private readonly configService: ConfigService,
+  ) {}
 
   async sendReport(report: Report, token: string) {
-    console.log('RECEIVER_URL = ' + process.env.RECEIVER_URL);
-    if (process.env.RECEIVER_URL)
-      await rx.lastValueFrom(
-        this.httpService.post(process.env.RECEIVER_URL, { report, token }),
-      );
+    const url = this.configService.get<string>('RECEIVER_URL');
+    if (url)
+      await rx.lastValueFrom(this.httpService.post(url, { report, token }));
   }
 }

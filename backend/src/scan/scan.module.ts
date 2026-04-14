@@ -13,9 +13,11 @@ import { ScanManagerService } from './scan-manager/scan-manager.service';
 import { ScanManagerController } from './scan-manager/scan-manager.controller';
 import { ConfigService } from '@nestjs/config';
 import { JwtModule, JwtModuleOptions } from '@nestjs/jwt';
+import { RepositoryModule } from '../repository/repository.module';
 
 @Module({
   imports: [
+    RepositoryModule,
     MongooseModule.forFeature([
       { name: ScanSchemaClass.name, schema: ScanSchema },
     ]),
@@ -26,8 +28,7 @@ import { JwtModule, JwtModuleOptions } from '@nestjs/jwt';
         secret: configService.get<string>('JWT_SECRET_KEY'),
         signOptions: {
           expiresIn:
-            configService.get<number>('JWT_EXPIRATION_TIME_IN_SECONDS') ||
-            '3600s',
+            Number(configService.get('JWT_EXPIRATION_TIME_IN_SECONDS')) || 3600,
         },
       }),
       inject: [ConfigService],
