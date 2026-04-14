@@ -1,14 +1,6 @@
-import { IsEnum, IsString } from 'class-validator';
-import { ScanStatusUpdateFromContainer } from '../enums/scan-status-update-from-container.enum';
+import { IsString } from 'class-validator';
 
-export class UpdateScanStatusFromContainerDto {
+export class SetErrorStatusDto {
   @IsString()
-  repositoryId: string;
-
-  @IsString()
-  branch: string;
-
-  // @IsIn(scanStatusUpdateFromContainer)
-  @IsEnum(ScanStatusUpdateFromContainer)
-  status: ScanStatusUpdateFromContainer;
+  token: string;
 }
