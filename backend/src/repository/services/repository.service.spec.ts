@@ -3,7 +3,9 @@ import { RepositoryService } from './repository.service';
 import { RepositoryRepositoryToken } from '../interfaces/repository.repository.interface';
 import type { RepositoryEntity } from '../entities/repository.entity';
 
-const makeEntity = (overrides: Partial<RepositoryEntity> = {}): RepositoryEntity => ({
+const makeEntity = (
+  overrides: Partial<RepositoryEntity> = {},
+): RepositoryEntity => ({
   repositoryId: 'myRepositoryId',
   ownerName: 'myOwner',
   name: 'myRepo',
@@ -44,12 +46,16 @@ describe('RepositoryService', () => {
 
   describe('getRepository', () => {
     it('returns a RepositoryInfo mapped from the entity', async () => {
-      const entity = makeEntity({ dateScan: new Date('2024-01-01T00:00:00.000Z') });
+      const entity = makeEntity({
+        dateScan: new Date('2024-01-01T00:00:00.000Z'),
+      });
       mockRepository.getRepository.mockResolvedValue(entity);
 
       const result = await service.getRepository('myRepositoryId');
 
-      expect(mockRepository.getRepository).toHaveBeenCalledWith('myRepositoryId');
+      expect(mockRepository.getRepository).toHaveBeenCalledWith(
+        'myRepositoryId',
+      );
       expect(result).toEqual({
         repositoryId: entity.repositoryId,
         ownerName: entity.ownerName,
@@ -158,7 +164,9 @@ describe('RepositoryService', () => {
     it('rejects when the repository rejects', async () => {
       mockRepository.getRepositories.mockRejectedValue(new Error('db error'));
 
-      await expect(service.getRepositories(['id1'])).rejects.toThrow('db error');
+      await expect(service.getRepositories(['id1'])).rejects.toThrow(
+        'db error',
+      );
     });
   });
 
