@@ -40,7 +40,7 @@ export class ReportController {
       throw new UnauthorizedException('Token non valido o scaduto');
     }
 
-    const branch = dto.report.metadata?.target.branch ?? '';
+    const branch = dto.report.metadata?.target?.branch ?? '';
     const reportInfo: ReportInfo = {
       summary: dto.report.summary,
       data: dto.report.data,

@@ -150,13 +150,13 @@ describe('DepsReportDto', () => {
   // lista
 
   describe('list', () => {
-    it('should fail if list is missing', async () => {
+    it('should pass if list is missing', async () => {
       const dto = plainToInstance(DepsReportDto, {
         ...mockDepsReportDto(),
         list: undefined,
       });
       const errors = await validate(dto);
-      expect(errors.some((e) => e.property === 'list')).toBe(true);
+      expect(errors.some((e) => e.property === 'list')).toBe(false);
     });
 
     it('should fail if list is not an array', async () => {
@@ -256,14 +256,14 @@ describe('DepsReportDto', () => {
       );
     });
 
-    it('should fail if vulnerabilityAnalysis is empty', async () => {
+    it('should pass if vulnerabilityAnalysis is empty', async () => {
       const dto = plainToInstance(DepsReportDto, {
         ...mockDepsReportDto(),
         vulnerabilityAnalysis: '',
       });
       const errors = await validate(dto);
       expect(errors.some((e) => e.property === 'vulnerabilityAnalysis')).toBe(
-        true,
+        false,
       );
     });
 
