@@ -15,7 +15,7 @@ import {
   type IScanStatusService,
 } from './interfaces/iscan-status.service';
 import { GetScanStatusDto } from './dtos/get-scan-status.dto';
-import { SetErrorStatusDto } from './dtos/update-scan-status-from-container.dto';
+import { SetErrorStatusDto } from './dtos/set-error-status.dto';
 import { ScanStatus } from './enums/scan-status.enum';
 import { ScanAuthGuard } from '../scan-auth/scan-auth.guard';
 

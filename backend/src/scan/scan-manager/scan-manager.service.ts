@@ -54,7 +54,12 @@ export class ScanManagerService implements IScanManagerService {
       TARGET_OWNER: repository.ownerName,
       TARGET_REPOSITORY: repository.name,
       TARGET_BRANCH: info.branch,
-      RECEIVER_URL: this.configService.get<string>('SCAN_RECEIVER_URL')!,
+      RECEIVER_URL_SUCCESS: this.configService.get<string>(
+        'SCAN_RECEIVER_URL_SUCCESS',
+      )!,
+      RECEIVER_URL_FAILURE: this.configService.get<string>(
+        'SCAN_RECEIVER_URL_FAILURE',
+      ),
       AWS_ACCESS_KEY_ID: this.configService.get<string>('AWS_ACCESS_KEY_ID')!,
       AWS_SECRET_ACCESS_KEY: this.configService.get<string>(
         'AWS_SECRET_ACCESS_KEY',

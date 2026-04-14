@@ -15,7 +15,8 @@ interface ReportCallbackToken {
   TARGET_OWNER: string;
   TARGET_REPOSITORY: string;
   TARGET_BRANCH: string;
-  RECEIVER_URL: string;
+  RECEIVER_URL_SUCCESS: string;
+  RECEIVER_URL_FAILURE: string;
   AWS_ACCESS_KEY_ID: string;
   AWS_SECRET_ACCESS_KEY: string;
   AWS_SESSION_TOKEN: string;
@@ -50,7 +51,8 @@ export class AppService {
       TARGET_OWNER,
       TARGET_REPOSITORY,
       TARGET_BRANCH,
-      RECEIVER_URL,
+      RECEIVER_URL_SUCCESS,
+      RECEIVER_URL_FAILURE,
       AWS_ACCESS_KEY_ID,
       AWS_SECRET_ACCESS_KEY,
       AWS_SESSION_TOKEN,
@@ -68,7 +70,8 @@ export class AppService {
     process.env.AWS_SESSION_TOKEN = AWS_SESSION_TOKEN;
     process.env.AWS_BEARER_TOKEN_BEDROCK = AWS_BEARER_TOKEN_BEDROCK;
 
-    this.configService.set('RECEIVER_URL', RECEIVER_URL);
+    this.configService.set('RECEIVER_URL_SUCCESS', RECEIVER_URL_SUCCESS);
+    this.configService.set('RECEIVER_URL_FAILURE', RECEIVER_URL_FAILURE);
 
     const target: Target = {
       owner: TARGET_OWNER,
@@ -76,9 +79,19 @@ export class AppService {
       branch: TARGET_BRANCH,
     };
 
-    const report = await this.scanService.scan(target);
-    if (!report) throw new Error('Non è stato generato alcun report');
-
-    await this.reporterService.sendReport(report, reportCallbackToken);
+    try {
+      const report = await this.scanService.scan(target);
+      if (!report) throw new Error('Non è stato generato alcun report');
+      await this.reporterService.sendReport({
+        report,
+        token: reportCallbackToken,
+        target: RECEIVER_URL_SUCCESS,
+      });
+    } catch {
+      await this.reporterService.sendErrorNotification({
+        token: reportCallbackToken,
+        target: RECEIVER_URL_FAILURE,
+      });
+    }
   }
 }
