@@ -8,6 +8,7 @@ export class DepVulnerabilityEntity {
   severity!: string;
   packageName!: string;
   packageVersion!: string;
+  description?: string;
   fixVersion?: string;
 }
 
@@ -25,8 +26,8 @@ export class CodeVulnerabilityEntity {
   severity!: number;
   impact!: string;
   category!: string;
-  cwe!: string[];
-  owasp!: string[];
+  cwe?: string[];
+  owasp?: string[];
 }
 
 export class VulnerabilitiesReportEntity {

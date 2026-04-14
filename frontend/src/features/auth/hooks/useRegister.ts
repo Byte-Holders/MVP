@@ -1,5 +1,5 @@
 import { registerUser } from '../model/registerApi'
-import type { IRegisterViewModel } from '../types/viewModels'
+import type { IRegisterViewModel } from '../interfaces/IUseRegister'
 
 export function useRegister(): IRegisterViewModel {
   async function register(): Promise<void> {

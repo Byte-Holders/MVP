@@ -29,6 +29,9 @@ class DepVulnerabilitySchema {
   packageVersion!: string;
 
   @Prop({ required: false, type: String })
+  description?: string;
+
+  @Prop({ required: false, type: String })
   fixVersion?: string;
 }
 const DepVulnerabilitySchemaDefinition = SchemaFactory.createForClass(

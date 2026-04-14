@@ -18,6 +18,7 @@ const mockDepsVulnerabilityDto = (): object => ({
   severity: '1.0.0',
   packageName: 'package-name1',
   packageVersion: '1.0.0',
+  description: 'A vulnerability description',
 });
 
 const mockDepsReportDto = (): object => ({

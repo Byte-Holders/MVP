@@ -5,7 +5,7 @@ import { createWorkspace } from '../model/createWorkspaceApi'
 import { useState } from 'react'
 import { useRouter } from '@tanstack/react-router'
 import type { CreateWorkspaceRequest } from '../types/CreateWorkspace'
-import type { INewWorkspaceFormViewModel } from '../types/viewModels'
+import type { INewWorkspaceFormViewModel } from '../interfaces/IUseNewWorkspaceForm'
 
 export const newWorkspaceSchema = z.object({
   // validazione lato client con Zod dell'imput del nome del workspace

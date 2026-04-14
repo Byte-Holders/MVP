@@ -1,4 +1,4 @@
-import type { WorkspaceMember, WorkspaceRole } from './workspaceMember'
+import type { WorkspaceRole } from '../types/workspaceMember'
 
 export interface IInviteMemberViewModel {
   username: string
@@ -9,12 +9,4 @@ export interface IInviteMemberViewModel {
   error: Error | null
   isSuccess: boolean
   handleSubmit: (e: SubmitEvent) => void
-}
-
-export interface IMembersPageViewModel {
-  members: WorkspaceMember[]
-  membersLoading: boolean
-  removeMember: (userId: string) => void
-  isRemoving: boolean
-  inviteForm: IInviteMemberViewModel
 }

@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { addRepositoryData } from '../model/addRepositoryData'
-import type { IAddRepositoryFormViewModel } from '../types/viewModels'
+import type { IAddRepositoryFormViewModel } from '../interfaces/IUseAddRepositoryForm'
 
 export function useAddRepositoryForm(
   workspaceId: string,

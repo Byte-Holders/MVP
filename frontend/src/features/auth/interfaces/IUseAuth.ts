@@ -6,7 +6,3 @@ export interface IAuthViewModel {
   logout: () => Promise<void>
   checkAuth: () => Promise<void>
 }
-
-export interface IRegisterViewModel {
-  register: () => Promise<void>
-}

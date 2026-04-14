@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { inviteMemberData } from '../model/inviteMemberData'
 import { WORKSPACE_ROLES, type WorkspaceRole } from '../types/workspaceMember'
-import type { IInviteMemberViewModel } from '../types/viewModels'
+import type { IInviteMemberViewModel } from '../interfaces/IUseInviteMember'
 
 export function useInviteMember(workspaceId: string): IInviteMemberViewModel {
   const [username, setUsername] = useState('')

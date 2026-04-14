@@ -1,7 +1,7 @@
 import { useMutation } from '@tanstack/react-query'
 import { fetchAuthSession } from 'aws-amplify/auth'
 import { requestScan, stopScan, type StartScanInfo } from '../model/scan'
-import type { IScanViewModel, IStopScanViewModel } from '../types/viewModels'
+import type { IScanViewModel, IStopScanViewModel } from '../interfaces/IUseScan'
 
 export function useScan(payload: StartScanInfo): IScanViewModel {
   const { mutate, isPending, isSuccess, error, reset, data } = useMutation({

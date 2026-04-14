@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useGetBranches } from './useGetBranches'
 import { useGetReport } from './useGetReport'
-import type { IReportPageViewModel } from '../types/viewModels'
+import type { IReportPageViewModel } from '../interfaces/IUseReportPage'
 
 export function useReportPage(repositoryId: string): IReportPageViewModel {
   const [selectedBranch, setSelectedBranch] = useState<string | undefined>(
