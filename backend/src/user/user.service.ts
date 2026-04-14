@@ -28,7 +28,7 @@ export class UserService
     email: string,
   ): Promise<UserInfo> {
     if (await this.findUser.findBySub(sub)) {
-      throw new ConflictException('Utente con sub ' + sub + ' già esistente');
+      throw new ConflictException('Utente già esistente');
     }
     return this.findUser.create(sub, username, email);
   }
