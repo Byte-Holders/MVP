@@ -9,6 +9,7 @@ export interface ReportInfo {
       vulnerabilities: {
         id: string
         severity: string
+        description?: string
         packageName: string
         packageVersion: string
         fixVersion?: string
@@ -24,8 +25,8 @@ export interface ReportInfo {
         severity: number
         impact: string
         category: string
-        cwe: string[]
-        owasp: string[]
+        cwe?: string
+        owasp?: string[]
       }[]
       mark: number
     }

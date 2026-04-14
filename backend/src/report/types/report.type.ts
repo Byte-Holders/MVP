@@ -24,7 +24,7 @@ export type ReportInfo = {
         severity: number;
         impact: string;
         category: string;
-        cwe?: string[];
+        cwe?: string;
         owasp?: string[];
       }[];
       mark: number;

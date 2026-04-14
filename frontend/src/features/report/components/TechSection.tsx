@@ -25,6 +25,8 @@ export function TechSection({ techReport, allDeps }: Props) {
       fill: PIE_COLORS[i % PIE_COLORS.length],
     }))
 
+  const minorLangs = techReport.languages.filter((l) => l.value < 1)
+
   return (
     <section className="flex flex-col gap-5 rounded-2xl border border-[var(--chip-line)] bg-[var(--chip-bg)] p-5">
       <h2 className="text-base font-semibold text-[var(--sea-ink)]">
@@ -77,58 +79,71 @@ export function TechSection({ techReport, allDeps }: Props) {
           ) : (
             <p className="text-xs opacity-50">Nessun linguaggio rilevato</p>
           )}
-        </div>
-
-        {/* Framework badges */}
-        <div>
-          <p className="mb-2 text-xs font-medium text-[var(--sea-ink)] opacity-60">
-            Framework ({techReport.frameworks.length})
-          </p>
-          {techReport.frameworks.length > 0 ? (
-            <div className="flex flex-wrap gap-2">
-              {techReport.frameworks.map((f) => (
+          {minorLangs.length > 0 && (
+            <div className="mt-2 flex flex-wrap gap-1">
+              {minorLangs.map((l) => (
                 <span
-                  key={f.name}
-                  className="rounded-full border border-[var(--chip-line)] bg-[var(--lagoon)]/10 px-3 py-0.5 text-xs font-medium text-[var(--lagoon-deep)]"
+                  key={l.name}
+                  className="rounded-full border border-[var(--chip-line)] px-2 py-0.5 text-[10px] text-[var(--sea-ink)] opacity-50"
                 >
-                  {f.name} <span className="opacity-60">{f.version}</span>
+                  {l.name} &lt;1%
                 </span>
               ))}
             </div>
-          ) : (
-            <p className="text-xs opacity-50">Nessuno rilevato</p>
           )}
         </div>
-      </div>
 
-      {/* Librerie */}
-      <div>
-        <p className="mb-2 text-xs font-medium text-[var(--sea-ink)] opacity-60">
-          Librerie ({techReport.libraries.length})
-        </p>
-        {techReport.libraries.length > 0 ? (
-          <div className="max-h-40 overflow-y-auto pr-1">
-            <table className="w-full text-xs">
-              <tbody>
-                {techReport.libraries.map((lib) => (
-                  <tr
-                    key={lib.name}
-                    className="border-b border-[var(--chip-line)] last:border-0"
+        {/* Framework + Librerie */}
+        <div className="flex flex-col gap-4">
+          <div>
+            <p className="mb-2 text-xs font-medium text-[var(--sea-ink)] opacity-60">
+              Framework ({techReport.frameworks.length})
+            </p>
+            {techReport.frameworks.length > 0 ? (
+              <div className="flex flex-wrap gap-2">
+                {techReport.frameworks.map((f) => (
+                  <span
+                    key={f.name}
+                    className="rounded-full border border-[var(--chip-line)] bg-[var(--lagoon)]/10 px-3 py-0.5 text-xs font-medium text-[var(--lagoon-deep)]"
                   >
-                    <td className="py-1 font-medium text-[var(--sea-ink)]">
-                      {lib.name}
-                    </td>
-                    <td className="py-1 text-right opacity-50">
-                      {lib.version}
-                    </td>
-                  </tr>
+                    {f.name} <span className="opacity-60">{f.version}</span>
+                  </span>
                 ))}
-              </tbody>
-            </table>
+              </div>
+            ) : (
+              <p className="text-xs opacity-50">Nessuno rilevato</p>
+            )}
           </div>
-        ) : (
-          <p className="text-xs opacity-50">Nessuna rilevata</p>
-        )}
+
+          <div>
+            <p className="mb-2 text-xs font-medium text-[var(--sea-ink)] opacity-60">
+              Librerie ({techReport.libraries.length})
+            </p>
+            {techReport.libraries.length > 0 ? (
+              <div className="max-h-40 overflow-y-auto pr-1">
+                <table className="w-full text-xs">
+                  <tbody>
+                    {techReport.libraries.map((lib) => (
+                      <tr
+                        key={lib.name}
+                        className="border-b border-[var(--chip-line)] last:border-0"
+                      >
+                        <td className="py-1 font-medium text-[var(--sea-ink)]">
+                          {lib.name}
+                        </td>
+                        <td className="py-1 text-right opacity-50">
+                          {lib.version}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            ) : (
+              <p className="text-xs opacity-50">Nessuna rilevata</p>
+            )}
+          </div>
+        </div>
       </div>
 
       {allDeps && allDeps.length > 0 && (
