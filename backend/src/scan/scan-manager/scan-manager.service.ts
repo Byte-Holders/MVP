@@ -44,8 +44,10 @@ export class ScanManagerService implements IScanManagerService {
     const [repository] = await this.repositoryReader.getRepositories([
       info.repositoryId,
     ]);
+    const scanId = randomUUID();
+
     this.logger.log(
-      `Lancio scansione verso ${repository.ownerName}/${repository.name}@${info.branch} `,
+      `Lancio scansione ${scanId} verso ${repository.ownerName}/${repository.name}@${info.branch} `,
     );
 
     const callbackToken = await this.jwtService.signAsync({
@@ -107,7 +109,7 @@ export class ScanManagerService implements IScanManagerService {
     this.logger.debug(`Handle: ${handle}`);
 
     const scan: Scan = {
-      id: randomUUID(),
+      id: scanId,
       workspaceId: info.workspaceId,
       target: {
         repositoryId: info.repositoryId,
