@@ -12,7 +12,7 @@ import { ApiOperation, ApiResponse } from '@nestjs/swagger';
 export class UserController {
   constructor(@Inject(CreateUserToken) private userService: ICreateUser) {}
 
-  @ApiOperation({ summary: 'Registra un nuovo utente utilizzando l\'ID token' })
+  @ApiOperation({ summary: "Registra un nuovo utente utilizzando l'ID token" })
   @ApiResponse({
     status: 201,
     description: 'Utente registrato con successo',
