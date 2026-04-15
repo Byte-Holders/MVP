@@ -34,7 +34,10 @@ export class MembershipController {
 
   @ApiOperation({ summary: 'Invita un utente a unirsi a un workspace' })
   @ApiResponse({ status: 201, description: 'Invito inviato' })
-  @ApiResponse({ status: 400, description: 'L\'utente ha già un invito in sospeso per questo workspace' })
+  @ApiResponse({
+    status: 400,
+    description: "L'utente ha già un invito in sospeso per questo workspace",
+  })
   @Post('invitations')
   @UsePipes(new ValidationPipe())
   async inviteUser(
@@ -51,7 +54,11 @@ export class MembershipController {
   }
 
   @ApiOperation({ summary: 'Ottieni gli inviti ricevuti' })
-  @ApiResponse({ status: 200, description: 'Lista degli inviti ricevuti', type: [GetInviteResponseDto] })
+  @ApiResponse({
+    status: 200,
+    description: 'Lista degli inviti ricevuti',
+    type: [GetInviteResponseDto],
+  })
   @Get('invitations')
   @UsePipes(new ValidationPipe())
   async getInvites(@User() user: RequestUser): Promise<GetInviteResponseDto[]> {
@@ -60,9 +67,15 @@ export class MembershipController {
 
   @ApiOperation({ summary: 'Gestisci un invito (accetta o rifiuta)' })
   @ApiResponse({ status: 200, description: 'Invito gestito con successo' })
-  @ApiResponse({ status: 400, description: 'Azione non valida o invito già gestito' })
-  @ApiResponse({ status: 412, description: 'invito rifiutato perchè utente fa già parte del workspace' })
-  @ApiParam({ name: 'id', description: 'ID dell\'invito da gestire' })
+  @ApiResponse({
+    status: 400,
+    description: 'Azione non valida o invito già gestito',
+  })
+  @ApiResponse({
+    status: 412,
+    description: 'invito rifiutato perchè utente fa già parte del workspace',
+  })
+  @ApiParam({ name: 'id', description: "ID dell'invito da gestire" })
   @Patch('invitations/:id')
   @UsePipes(new ValidationPipe())
   async manageInvite(

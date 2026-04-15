@@ -15,22 +15,22 @@ export enum MembershipStatus {
 
 export class InviteUserDto {
   @ApiProperty({
-    description: 'ID del workspace a cui invitare l\'utente'
+    description: "ID del workspace a cui invitare l'utente",
   })
   @IsNotEmpty()
   @IsString()
   workspaceId!: string;
 
   @ApiProperty({
-    description: 'Username del destinatario dell\'invito'
+    description: "Username del destinatario dell'invito",
   })
   @IsNotEmpty()
   @IsString()
   recipientUsername!: string;
 
   @ApiProperty({
-    description: 'Ruolo dell\'utente invitato',
-    enum: WorkspaceRole
+    description: "Ruolo dell'utente invitato",
+    enum: WorkspaceRole,
   })
   @IsNotEmpty()
   @IsEnum(WorkspaceRole)
@@ -39,8 +39,8 @@ export class InviteUserDto {
 
 export class ManageInviteDto {
   @ApiProperty({
-    description: 'Azione da compiere sull\'invito',
-    enum: ManageInviteAction
+    description: "Azione da compiere sull'invito",
+    enum: ManageInviteAction,
   })
   @IsNotEmpty()
   @IsEnum(ManageInviteAction)
@@ -49,34 +49,34 @@ export class ManageInviteDto {
 
 export class GetInviteResponseDto {
   @ApiProperty({
-    description: 'ID dell\'invito'
+    description: "ID dell'invito",
   })
   _id!: string;
 
   @ApiProperty({
-    description: 'Nome del workspace'
+    description: 'Nome del workspace',
   })
   workspaceName!: string;
 
   @ApiProperty({
-    description: 'Username dell\'utente che ha inviato l\'invito'
+    description: "Username dell'utente che ha inviato l'invito",
   })
   senderUsername!: string;
 
   @ApiProperty({
-    description: 'Username del destinatario dell\'invito'
+    description: "Username del destinatario dell'invito",
   })
   recipientUsername!: string;
 
   @ApiProperty({
-    description: 'Ruolo del destinatario dell\'invito',
-    enum: WorkspaceRole
+    description: "Ruolo del destinatario dell'invito",
+    enum: WorkspaceRole,
   })
   recipientRole!: WorkspaceRole;
 
   @ApiProperty({
-    description: 'Stato dell\'invito',
-    enum: MembershipStatus
+    description: "Stato dell'invito",
+    enum: MembershipStatus,
   })
   status!: MembershipStatus;
 }
