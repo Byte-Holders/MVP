@@ -54,7 +54,10 @@ describe('RepositoryWriterService', () => {
           provide: RepositoryPersistRepositoryToken,
           useValue: mockPersistRepository,
         },
-        { provide: GitHubAccessRepositoryToken, useValue: mockGitHubRepository },
+        {
+          provide: GitHubAccessRepositoryToken,
+          useValue: mockGitHubRepository,
+        },
       ],
     }).compile();
 
