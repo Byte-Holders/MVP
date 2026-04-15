@@ -1,7 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import * as fs from 'fs';
 import * as path from 'path';
-import { TestReport } from './coverage-report.type';
+import { CoverageReport, FailedTest, TestReport } from './coverage-report.type';
 import { WorkflowState } from '../workflow-state.type';
 import { CoverageNodeHelper } from './coverage-node.helper';
 import { INodeScanService } from '../inode-scan-service.interface';
@@ -28,15 +28,14 @@ export class CoverageNodeService implements INodeScanService {
     };
 
     try {
-      if (fs.existsSync(path.join(repoPath, 'package.json'))) {
+      if (this.helper.checkFileExists(path.join(repoPath, 'package.json'))) {
         const { stdout, resultsPath } =
           await this.helper.runCoverageTool(repoPath);
 
         try {
-          const split = this.helper.splitResult(stdout);
-          const coverageReport = this.helper.parseOutput(split);
-          const { failedTests, testsRun } =
-            this.helper.parseTestResults(resultsPath);
+          const split = this.splitResult(stdout);
+          const coverageReport = this.parseOutput(split);
+          const { failedTests, testsRun } = this.parseTestResults(resultsPath);
           testReport = { coverageReport, failedTests, testsRun };
           this.logger.log('Terminata coverage');
           this.logger.debug(JSON.stringify(testReport, null, 2));
@@ -55,5 +54,71 @@ export class CoverageNodeService implements INodeScanService {
     }
 
     return { testReport };
+  }
+
+  private parseOutput(split: string[]): CoverageReport {
+    return {
+      statements: parseFloat(split[0]),
+      branches: parseFloat(split[1]),
+      functions: parseFloat(split[2]),
+      lines: parseFloat(split[3]),
+    };
+  }
+
+  private splitResult(result: string): string[] {
+    const split = result
+      .split('\n')
+      .filter(
+        (line) => line.match(/(Statements|Branches|Functions|Lines)/) != null,
+      )
+      .join('\n')
+      .replaceAll(/% *\(\s*\d+\/\d+\s*\) */g, '')
+      .replaceAll(/(Statements|Branches|Functions|Lines)\s*:\s*/g, '')
+      .split('\n')
+      .map((line) => line.trim());
+
+    if (split.length != 4) {
+      throw new Error(`Errore lettura parametro: ${split.toString()}`);
+    }
+
+    return split;
+  }
+
+  private parseTestResults(resultsPath: string): {
+    failedTests: FailedTest[];
+    testsRun: number;
+  } {
+    try {
+      const raw = this.helper.getFileContentsRaw(resultsPath);
+      const sanitized = raw.replace(/[^\t\n\r -~]/g, '');
+      const json = JSON.parse(sanitized) as {
+        numTotalTests: number;
+        testResults: {
+          name: string;
+          assertionResults: {
+            fullName: string;
+            status: string;
+            failureMessages: string[];
+          }[];
+        }[];
+      };
+
+      const failedTests: FailedTest[] = [];
+      for (const suite of json.testResults) {
+        for (const test of suite.assertionResults) {
+          if (test.status === 'failed') {
+            failedTests.push({
+              name: test.fullName,
+              path: suite.name,
+              messageSummary: test.failureMessages?.[0]?.slice(0, 200) ?? '',
+            });
+          }
+        }
+      }
+
+      return { failedTests, testsRun: json.numTotalTests ?? 0 };
+    } catch {
+      return { failedTests: [], testsRun: 0 };
+    }
   }
 }
