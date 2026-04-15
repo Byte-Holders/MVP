@@ -11,10 +11,7 @@ import {
 
 @Injectable()
 export class ReporterService implements IReporterService {
-  constructor(
-    private readonly httpService: HttpService,
-    private readonly configService: ConfigService,
-  ) {}
+  constructor(private readonly httpService: HttpService) {}
 
   async sendReport(info: SendReportInfo) {
     await rx.lastValueFrom(
@@ -27,7 +24,7 @@ export class ReporterService implements IReporterService {
 
   async sendErrorNotification(info: SendErrorNotificationInfo): Promise<void> {
     await rx.lastValueFrom(
-      this.httpService.post(info.target, {
+      this.httpService.patch(info.target, {
         token: info.token,
       }),
     );
