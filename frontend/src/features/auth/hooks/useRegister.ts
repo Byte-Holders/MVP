@@ -1,6 +1,6 @@
 import { authRepository } from '../model/registerApi'
-import type { IAuthRepository } from '../interfaces/repository/IAuthRepository'
-import type { IRegisterViewModel } from '../interfaces/IUseRegister'
+import type { IAuthRepository } from '../interfaces/model/IAuthRepository'
+import type { IRegisterViewModel } from '../interfaces/viewModel/IUseRegister'
 
 export function useRegister(
   repo: IAuthRepository = authRepository,

@@ -1,5 +1,5 @@
 import { apiGet } from '../../../api/apiClient'
-import type { IWorkspaceListRepository } from '../interfaces/repository/IWorkspaceListRepository'
+import type { IWorkspaceListRepository } from '../interfaces/model/IWorkspaceListRepository'
 import type { WorkspaceListItem } from '../types/Workspace'
 
 class WorkspaceListRepository implements IWorkspaceListRepository {

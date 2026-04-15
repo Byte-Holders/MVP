@@ -1,4 +1,4 @@
-import type { WorkspaceRole } from '../types/workspaceMember'
+import type { WorkspaceRole } from '../../types/workspaceMember'
 
 export interface IInviteMemberViewModel {
   username: string

@@ -1,10 +1,10 @@
 import { useQuery } from '@tanstack/react-query'
-import { reportRepository } from '../model/reportRepository'
+import { getBranchesRepository } from '../model/getBranchesData'
 
 export function useGetBranches(repositoryId: string) {
   return useQuery({
     queryKey: ['branches', repositoryId],
-    queryFn: () => reportRepository.getBranches(repositoryId),
+    queryFn: () => getBranchesRepository.getBranches(repositoryId),
     enabled: !!repositoryId,
   })
 }

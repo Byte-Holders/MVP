@@ -6,15 +6,11 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { AddRepositoryForm } from './AddRepositoryForm'
 import type { ReactElement } from 'react'
 
-vi.mock('../model/workspaceRepositoryRepository', () => ({
-  workspaceRepositoryRepository: {
-    getRepositories: vi.fn(),
-    addRepository: vi.fn(),
-    removeRepository: vi.fn(),
-  },
+vi.mock('../model/addRepositoryData', () => ({
+  addRepositoryRepository: { addRepository: vi.fn() },
 }))
 
-import { workspaceRepositoryRepository } from '../model/workspaceRepositoryRepository'
+import { addRepositoryRepository } from '../model/addRepositoryData'
 
 const renderWithClient = (ui: ReactElement) => {
   const queryClient = new QueryClient({
@@ -36,35 +32,27 @@ describe('AddRepositoryForm Component', () => {
     const user = userEvent.setup()
     renderWithClient(<AddRepositoryForm workspaceId={workspaceId} />)
 
-    expect(
-      screen.queryByPlaceholderText('GitHub token'),
-    ).not.toBeInTheDocument()
+    expect(screen.queryByPlaceholderText('GitHub token')).not.toBeInTheDocument()
 
-    const privateRadio = screen.getByLabelText('Privata')
-    await user.click(privateRadio)
+    await user.click(screen.getByLabelText('Privata'))
 
     expect(screen.getByPlaceholderText('GitHub token')).toBeInTheDocument()
   })
 
   it('dovrebbe inviare i dati corretti per una repository pubblica', async () => {
     const user = userEvent.setup()
-    vi.mocked(workspaceRepositoryRepository.addRepository).mockResolvedValue(
-      undefined,
-    )
+    vi.mocked(addRepositoryRepository.addRepository).mockResolvedValue(undefined)
     renderWithClient(<AddRepositoryForm workspaceId={workspaceId} />)
 
-    const urlInput = screen.getByPlaceholderText(/URL repository/i)
-    await user.type(urlInput, 'https://github.com/user/repo')
+    await user.type(
+      screen.getByPlaceholderText(/URL repository/i),
+      'https://github.com/user/repo',
+    )
+    await user.click(screen.getByRole('button', { name: /aggiungi/i }))
 
-    const submitButton = screen.getByRole('button', { name: /aggiungi/i })
-    await user.click(submitButton)
-
-    expect(workspaceRepositoryRepository.addRepository).toHaveBeenCalledWith(
+    expect(addRepositoryRepository.addRepository).toHaveBeenCalledWith(
       workspaceId,
-      {
-        repositoryUrl: 'https://github.com/user/repo',
-        accessToken: undefined,
-      },
+      { repositoryUrl: 'https://github.com/user/repo', accessToken: undefined },
     )
   })
 })

@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react'
 import { workspaceListRepository } from '../model/getWorkspacesApi'
-import type { IWorkspaceListRepository } from '../interfaces/repository/IWorkspaceListRepository'
+import type { IWorkspaceListRepository } from '../interfaces/model/IWorkspaceListRepository'
 import type { WorkspaceListItem } from '../types/Workspace'
-import type { IWorkspacesViewModel } from '../interfaces/IUseWorkspaces'
+import type { IWorkspacesViewModel } from '../interfaces/viewModel/IUseWorkspaces'
 
 export function useWorkspaces(
   repo: IWorkspaceListRepository = workspaceListRepository,

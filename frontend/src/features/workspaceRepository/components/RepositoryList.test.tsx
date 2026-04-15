@@ -9,15 +9,11 @@ vi.mock('@tanstack/react-router', () => ({
   Link: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
 }))
 
-vi.mock('../model/workspaceRepositoryRepository', () => ({
-  workspaceRepositoryRepository: {
-    getRepositories: vi.fn(),
-    addRepository: vi.fn(),
-    removeRepository: vi.fn(),
-  },
+vi.mock('../model/getRepositoriesData', () => ({
+  getRepositoriesRepository: { getRepositories: vi.fn() },
 }))
 
-import { workspaceRepositoryRepository } from '../model/workspaceRepositoryRepository'
+import { getRepositoriesRepository } from '../model/getRepositoriesData'
 
 const renderWithClient = (ui: React.ReactElement) => {
   const queryClient = new QueryClient({
@@ -31,12 +27,10 @@ const renderWithClient = (ui: React.ReactElement) => {
 describe('RepositoryList Component', () => {
   const workspaceId = 'ws-test-123'
 
-  beforeEach(() => {
-    vi.clearAllMocks()
-  })
+  beforeEach(() => { vi.clearAllMocks() })
 
   it("dovrebbe mostrare il messaggio di caricamento all'inizio", () => {
-    vi.mocked(workspaceRepositoryRepository.getRepositories).mockReturnValue(
+    vi.mocked(getRepositoriesRepository.getRepositories).mockReturnValue(
       new Promise(() => {}),
     )
     renderWithClient(<RepositoryList workspaceId={workspaceId} />)
@@ -44,41 +38,18 @@ describe('RepositoryList Component', () => {
   })
 
   it('dovrebbe mostrare un messaggio se non ci sono repository', async () => {
-    vi.mocked(workspaceRepositoryRepository.getRepositories).mockResolvedValue(
-      [],
-    )
+    vi.mocked(getRepositoriesRepository.getRepositories).mockResolvedValue([])
     renderWithClient(<RepositoryList workspaceId={workspaceId} />)
     await waitFor(() => {
-      expect(
-        screen.getByText(/nessun repository aggiunto/i),
-      ).toBeInTheDocument()
+      expect(screen.getByText(/nessun repository aggiunto/i)).toBeInTheDocument()
     })
   })
 
   it('dovrebbe renderizzare la lista di repository quando i dati arrivano', async () => {
-    const mockRepos = [
-      {
-        repositoryId: 'repo-1',
-        name: 'app-frontend',
-        ownerName: 'giacomo',
-        dateScan: '2024-01-01',
-        documentationScore: 80,
-        codeCoverage: 70,
-        cvss: 0,
-      },
-      {
-        repositoryId: 'repo-2',
-        name: 'api-backend',
-        ownerName: 'giacomo',
-        dateScan: '2024-01-02',
-        documentationScore: 90,
-        codeCoverage: 85,
-        cvss: 2,
-      },
-    ]
-    vi.mocked(workspaceRepositoryRepository.getRepositories).mockResolvedValue(
-      mockRepos,
-    )
+    vi.mocked(getRepositoriesRepository.getRepositories).mockResolvedValue([
+      { repositoryId: 'repo-1', name: 'app-frontend', ownerName: 'giacomo', dateScan: '2024-01-01', documentationScore: 80, codeCoverage: 70, cvss: 0 },
+      { repositoryId: 'repo-2', name: 'api-backend', ownerName: 'giacomo', dateScan: '2024-01-02', documentationScore: 90, codeCoverage: 85, cvss: 2 },
+    ])
     renderWithClient(<RepositoryList workspaceId={workspaceId} />)
     await waitFor(() => {
       expect(screen.getByText('app-frontend')).toBeInTheDocument()
@@ -86,20 +57,18 @@ describe('RepositoryList Component', () => {
     })
   })
 
-  it("dovrebbe chiamare l'API con il termine di ricerca corretto quando l'utente digita", async () => {
+  it("dovrebbe chiamare l'API con il termine di ricerca corretto", async () => {
     const user = userEvent.setup()
-    vi.mocked(workspaceRepositoryRepository.getRepositories).mockResolvedValue(
-      [],
-    )
+    vi.mocked(getRepositoriesRepository.getRepositories).mockResolvedValue([])
     renderWithClient(<RepositoryList workspaceId={workspaceId} />)
 
-    const searchInput = screen.getByPlaceholderText(/cerca per nome/i)
-    await user.type(searchInput, 'test-search')
+    await user.type(screen.getByPlaceholderText(/cerca per nome/i), 'test-search')
 
     await waitFor(() => {
-      expect(
-        workspaceRepositoryRepository.getRepositories,
-      ).toHaveBeenCalledWith(workspaceId, 'test-search')
+      expect(getRepositoriesRepository.getRepositories).toHaveBeenCalledWith(
+        workspaceId,
+        'test-search',
+      )
     })
   })
 })

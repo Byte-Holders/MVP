@@ -1,5 +1,5 @@
 import { fetchSession } from './authApi'
-import type { IAuthRepository } from '../interfaces/repository/IAuthRepository'
+import type { IAuthRepository } from '../interfaces/model/IAuthRepository'
 
 class AuthRepository implements IAuthRepository {
   // Uses idToken (not accessToken) because the registration endpoint

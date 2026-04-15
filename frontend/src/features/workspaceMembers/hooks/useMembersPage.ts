@@ -1,7 +1,7 @@
 import { useGetMembers } from './useGetMembers'
 import { useRemoveMember } from './useRemoveMember'
 import { useInviteMember } from './useInviteMember'
-import type { IMembersPageViewModel } from '../interfaces/IUseMembersPage'
+import type { IMembersPageViewModel } from '../interfaces/viewModel/IUseMembersPage'
 
 export function useMembersPage(workspaceId: string): IMembersPageViewModel {
   const { data: members = [], isLoading: membersLoading } =

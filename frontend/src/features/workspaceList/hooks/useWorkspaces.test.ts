@@ -1,7 +1,7 @@
 import { renderHook, waitFor, act } from '@testing-library/react'
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { useWorkspaces } from './useWorkspaces'
-import type { IWorkspaceListRepository } from '../interfaces/repository/IWorkspaceListRepository'
+import type { IWorkspaceListRepository } from '../interfaces/model/IWorkspaceListRepository'
 
 const mockRepo: IWorkspaceListRepository = {
   getWorkspaces: vi.fn(),

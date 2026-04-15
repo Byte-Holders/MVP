@@ -1,5 +1,5 @@
 import { apiPost, apiPatch } from '../../../api/apiClient'
-import type { IRepoRepository } from '../interfaces/repository/IRepoRepository'
+import type { IRepoRepository } from '../interfaces/model/IRepoRepository'
 
 export interface StartScanInfo {
   workspaceId: string

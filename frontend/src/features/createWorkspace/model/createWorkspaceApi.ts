@@ -1,5 +1,5 @@
 import { apiPost } from '../../../api/apiClient'
-import type { ICreateWorkspaceRepository } from '../interfaces/repository/ICreateWorkspaceRepository'
+import type { ICreateWorkspaceRepository } from '../interfaces/model/ICreateWorkspaceRepository'
 import type { CreateWorkspaceRequest } from '../types/CreateWorkspace'
 import type { WorkspaceResponse } from '../types/CreateWorkspaceResponse'
 

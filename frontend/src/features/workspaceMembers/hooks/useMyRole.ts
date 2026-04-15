@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query'
 import { getCurrentUser } from 'aws-amplify/auth'
-import { workspaceMembersRepository } from '../model/workspaceMembersRepository'
+import { getMembersRepository } from '../model/getMembersData'
 import type { WorkspaceRole } from '../types/workspaceMember'
 
 export function useMyRole(workspaceId: string) {
@@ -9,7 +9,7 @@ export function useMyRole(workspaceId: string) {
     queryFn: async (): Promise<WorkspaceRole | null> => {
       const [{ userId }, members] = await Promise.all([
         getCurrentUser(),
-        workspaceMembersRepository.getMembers(workspaceId),
+        getMembersRepository.getMembers(workspaceId),
       ])
       const me = members.find((m) => m.userId === userId)
       return (me?.role as WorkspaceRole) ?? null

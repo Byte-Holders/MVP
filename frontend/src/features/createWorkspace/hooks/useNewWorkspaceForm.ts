@@ -3,9 +3,9 @@ import { useNavigate, useRouter } from '@tanstack/react-router'
 import * as z from 'zod'
 import { useState } from 'react'
 import { createWorkspaceRepository } from '../model/createWorkspaceApi'
-import type { ICreateWorkspaceRepository } from '../interfaces/repository/ICreateWorkspaceRepository'
+import type { ICreateWorkspaceRepository } from '../interfaces/model/ICreateWorkspaceRepository'
 import type { CreateWorkspaceRequest } from '../types/CreateWorkspace'
-import type { INewWorkspaceFormViewModel } from '../interfaces/IUseNewWorkspaceForm'
+import type { INewWorkspaceFormViewModel } from '../interfaces/viewModel/IUseNewWorkspaceForm'
 
 export const newWorkspaceSchema = z.object({
   name: z

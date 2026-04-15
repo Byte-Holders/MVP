@@ -1,9 +1,9 @@
 import { useQuery } from '@tanstack/react-query'
-import { membershipRepository } from '../model/membershipRepository'
+import { getInvitesRepository } from '../model/getInvitesData'
 
 export function useGetInvites() {
   return useQuery({
     queryKey: ['invites'],
-    queryFn: () => membershipRepository.getInvites(),
+    queryFn: () => getInvitesRepository.getInvites(),
   })
 }

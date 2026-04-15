@@ -4,20 +4,14 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { useGetRepositories } from './useGetRepositories'
 import type { ReactNode } from 'react'
 
-vi.mock('../model/workspaceRepositoryRepository', () => ({
-  workspaceRepositoryRepository: {
-    getRepositories: vi.fn(),
-    addRepository: vi.fn(),
-    removeRepository: vi.fn(),
-  },
+vi.mock('../model/getRepositoriesData', () => ({
+  getRepositoriesRepository: { getRepositories: vi.fn() },
 }))
 
-import { workspaceRepositoryRepository } from '../model/workspaceRepositoryRepository'
+import { getRepositoriesRepository } from '../model/getRepositoriesData'
 
 const createWrapper = () => {
-  const queryClient = new QueryClient({
-    defaultOptions: { queries: { retry: false } },
-  })
+  const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } })
   return ({ children }: { children: ReactNode }) => (
     <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
   )
@@ -26,58 +20,30 @@ const createWrapper = () => {
 describe('useGetRepositories Hook', () => {
   const workspaceId = 'ws-1'
 
-  beforeEach(() => {
-    vi.clearAllMocks()
-  })
+  beforeEach(() => { vi.clearAllMocks() })
 
   it('dovrebbe restituire i repository dalla API', async () => {
-    const mockRepos = [
-      { repositoryId: 'r-1', name: 'repo-a', ownerName: 'alice' },
-    ]
-    vi.mocked(workspaceRepositoryRepository.getRepositories).mockResolvedValue(
-      mockRepos,
-    )
-    const { result } = renderHook(() => useGetRepositories(workspaceId), {
-      wrapper: createWrapper(),
-    })
-    await waitFor(() => {
-      expect(result.current.data).toEqual(mockRepos)
-    })
+    const mockRepos = [{ repositoryId: 'r-1', name: 'repo-a', ownerName: 'alice' }]
+    vi.mocked(getRepositoriesRepository.getRepositories).mockResolvedValue(mockRepos)
+    const { result } = renderHook(() => useGetRepositories(workspaceId), { wrapper: createWrapper() })
+    await waitFor(() => { expect(result.current.data).toEqual(mockRepos) })
   })
 
   it('dovrebbe passare searchInput alla API', async () => {
-    vi.mocked(workspaceRepositoryRepository.getRepositories).mockResolvedValue(
-      [],
-    )
-    const { result } = renderHook(
-      () => useGetRepositories(workspaceId, 'mio-repo'),
-      { wrapper: createWrapper() },
-    )
-    await waitFor(() => {
-      expect(result.current.isLoading).toBe(false)
-    })
-    expect(workspaceRepositoryRepository.getRepositories).toHaveBeenCalledWith(
-      workspaceId,
-      'mio-repo',
-    )
+    vi.mocked(getRepositoriesRepository.getRepositories).mockResolvedValue([])
+    const { result } = renderHook(() => useGetRepositories(workspaceId, 'mio-repo'), { wrapper: createWrapper() })
+    await waitFor(() => { expect(result.current.isLoading).toBe(false) })
+    expect(getRepositoriesRepository.getRepositories).toHaveBeenCalledWith(workspaceId, 'mio-repo')
   })
 
   it('dovrebbe essere disabilitato se workspaceId è vuoto', () => {
-    const { result } = renderHook(() => useGetRepositories(''), {
-      wrapper: createWrapper(),
-    })
+    const { result } = renderHook(() => useGetRepositories(''), { wrapper: createWrapper() })
     expect(result.current.fetchStatus).toBe('idle')
   })
 
   it('dovrebbe restituire una lista vuota se non ci sono repository', async () => {
-    vi.mocked(workspaceRepositoryRepository.getRepositories).mockResolvedValue(
-      [],
-    )
-    const { result } = renderHook(() => useGetRepositories(workspaceId), {
-      wrapper: createWrapper(),
-    })
-    await waitFor(() => {
-      expect(result.current.data).toEqual([])
-    })
+    vi.mocked(getRepositoriesRepository.getRepositories).mockResolvedValue([])
+    const { result } = renderHook(() => useGetRepositories(workspaceId), { wrapper: createWrapper() })
+    await waitFor(() => { expect(result.current.data).toEqual([]) })
   })
 })
