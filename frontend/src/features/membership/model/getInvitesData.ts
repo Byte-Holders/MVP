@@ -8,4 +8,5 @@ class GetInvitesRepository implements IGetInvitesRepository {
   }
 }
 
-export const getInvitesRepository: IGetInvitesRepository = new GetInvitesRepository()
+export const getInvitesRepository: IGetInvitesRepository =
+  new GetInvitesRepository()

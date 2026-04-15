@@ -62,9 +62,7 @@ describe('WorkspaceList Component', () => {
     vi.mocked(workspaceListRepository.getWorkspaces).mockResolvedValue([])
     render(<WorkspaceList />)
     await waitFor(() => {
-      expect(
-        screen.queryByText(/loading workspaces/i),
-      ).not.toBeInTheDocument()
+      expect(screen.queryByText(/loading workspaces/i)).not.toBeInTheDocument()
     })
   })
 })

@@ -37,7 +37,9 @@ describe('RepositoryItem Component', () => {
   }
   const workspaceId = 'ws-1'
 
-  beforeEach(() => { vi.clearAllMocks() })
+  beforeEach(() => {
+    vi.clearAllMocks()
+  })
 
   it('dovrebbe mostrare il nome della repository', () => {
     renderWithClient(
@@ -55,7 +57,9 @@ describe('RepositoryItem Component', () => {
 
   it('dovrebbe chiamare removeRepository al click del bottone Rimuovi', async () => {
     const user = userEvent.setup()
-    vi.mocked(removeRepositoryRepository.removeRepository).mockResolvedValue(undefined)
+    vi.mocked(removeRepositoryRepository.removeRepository).mockResolvedValue(
+      undefined,
+    )
     renderWithClient(
       <RepositoryItem repository={mockRepo} workspaceId={workspaceId} />,
     )

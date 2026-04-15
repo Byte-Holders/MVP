@@ -16,4 +16,5 @@ class InviteMemberRepository implements IInviteMemberRepository {
   }
 }
 
-export const inviteMemberRepository: IInviteMemberRepository = new InviteMemberRepository()
+export const inviteMemberRepository: IInviteMemberRepository =
+  new InviteMemberRepository()

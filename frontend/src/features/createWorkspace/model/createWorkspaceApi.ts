@@ -4,7 +4,9 @@ import type { CreateWorkspaceRequest } from '../types/CreateWorkspace'
 import type { WorkspaceResponse } from '../types/CreateWorkspaceResponse'
 
 class CreateWorkspaceRepository implements ICreateWorkspaceRepository {
-  async createWorkspace(data: CreateWorkspaceRequest): Promise<WorkspaceResponse> {
+  async createWorkspace(
+    data: CreateWorkspaceRequest,
+  ): Promise<WorkspaceResponse> {
     return apiPost<WorkspaceResponse>('/api/workspaces/', data)
   }
 }
