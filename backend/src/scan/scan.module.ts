@@ -35,6 +35,7 @@ import { ScanAuthGuard } from './scan-auth/scan-auth.guard';
       inject: [ConfigService],
     }),
   ],
+  controllers: [ScanStatusController, ScanManagerController],
   providers: [
     {
       provide: ISCAN_STATUS_SERVICE_TOKEN,
@@ -50,6 +51,6 @@ import { ScanAuthGuard } from './scan-auth/scan-auth.guard';
     },
     ScanAuthGuard,
   ],
-  controllers: [ScanStatusController, ScanManagerController],
+  exports: [ISCAN_STATUS_SERVICE_TOKEN],
 })
 export class ScanModule {}

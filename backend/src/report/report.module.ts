@@ -10,6 +10,7 @@ import { ReportRepositoryToken } from './interfaces/ireport.repository.interface
 import { ReportServiceToken } from './interfaces/ireport.service.interface';
 import { RepositoryModule } from '../repository/repository.module';
 import { WorkspaceUserModule } from '../workspace/workspaceUser/workspaceUser.module';
+import { ScanModule } from 'src/scan/scan.module';
 
 @Module({
   imports: [
@@ -30,6 +31,7 @@ import { WorkspaceUserModule } from '../workspace/workspaceUser/workspaceUser.mo
     }),
     RepositoryModule,
     WorkspaceUserModule,
+    ScanModule,
   ],
   controllers: [ReportController],
   providers: [

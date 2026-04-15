@@ -88,6 +88,7 @@ describe('ReportController', () => {
           data: body.data,
           metadata: undefined,
         }),
+        dto.token,
       );
     });
 
@@ -123,6 +124,7 @@ describe('ReportController', () => {
             target: { repositoryId: 'repo-42', branch: 'feature/x' },
           },
         }),
+        dto.token,
       );
     });
 
