@@ -320,11 +320,13 @@ export function SecuritySection({ vulnerabilitiesReport, depsReport }: Props) {
                           </span>
                         </div>
                       )}
+                      {/* eslint-disable-next-line @typescript-eslint/no-unnecessary-condition */}
                       {v.cwe && (
                         <span className="rounded bg-[var(--chip-line)] px-1.5 py-0.5 text-[10px] text-[var(--sea-ink)] opacity-70 w-fit">
                           {v.cwe}
                         </span>
                       )}
+                      {/* eslint-disable-next-line @typescript-eslint/no-unnecessary-condition */}
                       {v.owasp && v.owasp.length > 0 && (
                         <div className="flex flex-wrap gap-1">
                           {v.owasp.map((o) => (

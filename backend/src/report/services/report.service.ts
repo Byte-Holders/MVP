@@ -44,7 +44,7 @@ export class ReportService implements IReportService {
       callbackToken,
       ScanStatus.Completed,
     );
-    await this.reportRepository.save(report);
+    await this.reportRepository.saveReport(report);
 
     if (report.metadata?.target.branch === DEVELOP_BRANCH) {
       const { repositoryId } = report.metadata.target;
