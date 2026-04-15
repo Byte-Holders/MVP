@@ -1,20 +1,15 @@
-import { fetchAuthSession } from 'aws-amplify/auth'
+import { apiPost } from '../../../api/apiClient'
+import type { IManageInviteRepository } from '../interfaces/model/IManageInviteRepository'
 import type { InviteAction } from '../types'
 
-export async function manageInviteData(
-  membershipId: string,
-  action: InviteAction,
-): Promise<void> {
-  const session = await fetchAuthSession()
-  const token = session.tokens?.accessToken?.toString()
-
-  const response = await fetch('/api/membership/manage', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${token}`,
-    },
-    body: JSON.stringify({ membershipId, action }),
-  })
-  if (!response.ok) throw new Error(`Errore durante l'azione: ${action}`)
+class ManageInviteRepository implements IManageInviteRepository {
+  async manageInvite(
+    membershipId: string,
+    action: InviteAction,
+  ): Promise<void> {
+    return apiPost('/api/membership/manage', { membershipId, action })
+  }
 }
+
+export const manageInviteRepository: IManageInviteRepository =
+  new ManageInviteRepository()

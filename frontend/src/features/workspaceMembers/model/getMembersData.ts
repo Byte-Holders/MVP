@@ -1,15 +1,12 @@
-import { fetchAuthSession } from 'aws-amplify/auth'
+import { apiGet } from '../../../api/apiClient'
+import type { IGetMembersRepository } from '../interfaces/model/IGetMembersRepository'
 import type { WorkspaceMember } from '../types/workspaceMember'
 
-export async function getMembersData(
-  workspaceId: string,
-): Promise<WorkspaceMember[]> {
-  const session = await fetchAuthSession()
-  const token = session.tokens?.accessToken?.toString()
-
-  const response = await fetch(`/api/workspace/${workspaceId}/users`, {
-    headers: { Authorization: `Bearer ${token}` },
-  })
-  if (!response.ok) throw new Error('Errore nel recupero dei membri')
-  return response.json() as Promise<WorkspaceMember[]>
+class GetMembersRepository implements IGetMembersRepository {
+  async getMembers(workspaceId: string): Promise<WorkspaceMember[]> {
+    return apiGet<WorkspaceMember[]>(`/api/workspace/${workspaceId}/users`)
+  }
 }
+
+export const getMembersRepository: IGetMembersRepository =
+  new GetMembersRepository()

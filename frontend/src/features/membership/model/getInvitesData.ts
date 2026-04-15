@@ -1,13 +1,12 @@
-import { fetchAuthSession } from 'aws-amplify/auth'
+import { apiGet } from '../../../api/apiClient'
+import type { IGetInvitesRepository } from '../interfaces/model/IGetInvitesRepository'
 import type { Invite } from '../types'
 
-export async function getInvitesData(): Promise<Invite[]> {
-  const session = await fetchAuthSession()
-  const token = session.tokens?.accessToken?.toString()
-
-  const response = await fetch('/api/membership/invites', {
-    headers: { Authorization: `Bearer ${token}` },
-  })
-  if (!response.ok) throw new Error('Errore nel recupero inviti')
-  return response.json() as Promise<Invite[]>
+class GetInvitesRepository implements IGetInvitesRepository {
+  async getInvites(): Promise<Invite[]> {
+    return apiGet<Invite[]>('/api/membership/invites')
+  }
 }
+
+export const getInvitesRepository: IGetInvitesRepository =
+  new GetInvitesRepository()

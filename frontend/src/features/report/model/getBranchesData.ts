@@ -1,13 +1,23 @@
-import { fetchAuthSession } from 'aws-amplify/auth'
+import { apiGet, ApiError } from '../../../api/apiClient'
+import type { IGetBranchesRepository } from '../interfaces/model/IGetBranchesRepository'
 
-export async function getBranchesData(repositoryId: string): Promise<string[]> {
-  const session = await fetchAuthSession()
-  const token = session.tokens?.accessToken?.toString()
-
-  const response = await fetch(`/api/repositories/${repositoryId}/branches`, {
-    headers: { Authorization: `Bearer ${token}` },
-  })
-  if (response.status === 404 || response.status === 403) return []
-  if (!response.ok) throw new Error('Errore nel recupero dei branch')
-  return response.json() as Promise<string[]>
+class GetBranchesRepository implements IGetBranchesRepository {
+  async getBranches(repositoryId: string): Promise<string[]> {
+    try {
+      return await apiGet<string[]>(
+        `/api/repositories/${repositoryId}/branches`,
+      )
+    } catch (err) {
+      if (
+        err instanceof ApiError &&
+        (err.status === 404 || err.status === 403)
+      ) {
+        return []
+      }
+      throw err
+    }
+  }
 }
+
+export const getBranchesRepository: IGetBranchesRepository =
+  new GetBranchesRepository()

@@ -5,7 +5,7 @@ import {
   signIn,
   logOut,
 } from '../model/authApi'
-import type { IAuthViewModel } from '../interfaces/IUseAuth'
+import type { IAuthViewModel } from '../interfaces/viewModel/IUseAuth'
 
 interface AuthState {
   isAuthenticated: boolean

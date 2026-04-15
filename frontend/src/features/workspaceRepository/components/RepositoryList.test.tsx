@@ -4,16 +4,16 @@ import userEvent from '@testing-library/user-event'
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { RepositoryList } from './RepositoryList'
-import { getRepositoriesData } from '../model/getRepositoriesData'
 
 vi.mock('@tanstack/react-router', () => ({
   Link: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
 }))
 
-// 1. Mockiamo l'API di recupero dati
 vi.mock('../model/getRepositoriesData', () => ({
-  getRepositoriesData: vi.fn(),
+  getRepositoriesRepository: { getRepositories: vi.fn() },
 }))
+
+import { getRepositoriesRepository } from '../model/getRepositoriesData'
 
 const renderWithClient = (ui: React.ReactElement) => {
   const queryClient = new QueryClient({
@@ -32,18 +32,16 @@ describe('RepositoryList Component', () => {
   })
 
   it("dovrebbe mostrare il messaggio di caricamento all'inizio", () => {
-    // Facciamo in modo che la promessa resti "pendente"
-    vi.mocked(getRepositoriesData).mockReturnValue(new Promise(() => {}))
-
+    vi.mocked(getRepositoriesRepository.getRepositories).mockReturnValue(
+      new Promise(() => {}),
+    )
     renderWithClient(<RepositoryList workspaceId={workspaceId} />)
     expect(screen.getByText(/caricamento/i)).toBeInTheDocument()
   })
 
   it('dovrebbe mostrare un messaggio se non ci sono repository', async () => {
-    vi.mocked(getRepositoriesData).mockResolvedValue([])
-
+    vi.mocked(getRepositoriesRepository.getRepositories).mockResolvedValue([])
     renderWithClient(<RepositoryList workspaceId={workspaceId} />)
-
     await waitFor(() => {
       expect(
         screen.getByText(/nessun repository aggiunto/i),
@@ -52,7 +50,7 @@ describe('RepositoryList Component', () => {
   })
 
   it('dovrebbe renderizzare la lista di repository quando i dati arrivano', async () => {
-    const mockRepos = [
+    vi.mocked(getRepositoriesRepository.getRepositories).mockResolvedValue([
       {
         repositoryId: 'repo-1',
         name: 'app-frontend',
@@ -71,30 +69,26 @@ describe('RepositoryList Component', () => {
         codeCoverage: 85,
         cvss: 2,
       },
-    ]
-    vi.mocked(getRepositoriesData).mockResolvedValue(mockRepos)
-
+    ])
     renderWithClient(<RepositoryList workspaceId={workspaceId} />)
-
-    // Verifichiamo che i nomi delle repo appaiano sullo schermo
     await waitFor(() => {
       expect(screen.getByText('app-frontend')).toBeInTheDocument()
       expect(screen.getByText('api-backend')).toBeInTheDocument()
     })
   })
 
-  it("dovrebbe chiamare l'API con il termine di ricerca corretto quando l'utente digita", async () => {
+  it("dovrebbe chiamare l'API con il termine di ricerca corretto", async () => {
     const user = userEvent.setup()
-    vi.mocked(getRepositoriesData).mockResolvedValue([])
-
+    vi.mocked(getRepositoriesRepository.getRepositories).mockResolvedValue([])
     renderWithClient(<RepositoryList workspaceId={workspaceId} />)
 
-    const searchInput = screen.getByPlaceholderText(/cerca per nome/i)
-    await user.type(searchInput, 'test-search')
+    await user.type(
+      screen.getByPlaceholderText(/cerca per nome/i),
+      'test-search',
+    )
 
-    // Verifichiamo che l'API sia stata richiamata con il parametro di ricerca
     await waitFor(() => {
-      expect(getRepositoriesData).toHaveBeenCalledWith(
+      expect(getRepositoriesRepository.getRepositories).toHaveBeenCalledWith(
         workspaceId,
         'test-search',
       )

@@ -1,4 +1,5 @@
-import axios, { type AxiosRequestConfig } from 'axios'
+import { apiPost, apiPatch } from '../../../api/apiClient'
+import type { IRepoRepository } from '../interfaces/model/IRepoRepository'
 
 export interface StartScanInfo {
   workspaceId: string
@@ -6,41 +7,15 @@ export interface StartScanInfo {
   branch: string
 }
 
-export async function requestScan(
-  payload: StartScanInfo,
-  token: string,
-): Promise<string> {
-  const config: AxiosRequestConfig = {
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${token}`,
-    },
+class RepoRepository implements IRepoRepository {
+  async requestScan(payload: StartScanInfo): Promise<string> {
+    const data = await apiPost<{ scanId: string }>('/api/scan', payload)
+    return data.scanId
   }
 
-  const response = await axios.post<{ scanId: string }>(
-    '/api/scan',
-    payload,
-    config,
-  )
-
-  if (response.status >= 400) {
-    throw new Error(`Errore lancio scansione: ${response.data}`)
-  }
-
-  return response.data.scanId
-}
-
-export async function stopScan(scanId: string, token: string): Promise<void> {
-  const config: AxiosRequestConfig = {
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${token}`,
-    },
-  }
-
-  const response = await axios.patch('/api/scan', { scanId }, config)
-
-  if (response.status >= 400) {
-    throw new Error(`Errore stop scansione: ${response.data}`)
+  async stopScan(scanId: string): Promise<void> {
+    return apiPatch('/api/scan', { scanId })
   }
 }
+
+export const scanRepository: IRepoRepository = new RepoRepository()

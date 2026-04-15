@@ -1,16 +1,14 @@
 import { useMutation } from '@tanstack/react-query'
-import { fetchAuthSession } from 'aws-amplify/auth'
-import { requestScan, stopScan, type StartScanInfo } from '../model/scan'
-import type { IScanViewModel, IStopScanViewModel } from '../interfaces/IUseScan'
+import { scanRepository } from '../model/scan'
+import type { StartScanInfo } from '../model/scan'
+import type {
+  IScanViewModel,
+  IStopScanViewModel,
+} from '../interfaces/viewModel/IUseScan'
 
 export function useScan(payload: StartScanInfo): IScanViewModel {
   const { mutate, isPending, isSuccess, error, reset, data } = useMutation({
-    mutationFn: async () => {
-      const session = await fetchAuthSession()
-      const token = session.tokens?.accessToken?.toString()
-      if (!token) throw new Error('Utente non autenticato')
-      return await requestScan(payload, token)
-    },
+    mutationFn: () => scanRepository.requestScan(payload),
   })
 
   return {
@@ -25,12 +23,7 @@ export function useScan(payload: StartScanInfo): IScanViewModel {
 
 export function useStopScan(): IStopScanViewModel {
   const { mutate, isPending, error, reset } = useMutation({
-    mutationFn: async (scanId: string) => {
-      const session = await fetchAuthSession()
-      const token = session.tokens?.accessToken?.toString()
-      if (!token) throw new Error('Utente non autenticato')
-      await stopScan(scanId, token)
-    },
+    mutationFn: (scanId: string) => scanRepository.stopScan(scanId),
   })
 
   return {

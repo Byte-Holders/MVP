@@ -1,9 +1,9 @@
 import { useQuery } from '@tanstack/react-query'
-import { getInvitesData } from '../model/getInvitesData'
+import { getInvitesRepository } from '../model/getInvitesData'
 
 export function useGetInvites() {
   return useQuery({
     queryKey: ['invites'],
-    queryFn: getInvitesData,
+    queryFn: () => getInvitesRepository.getInvites(),
   })
 }

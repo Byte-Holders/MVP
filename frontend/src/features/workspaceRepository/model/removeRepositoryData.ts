@@ -1,18 +1,11 @@
-import { fetchAuthSession } from 'aws-amplify/auth'
+import { apiDelete } from '../../../api/apiClient'
+import type { IRemoveRepositoryRepository } from '../interfaces/model/IRemoveRepositoryRepository'
 
-export async function removeRepositoryData(
-  workspaceId: string,
-  repoId: string,
-): Promise<void> {
-  const session = await fetchAuthSession()
-  const token = session.tokens?.accessToken?.toString()
-
-  const response = await fetch(
-    `/api/workspaces/${workspaceId}/repositories/${repoId}`,
-    {
-      method: 'DELETE',
-      headers: { Authorization: `Bearer ${token}` },
-    },
-  )
-  if (!response.ok) throw new Error('Errore nella rimozione del repository')
+class RemoveRepositoryRepository implements IRemoveRepositoryRepository {
+  async removeRepository(workspaceId: string, repoId: string): Promise<void> {
+    return apiDelete(`/api/workspaces/${workspaceId}/repositories/${repoId}`)
+  }
 }
+
+export const removeRepositoryRepository: IRemoveRepositoryRepository =
+  new RemoveRepositoryRepository()

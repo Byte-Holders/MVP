@@ -1,9 +1,12 @@
-import { registerUser } from '../model/registerApi'
-import type { IRegisterViewModel } from '../interfaces/IUseRegister'
+import { authRepository } from '../model/registerApi'
+import type { IAuthRepository } from '../interfaces/model/IAuthRepository'
+import type { IRegisterViewModel } from '../interfaces/viewModel/IUseRegister'
 
-export function useRegister(): IRegisterViewModel {
+export function useRegister(
+  repo: IAuthRepository = authRepository,
+): IRegisterViewModel {
   async function register(): Promise<void> {
-    await registerUser()
+    await repo.register()
   }
 
   return { register }

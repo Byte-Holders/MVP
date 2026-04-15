@@ -2,12 +2,15 @@ import { renderHook, waitFor } from '@testing-library/react'
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { useGetWorkspace } from './useGetWorkspace'
-import { getWorkspaces } from '../model/getWorkspacesApi'
 import type { ReactNode } from 'react'
 
 vi.mock('../model/getWorkspacesApi', () => ({
-  getWorkspaces: vi.fn(),
+  workspaceListRepository: {
+    getWorkspaces: vi.fn(),
+  },
 }))
+
+import { workspaceListRepository } from '../model/getWorkspacesApi'
 
 const createWrapper = () => {
   const queryClient = new QueryClient({
@@ -29,7 +32,9 @@ describe('useGetWorkspace Hook', () => {
   })
 
   it('dovrebbe restituire il workspace corretto tramite id', async () => {
-    vi.mocked(getWorkspaces).mockResolvedValue(mockWorkspaces)
+    vi.mocked(workspaceListRepository.getWorkspaces).mockResolvedValue(
+      mockWorkspaces,
+    )
     const { result } = renderHook(() => useGetWorkspace('ws-1'), {
       wrapper: createWrapper(),
     })
@@ -39,7 +44,9 @@ describe('useGetWorkspace Hook', () => {
   })
 
   it('dovrebbe restituire undefined per un id inesistente', async () => {
-    vi.mocked(getWorkspaces).mockResolvedValue(mockWorkspaces)
+    vi.mocked(workspaceListRepository.getWorkspaces).mockResolvedValue(
+      mockWorkspaces,
+    )
     const { result } = renderHook(() => useGetWorkspace('non-esiste'), {
       wrapper: createWrapper(),
     })
@@ -50,7 +57,9 @@ describe('useGetWorkspace Hook', () => {
   })
 
   it('dovrebbe restituire isLoading true inizialmente', () => {
-    vi.mocked(getWorkspaces).mockReturnValue(new Promise(() => {}))
+    vi.mocked(workspaceListRepository.getWorkspaces).mockReturnValue(
+      new Promise(() => {}),
+    )
     const { result } = renderHook(() => useGetWorkspace('ws-1'), {
       wrapper: createWrapper(),
     })

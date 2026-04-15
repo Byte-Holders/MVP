@@ -1,8 +1,8 @@
 import { useState } from 'react'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { inviteMemberData } from '../model/inviteMemberData'
+import { inviteMemberRepository } from '../model/inviteMemberData'
 import { WORKSPACE_ROLES, type WorkspaceRole } from '../types/workspaceMember'
-import type { IInviteMemberViewModel } from '../interfaces/IUseInviteMember'
+import type { IInviteMemberViewModel } from '../interfaces/viewModel/IUseInviteMember'
 
 export function useInviteMember(workspaceId: string): IInviteMemberViewModel {
   const [username, setUsername] = useState('')
@@ -10,7 +10,8 @@ export function useInviteMember(workspaceId: string): IInviteMemberViewModel {
   const queryClient = useQueryClient()
 
   const { mutate, isPending, error, isSuccess } = useMutation({
-    mutationFn: () => inviteMemberData(workspaceId, username, role),
+    mutationFn: () =>
+      inviteMemberRepository.inviteMember(workspaceId, username, role),
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: ['members', workspaceId] })
       setUsername('')

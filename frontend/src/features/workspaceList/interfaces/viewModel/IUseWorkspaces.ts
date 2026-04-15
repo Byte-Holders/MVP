@@ -1,4 +1,4 @@
-import type { WorkspaceListItem } from '../types/Workspace'
+import type { WorkspaceListItem } from '../../types/Workspace'
 
 export interface IWorkspacesViewModel {
   workspaces: WorkspaceListItem[]

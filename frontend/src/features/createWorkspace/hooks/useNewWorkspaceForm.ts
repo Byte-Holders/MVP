@@ -1,38 +1,36 @@
 import { useForm } from '@tanstack/react-form'
-import { useNavigate } from '@tanstack/react-router'
+import { useNavigate, useRouter } from '@tanstack/react-router'
 import * as z from 'zod'
-import { createWorkspace } from '../model/createWorkspaceApi'
 import { useState } from 'react'
-import { useRouter } from '@tanstack/react-router'
+import { createWorkspaceRepository } from '../model/createWorkspaceApi'
+import type { ICreateWorkspaceRepository } from '../interfaces/model/ICreateWorkspaceRepository'
 import type { CreateWorkspaceRequest } from '../types/CreateWorkspace'
-import type { INewWorkspaceFormViewModel } from '../interfaces/IUseNewWorkspaceForm'
+import type { INewWorkspaceFormViewModel } from '../interfaces/viewModel/IUseNewWorkspaceForm'
 
 export const newWorkspaceSchema = z.object({
-  // validazione lato client con Zod dell'imput del nome del workspace
   name: z
     .string()
     .min(2, 'Workspace name must be at least 2 characters.')
     .max(30, 'Workspace name must be at most 30 characters.'),
 })
 
-export function useNewWorkspaceForm(): INewWorkspaceFormViewModel {
+export function useNewWorkspaceForm(
+  repo: ICreateWorkspaceRepository = createWorkspaceRepository,
+): INewWorkspaceFormViewModel {
   const navigate = useNavigate()
-  const [serverError, setServerError] = useState<string | null>(null) // stato per gestire eventuali errori che vengono dal backend (es. nome già esistente → 409 Conflict)
+  const [serverError, setServerError] = useState<string | null>(null)
   const router = useRouter()
 
   const form = useForm({
-    //gestione del form: chiama createWorkspaceApi quando vine fatto il submit, e gestisce la validazione con lo schema Zod
     defaultValues: { name: '' },
     validators: { onSubmit: newWorkspaceSchema },
     onSubmit: async ({ value }: { value: CreateWorkspaceRequest }) => {
-      setServerError(null) // reset errore server ad ogni tentativo
+      setServerError(null)
       try {
-        const newWorkspace = await createWorkspace({ name: value.name })
-        // invalida e ricarica la route corrente → WorkspaceList si aggiorna
+        const newWorkspace = await repo.createWorkspace({ name: value.name })
         await router.invalidate()
         navigate({ to: `/workspace/${newWorkspace.id}` })
       } catch (error: any) {
-        // errore che viene dal backend (es. ConflictException → 409)
         setServerError(error.message)
       }
     },

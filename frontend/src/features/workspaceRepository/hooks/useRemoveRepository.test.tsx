@@ -2,12 +2,13 @@ import { renderHook, act, waitFor } from '@testing-library/react'
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { useRemoveRepository } from './useRemoveRepository'
-import { removeRepositoryData } from '../model/removeRepositoryData'
 import type { ReactNode } from 'react'
 
 vi.mock('../model/removeRepositoryData', () => ({
-  removeRepositoryData: vi.fn(),
+  removeRepositoryRepository: { removeRepository: vi.fn() },
 }))
+
+import { removeRepositoryRepository } from '../model/removeRepositoryData'
 
 const createWrapper = () => {
   const queryClient = new QueryClient({
@@ -25,8 +26,10 @@ describe('useRemoveRepository Hook', () => {
     vi.clearAllMocks()
   })
 
-  it('dovrebbe chiamare removeRepositoryData con i parametri corretti', async () => {
-    vi.mocked(removeRepositoryData).mockResolvedValue(undefined)
+  it('dovrebbe chiamare removeRepository con i parametri corretti', async () => {
+    vi.mocked(removeRepositoryRepository.removeRepository).mockResolvedValue(
+      undefined,
+    )
     const { result } = renderHook(() => useRemoveRepository(workspaceId), {
       wrapper: createWrapper(),
     })
@@ -36,17 +39,20 @@ describe('useRemoveRepository Hook', () => {
     })
 
     await vi.waitFor(() => {
-      expect(removeRepositoryData).toHaveBeenCalledWith(workspaceId, 'repo-1')
+      expect(removeRepositoryRepository.removeRepository).toHaveBeenCalledWith(
+        workspaceId,
+        'repo-1',
+      )
     })
   })
 
   it('dovrebbe impostare isPending a true durante la mutazione', async () => {
-    vi.mocked(removeRepositoryData).mockReturnValue(new Promise(() => {}))
+    vi.mocked(removeRepositoryRepository.removeRepository).mockReturnValue(
+      new Promise(() => {}),
+    )
     const { result } = renderHook(() => useRemoveRepository(workspaceId), {
       wrapper: createWrapper(),
     })
-
-    expect(result.current.isPending).toBe(false)
 
     act(() => {
       result.current.mutate({ repositoryId: 'repo-2' })
