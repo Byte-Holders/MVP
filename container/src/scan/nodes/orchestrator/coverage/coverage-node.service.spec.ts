@@ -66,7 +66,6 @@ const VALID_JEST_REPORT = `{
                     "status": "failed"
                 }
             ],
-            "endTime": 1776269750374,
             "name": "myPath"
         }
     ]
