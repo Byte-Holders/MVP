@@ -16,8 +16,7 @@ export function RepositoryItem({ repository, workspaceId }: Props) {
       <Link
         to="/workspaces/$workspaceId/repositories/$repositoryId"
         params={{ workspaceId, repositoryId: repository.repositoryId }}
-        search={{ ownerName: repository.ownerName, name: repository.name }}
-        className="block"
+className="block"
       >
         <RepositoryCard
           name={repository.name}
