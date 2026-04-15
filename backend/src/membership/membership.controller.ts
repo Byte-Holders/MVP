@@ -3,7 +3,6 @@ import {
   Post,
   Get,
   Body,
-  Query,
   UseGuards,
   Inject,
   ValidationPipe,
@@ -23,7 +22,7 @@ import { ManageInviteInfo } from './type/manageInvite.type';
 import { IMembershipServiceToken } from './interfaces/IMembershipService.interface';
 
 @UseGuards(JwtAuthGuard)
-@Controller('membership')
+@Controller()
 export class MembershipController {
   constructor(
     @Inject(IMembershipServiceToken)
