@@ -50,12 +50,22 @@ export class ScanManagerService implements IScanManagerService {
     const [repository] = await this.repositoryReader.getRepositories([
       info.repositoryId,
     ]);
+    const scanId = randomUUID();
+
+    this.logger.log(
+      `Lancio scansione ${scanId} verso ${repository.ownerName}/${repository.name}@${info.branch} `,
+    );
 
     const callbackToken = await this.jwtService.signAsync({
       TARGET_OWNER: repository.ownerName,
       TARGET_REPOSITORY: repository.name,
       TARGET_BRANCH: info.branch,
-      RECEIVER_URL: this.configService.get<string>('SCAN_RECEIVER_URL')!,
+      RECEIVER_URL_SUCCESS: this.configService.get<string>(
+        'SCAN_RECEIVER_URL_SUCCESS',
+      )!,
+      RECEIVER_URL_FAILURE: this.configService.get<string>(
+        'SCAN_RECEIVER_URL_FAILURE',
+      ),
       AWS_ACCESS_KEY_ID: this.configService.get<string>('AWS_ACCESS_KEY_ID')!,
       AWS_SECRET_ACCESS_KEY: this.configService.get<string>(
         'AWS_SECRET_ACCESS_KEY',
@@ -117,7 +127,7 @@ export class ScanManagerService implements IScanManagerService {
     this.logger.debug(`Handle: ${handle}`);
 
     const scan: Scan = {
-      id: randomUUID(),
+      id: scanId,
       workspaceId: info.workspaceId,
       target: {
         repositoryId: info.repositoryId,
@@ -135,7 +145,7 @@ export class ScanManagerService implements IScanManagerService {
   }
 
   async stopScan(scanId: string): Promise<void> {
-    const scan = await this.scanRepository.find(scanId); // TODO id
+    const scan = await this.scanRepository.find(scanId);
     if (!scan) {
       throw new NotFoundException(`Scan ${scanId} non trovato`);
     }

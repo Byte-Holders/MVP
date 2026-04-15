@@ -19,9 +19,7 @@ export class CoverageNodeService implements INodeScanService {
   }: {
     repoPath: string;
   }): Promise<Partial<WorkflowState>> {
-    this.logger.log(
-      `[CoverageNode] Inizio analisi coverage (percorso: ${repoPath})`,
-    );
+    this.logger.log(`Inizio analisi coverage (percorso: ${repoPath})`);
 
     let testReport: TestReport = {
       coverageReport: { statements: 0, branches: 0, functions: 0, lines: 0 },

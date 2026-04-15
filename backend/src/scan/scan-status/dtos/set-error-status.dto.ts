@@ -1,7 +1,7 @@
 import { IsNotEmpty, IsString } from 'class-validator';
 
-export class StopScanDto {
+export class SetErrorStatusDto {
   @IsString()
   @IsNotEmpty()
-  scanId: string;
+  token: string;
 }

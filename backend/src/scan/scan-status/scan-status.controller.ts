@@ -2,10 +2,13 @@ import {
   Body,
   Controller,
   Get,
+  HttpCode,
+  HttpStatus,
   Inject,
   InternalServerErrorException,
   Param,
-  Put,
+  Patch,
+  UseGuards,
   UsePipes,
   ValidationPipe,
 } from '@nestjs/common';
@@ -14,36 +17,35 @@ import {
   type IScanStatusService,
 } from './interfaces/iscan-status.service';
 import { GetScanStatusDto } from './dtos/get-scan-status.dto';
-import { UpdateScanStatusFromContainerDto } from './dtos/update-scan-status-from-container.dto';
-import { UpdateScanStatusDto } from './dtos/update-scan-status.dto';
+import { SetErrorStatusDto } from './dtos/set-error-status.dto';
 import { ScanStatus } from './enums/scan-status.enum';
+import { ScanAuthGuard } from '../scan-auth/scan-auth.guard';
+import { JwtAuthGuard } from '../../auth/jwt-auth.guard';
 
-@Controller('/scan/status')
+@Controller('/scan/:scanId/status')
 export class ScanStatusController {
   constructor(
     @Inject(ISCAN_STATUS_SERVICE_TOKEN)
     private readonly scanStatusService: IScanStatusService,
   ) {}
 
-  @Get('/repositories/:repositoryId/branches/:branch')
+  @Get('/')
   @UsePipes(new ValidationPipe())
+  @UseGuards(JwtAuthGuard)
   async getScanStatus(@Param() dto: GetScanStatusDto): Promise<ScanStatus> {
     return await this.scanStatusService.getScanStatus(dto.scanId);
   }
 
-  // TODO guardia che permette solo al container di interagire
-  // UpdateScanStatusFromContainerDto ~ UpdateScanStatusDto
-  @Put('/')
+  @Patch('/')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @UseGuards(ScanAuthGuard)
   @UsePipes(new ValidationPipe())
-  async update(
-    @Body() updateStatusDto: UpdateScanStatusFromContainerDto,
-  ): Promise<void> {
-    // brutto ma compila
-    const dto: UpdateScanStatusDto =
-      updateStatusDto as unknown as UpdateScanStatusDto;
-
+  async setErrorStatus(@Body() dto: SetErrorStatusDto): Promise<void> {
     try {
-      return await this.scanStatusService.setScanStatus(dto.scanId, dto.status);
+      return await this.scanStatusService.setScanStatusFromToken(
+        dto.token,
+        ScanStatus.Err,
+      );
     } catch {
       throw new InternalServerErrorException();
     }

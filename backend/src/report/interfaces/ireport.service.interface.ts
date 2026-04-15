@@ -1,7 +1,7 @@
 import type { ReportInfo } from '../types/report.type';
 
 export interface IReportService {
-  saveReport(report: ReportInfo): Promise<void>;
+  saveReport(report: ReportInfo, callbackToken: string): Promise<void>;
   getReport(
     repositoryId: string,
     branch: string,

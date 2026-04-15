@@ -12,6 +12,9 @@ module.exports = {
     '!**/*.entity.ts', // le entity sono solo classi dati
     '!**/*.interface.ts', // le interfacce sono solo tipi
   ],
+  moduleNameMapper: {
+    '^src/(.*)$': '<rootDir>/$1',
+  },
   coverageDirectory: '../coverage',
   coverageThreshold: { global: { lines: 70 } },
   testEnvironment: 'node',

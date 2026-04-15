@@ -15,7 +15,8 @@ interface ReportCallbackToken {
   TARGET_OWNER: string;
   TARGET_REPOSITORY: string;
   TARGET_BRANCH: string;
-  RECEIVER_URL: string;
+  RECEIVER_URL_SUCCESS: string;
+  RECEIVER_URL_FAILURE: string;
   AWS_ACCESS_KEY_ID: string;
   AWS_SECRET_ACCESS_KEY: string;
   AWS_SESSION_TOKEN: string;
@@ -51,42 +52,67 @@ export class AppService {
       TARGET_OWNER,
       TARGET_REPOSITORY,
       TARGET_BRANCH,
-      RECEIVER_URL,
+      RECEIVER_URL_SUCCESS,
+      RECEIVER_URL_FAILURE,
       AWS_ACCESS_KEY_ID,
       AWS_SECRET_ACCESS_KEY,
       AWS_SESSION_TOKEN,
       AWS_BEARER_TOKEN_BEDROCK,
-      repositoryId,
     } = decoded;
 
-    if (
-      !TARGET_OWNER ||
-      !TARGET_REPOSITORY ||
-      !TARGET_BRANCH ||
-      !repositoryId
-    ) {
-      throw new Error(
-        `Mancano informazioni per lanciare scansioni.\nOwner: ${TARGET_OWNER}\nRepository: ${TARGET_REPOSITORY}\nBranch: ${TARGET_BRANCH}\nRepositoryId: ${repositoryId}`,
-      );
+    if (!RECEIVER_URL_FAILURE || !RECEIVER_URL_SUCCESS) {
+      throw new Error(`Mancano informazioni per riportare l'esito`);
     }
 
-    process.env.AWS_ACCESS_KEY_ID = AWS_ACCESS_KEY_ID;
-    process.env.AWS_SECRET_ACCESS_KEY = AWS_SECRET_ACCESS_KEY;
-    process.env.AWS_SESSION_TOKEN = AWS_SESSION_TOKEN;
-    process.env.AWS_BEARER_TOKEN_BEDROCK = AWS_BEARER_TOKEN_BEDROCK;
+    try {
+      if (!TARGET_OWNER || !TARGET_REPOSITORY || !TARGET_BRANCH) {
+        throw new Error(
+          `Mancano informazioni sul bersaglio delle scansioni scansioni.`,
+        );
+      }
 
-    this.configService.set('RECEIVER_URL', RECEIVER_URL);
+      if (
+        !AWS_ACCESS_KEY_ID ||
+        !AWS_SECRET_ACCESS_KEY ||
+        !AWS_SESSION_TOKEN ||
+        !AWS_BEARER_TOKEN_BEDROCK
+      ) {
+        throw new Error(`Mancano i dati di collegamento ad AWS`);
+      }
 
-    const target: Target = {
-      owner: TARGET_OWNER,
-      repository: TARGET_REPOSITORY,
-      branch: TARGET_BRANCH,
-      repositoryId,
-    };
+      await this.scanService.validateCredentials({
+        accessKeyId: AWS_ACCESS_KEY_ID,
+        secretAccessKey: AWS_SECRET_ACCESS_KEY,
+        sessionToken: AWS_SESSION_TOKEN,
+        bedrockBearerToken: AWS_BEARER_TOKEN_BEDROCK,
+      });
 
-    const report = await this.scanService.scan(target);
-    if (!report) throw new Error('Non è stato generato alcun report');
+      process.env.AWS_ACCESS_KEY_ID = AWS_ACCESS_KEY_ID;
+      process.env.AWS_SECRET_ACCESS_KEY = AWS_SECRET_ACCESS_KEY;
+      process.env.AWS_SESSION_TOKEN = AWS_SESSION_TOKEN;
+      process.env.AWS_BEARER_TOKEN_BEDROCK = AWS_BEARER_TOKEN_BEDROCK;
 
-    await this.reporterService.sendReport(report, reportCallbackToken);
+      this.configService.set('RECEIVER_URL_SUCCESS', RECEIVER_URL_SUCCESS);
+      this.configService.set('RECEIVER_URL_FAILURE', RECEIVER_URL_FAILURE);
+
+      const target: Target = {
+        owner: TARGET_OWNER,
+        repository: TARGET_REPOSITORY,
+        branch: TARGET_BRANCH,
+      };
+
+      const report = await this.scanService.scan(target);
+      if (!report) throw new Error('Non è stato generato alcun report');
+      await this.reporterService.sendReport({
+        report,
+        token: reportCallbackToken,
+        target: RECEIVER_URL_SUCCESS,
+      });
+    } catch {
+      await this.reporterService.sendErrorNotification({
+        token: reportCallbackToken,
+        target: RECEIVER_URL_FAILURE,
+      });
+    }
   }
 }

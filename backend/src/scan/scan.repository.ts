@@ -19,8 +19,12 @@ export class ScanRepository implements IScanRepository {
 
   async find(id: string): Promise<Scan | null> {
     const scan = await this.scanModel.findOne({ id: id }).lean().exec();
-    if (!scan) return null;
 
+    return scan;
+  }
+
+  async findByToken(callbackToken: string): Promise<Scan | null> {
+    const scan = await this.scanModel.findOne({ callbackToken }).lean().exec();
     return scan;
   }
 

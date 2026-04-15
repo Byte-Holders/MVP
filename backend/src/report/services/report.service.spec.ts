@@ -6,6 +6,11 @@ import { RepositoryScoreWriterToken } from '../../repository/interfaces/reposito
 import { IWorkspaceUserServiceToken } from '../../workspace/workspaceUser/interfaces/IWorkspaceUserService';
 import { WorkspaceRole } from '../../workspace/roles.enum';
 import type { ReportInfo } from '../types/report.type';
+import {
+  ISCAN_STATUS_SERVICE_TOKEN,
+  type IScanStatusService,
+} from '../../scan/scan-status/interfaces/iscan-status.service';
+import { ScanStatus } from '../../scan/scan-status/enums/scan-status.enum';
 
 const makeReport = (...overrides: any[]): ReportInfo => ({
   summary: {
@@ -102,6 +107,8 @@ const makeReport = (...overrides: any[]): ReportInfo => ({
   ...overrides,
 });
 
+const MOCK_TOKEN = 'myToken';
+
 describe('ReportService', () => {
   let service: ReportService;
   let mockRepository: {
@@ -109,6 +116,7 @@ describe('ReportService', () => {
     findLatestByTarget: jest.Mock;
   };
   let mockWorkspaceUserService: { getUserRoleForRepository: jest.Mock };
+  let mockScanStatusService: jest.Mocked<IScanStatusService>;
 
   beforeEach(async () => {
     mockRepository = {
@@ -117,6 +125,11 @@ describe('ReportService', () => {
     };
     mockWorkspaceUserService = {
       getUserRoleForRepository: jest.fn().mockResolvedValue(null),
+    };
+    mockScanStatusService = {
+      getScanStatus: jest.fn(),
+      setScanStatus: jest.fn(),
+      setScanStatusFromToken: jest.fn(),
     };
 
     const module: TestingModule = await Test.createTestingModule({
@@ -131,6 +144,10 @@ describe('ReportService', () => {
           provide: IWorkspaceUserServiceToken,
           useValue: mockWorkspaceUserService,
         },
+        {
+          provide: ISCAN_STATUS_SERVICE_TOKEN,
+          useValue: mockScanStatusService,
+        },
       ],
     }).compile();
 
@@ -142,17 +159,35 @@ describe('ReportService', () => {
   });
 
   describe('saveReport', () => {
-    it('delegates to the repository', async () => {
+    it('updates the scan status with Completed Status and delegates to the repository', async () => {
       const report = makeReport();
       mockRepository.save.mockResolvedValue(report);
 
-      await service.saveReport(report);
+      await service.saveReport(report, MOCK_TOKEN);
+
+      // eslint-disable-next-line @typescript-eslint/unbound-method
+      expect(mockScanStatusService.setScanStatusFromToken).toHaveBeenCalledWith(
+        MOCK_TOKEN,
+        ScanStatus.Completed,
+      );
 
       expect(mockRepository.save).toHaveBeenCalledWith({
         summary: report.summary,
         data: report.data,
         metadata: report.metadata,
       });
+    });
+
+    it('does not save the new report if the scan status rejects', async () => {
+      mockScanStatusService.setScanStatusFromToken.mockRejectedValue(
+        new Error(),
+      );
+
+      await expect(
+        service.saveReport(makeReport(), MOCK_TOKEN),
+      ).rejects.toThrow();
+
+      expect(mockRepository.save).not.toHaveBeenCalled();
     });
   });
 
