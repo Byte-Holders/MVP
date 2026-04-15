@@ -27,11 +27,15 @@ const createWrapper = () => {
 describe('useReportPage', () => {
   beforeEach(() => {
     vi.clearAllMocks()
-    vi.mocked(getReportRepository.getReport).mockReturnValue(new Promise(() => {}))
+    vi.mocked(getReportRepository.getReport).mockReturnValue(
+      new Promise(() => {}),
+    )
   })
 
   it('dovrebbe iniziare con selectedBranch undefined', () => {
-    vi.mocked(getBranchesRepository.getBranches).mockReturnValue(new Promise(() => {}))
+    vi.mocked(getBranchesRepository.getBranches).mockReturnValue(
+      new Promise(() => {}),
+    )
     const { result } = renderHook(() => useReportPage('repo-1'), {
       wrapper: createWrapper(),
     })
@@ -40,7 +44,11 @@ describe('useReportPage', () => {
   })
 
   it('dovrebbe selezionare develop automaticamente se presente', async () => {
-    vi.mocked(getBranchesRepository.getBranches).mockResolvedValue(['main', 'develop', 'feature/x'])
+    vi.mocked(getBranchesRepository.getBranches).mockResolvedValue([
+      'main',
+      'develop',
+      'feature/x',
+    ])
     const { result } = renderHook(() => useReportPage('repo-1'), {
       wrapper: createWrapper(),
     })
@@ -50,7 +58,10 @@ describe('useReportPage', () => {
   })
 
   it('dovrebbe selezionare il primo branch se develop non è presente', async () => {
-    vi.mocked(getBranchesRepository.getBranches).mockResolvedValue(['main', 'feature/x'])
+    vi.mocked(getBranchesRepository.getBranches).mockResolvedValue([
+      'main',
+      'feature/x',
+    ])
     const { result } = renderHook(() => useReportPage('repo-1'), {
       wrapper: createWrapper(),
     })
@@ -60,7 +71,10 @@ describe('useReportPage', () => {
   })
 
   it('dovrebbe permettere la selezione manuale di un branch', async () => {
-    vi.mocked(getBranchesRepository.getBranches).mockResolvedValue(['main', 'develop'])
+    vi.mocked(getBranchesRepository.getBranches).mockResolvedValue([
+      'main',
+      'develop',
+    ])
     const { result } = renderHook(() => useReportPage('repo-1'), {
       wrapper: createWrapper(),
     })
@@ -74,7 +88,10 @@ describe('useReportPage', () => {
   })
 
   it('non dovrebbe sovrascrivere la selezione manuale al ricaricamento dei branch', async () => {
-    vi.mocked(getBranchesRepository.getBranches).mockResolvedValue(['main', 'develop'])
+    vi.mocked(getBranchesRepository.getBranches).mockResolvedValue([
+      'main',
+      'develop',
+    ])
     const { result } = renderHook(() => useReportPage('repo-1'), {
       wrapper: createWrapper(),
     })

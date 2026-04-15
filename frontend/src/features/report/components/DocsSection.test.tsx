@@ -8,7 +8,9 @@ vi.mock('react-markdown', () => ({
 vi.mock('remark-gfm', () => ({ default: () => {} }))
 vi.mock('../../../components/ScoreBar', () => ({
   ScoreBar: ({ label, value }: { label: string; value: number }) => (
-    <div data-testid="score-bar">{label}: {value}</div>
+    <div data-testid="score-bar">
+      {label}: {value}
+    </div>
   ),
 }))
 

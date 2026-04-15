@@ -29,7 +29,12 @@ describe('useScan', () => {
 
   it('dovrebbe iniziare con isPending false e scanId undefined', () => {
     const { result } = renderHook(
-      () => useScan({ workspaceId: 'ws-1', repositoryId: 'repo-1', branch: 'main' }),
+      () =>
+        useScan({
+          workspaceId: 'ws-1',
+          repositoryId: 'repo-1',
+          branch: 'main',
+        }),
       { wrapper: createWrapper() },
     )
     expect(result.current.isPending).toBe(false)
@@ -40,7 +45,12 @@ describe('useScan', () => {
   it('dovrebbe impostare isPending true durante la mutazione', async () => {
     vi.mocked(scanRepository.requestScan).mockReturnValue(new Promise(() => {}))
     const { result } = renderHook(
-      () => useScan({ workspaceId: 'ws-1', repositoryId: 'repo-1', branch: 'main' }),
+      () =>
+        useScan({
+          workspaceId: 'ws-1',
+          repositoryId: 'repo-1',
+          branch: 'main',
+        }),
       { wrapper: createWrapper() },
     )
     act(() => {
@@ -54,7 +64,12 @@ describe('useScan', () => {
   it('dovrebbe restituire scanId dopo il successo', async () => {
     vi.mocked(scanRepository.requestScan).mockResolvedValue('scan-123')
     const { result } = renderHook(
-      () => useScan({ workspaceId: 'ws-1', repositoryId: 'repo-1', branch: 'main' }),
+      () =>
+        useScan({
+          workspaceId: 'ws-1',
+          repositoryId: 'repo-1',
+          branch: 'main',
+        }),
       { wrapper: createWrapper() },
     )
     act(() => {
@@ -67,9 +82,16 @@ describe('useScan', () => {
   })
 
   it('dovrebbe impostare error in caso di fallimento', async () => {
-    vi.mocked(scanRepository.requestScan).mockRejectedValue(new Error('Scan fallito'))
+    vi.mocked(scanRepository.requestScan).mockRejectedValue(
+      new Error('Scan fallito'),
+    )
     const { result } = renderHook(
-      () => useScan({ workspaceId: 'ws-1', repositoryId: 'repo-1', branch: 'main' }),
+      () =>
+        useScan({
+          workspaceId: 'ws-1',
+          repositoryId: 'repo-1',
+          branch: 'main',
+        }),
       { wrapper: createWrapper() },
     )
     act(() => {
@@ -88,14 +110,18 @@ describe('useStopScan', () => {
   })
 
   it('dovrebbe iniziare con isStopping false', () => {
-    const { result } = renderHook(() => useStopScan(), { wrapper: createWrapper() })
+    const { result } = renderHook(() => useStopScan(), {
+      wrapper: createWrapper(),
+    })
     expect(result.current.isStopping).toBe(false)
     expect(result.current.stopError).toBeNull()
   })
 
   it('dovrebbe chiamare stopScan con il scanId corretto', async () => {
     vi.mocked(scanRepository.stopScan).mockResolvedValue(undefined)
-    const { result } = renderHook(() => useStopScan(), { wrapper: createWrapper() })
+    const { result } = renderHook(() => useStopScan(), {
+      wrapper: createWrapper(),
+    })
     act(() => {
       result.current.triggerStop('scan-abc')
     })
@@ -106,7 +132,9 @@ describe('useStopScan', () => {
 
   it('dovrebbe impostare isStopping true durante la mutazione', async () => {
     vi.mocked(scanRepository.stopScan).mockReturnValue(new Promise(() => {}))
-    const { result } = renderHook(() => useStopScan(), { wrapper: createWrapper() })
+    const { result } = renderHook(() => useStopScan(), {
+      wrapper: createWrapper(),
+    })
     act(() => {
       result.current.triggerStop('scan-abc')
     })

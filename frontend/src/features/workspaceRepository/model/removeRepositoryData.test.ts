@@ -15,7 +15,9 @@ describe('removeRepositoryRepository', () => {
   it('dovrebbe chiamare apiDelete con il percorso corretto', async () => {
     vi.mocked(apiDelete).mockResolvedValue(undefined)
     await removeRepositoryRepository.removeRepository('ws-1', 'repo-1')
-    expect(apiDelete).toHaveBeenCalledWith('/api/workspaces/ws-1/repositories/repo-1')
+    expect(apiDelete).toHaveBeenCalledWith(
+      '/api/workspaces/ws-1/repositories/repo-1',
+    )
   })
 
   it('dovrebbe propagare gli errori della API', async () => {

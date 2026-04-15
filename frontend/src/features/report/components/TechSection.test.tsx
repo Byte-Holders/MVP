@@ -73,7 +73,9 @@ describe('TechSection', () => {
       { name: 'dayjs', version: '1.11.0' },
     ]
     render(<TechSection techReport={baseTechReport} allDeps={allDeps} />)
-    expect(screen.getByText(/Tutte le dipendenze rilevate \(2\)/)).toBeInTheDocument()
+    expect(
+      screen.getByText(/Tutte le dipendenze rilevate \(2\)/),
+    ).toBeInTheDocument()
     expect(screen.getByText('lodash')).toBeInTheDocument()
     expect(screen.getByText('dayjs')).toBeInTheDocument()
   })

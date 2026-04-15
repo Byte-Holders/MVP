@@ -36,7 +36,9 @@ describe('ScanButton', () => {
 
   it('dovrebbe mostrare il bottone "Lancia scansione" di default', () => {
     render(<ScanButton {...props} />)
-    expect(screen.getByRole('button', { name: 'Lancia scansione' })).toBeInTheDocument()
+    expect(
+      screen.getByRole('button', { name: 'Lancia scansione' }),
+    ).toBeInTheDocument()
   })
 
   it('dovrebbe chiamare reset e triggerScan al click', () => {
@@ -62,13 +64,23 @@ describe('ScanButton', () => {
   })
 
   it('dovrebbe mostrare il bottone "Ferma scansione" quando la scansione è in corso', () => {
-    vi.mocked(useScan).mockReturnValue({ ...defaultScan, isSuccess: true, scanId: 'scan-abc' })
+    vi.mocked(useScan).mockReturnValue({
+      ...defaultScan,
+      isSuccess: true,
+      scanId: 'scan-abc',
+    })
     render(<ScanButton {...props} />)
-    expect(screen.getByRole('button', { name: 'Ferma scansione' })).toBeInTheDocument()
+    expect(
+      screen.getByRole('button', { name: 'Ferma scansione' }),
+    ).toBeInTheDocument()
   })
 
   it('dovrebbe mostrare "Arresto..." e disabilitare durante isStopping', () => {
-    vi.mocked(useScan).mockReturnValue({ ...defaultScan, isSuccess: true, scanId: 'scan-abc' })
+    vi.mocked(useScan).mockReturnValue({
+      ...defaultScan,
+      isSuccess: true,
+      scanId: 'scan-abc',
+    })
     vi.mocked(useStopScan).mockReturnValue({ ...defaultStop, isStopping: true })
     render(<ScanButton {...props} />)
     const btn = screen.getByRole('button', { name: 'Arresto...' })
@@ -76,14 +88,24 @@ describe('ScanButton', () => {
   })
 
   it('dovrebbe mostrare il messaggio di errore scan', () => {
-    vi.mocked(useScan).mockReturnValue({ ...defaultScan, error: new Error('Errore avvio') })
+    vi.mocked(useScan).mockReturnValue({
+      ...defaultScan,
+      error: new Error('Errore avvio'),
+    })
     render(<ScanButton {...props} />)
     expect(screen.getByText('Errore avvio')).toBeInTheDocument()
   })
 
   it('dovrebbe mostrare il messaggio di errore stop', () => {
-    vi.mocked(useScan).mockReturnValue({ ...defaultScan, isSuccess: true, scanId: 'scan-abc' })
-    vi.mocked(useStopScan).mockReturnValue({ ...defaultStop, stopError: new Error('Errore stop') })
+    vi.mocked(useScan).mockReturnValue({
+      ...defaultScan,
+      isSuccess: true,
+      scanId: 'scan-abc',
+    })
+    vi.mocked(useStopScan).mockReturnValue({
+      ...defaultStop,
+      stopError: new Error('Errore stop'),
+    })
     render(<ScanButton {...props} />)
     expect(screen.getByText('Errore stop')).toBeInTheDocument()
   })
