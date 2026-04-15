@@ -25,7 +25,7 @@ import { IMembershipServiceToken } from './interfaces/IMembershipService.interfa
 import { ApiOperation, ApiParam, ApiResponse } from '@nestjs/swagger';
 
 @UseGuards(JwtAuthGuard)
-@Controller("invitations")
+@Controller('invitations')
 export class MembershipController {
   constructor(
     @Inject(IMembershipServiceToken)
