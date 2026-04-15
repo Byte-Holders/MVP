@@ -35,7 +35,9 @@ export class ReportController {
     private readonly jwtService: JwtService,
   ) {}
 
-  @ApiOperation({ summary: 'Salva un report (chiamata dal container di scansione)' })
+  @ApiOperation({
+    summary: 'Salva un report (chiamata dal container di scansione)',
+  })
   @ApiResponse({ status: 201, description: 'Report salvato' })
   @ApiResponse({ status: 401, description: 'Token scan non valido o scaduto' })
   @Post('reports')
@@ -72,7 +74,11 @@ export class ReportController {
   @ApiOperation({ summary: 'Recupera il report di una branch' })
   @ApiParam({ name: 'repositoryId', description: 'ID del repository' })
   @ApiParam({ name: 'branch', description: 'Nome della branch' })
-  @ApiResponse({ status: 200, description: 'Report trovato', type: ReportResponseDto })
+  @ApiResponse({
+    status: 200,
+    description: 'Report trovato',
+    type: ReportResponseDto,
+  })
   @ApiResponse({ status: 404, description: 'Report non trovato' })
   @Get('repositories/:repositoryId/branches/:branch/report')
   @UseGuards(JwtAuthGuard)

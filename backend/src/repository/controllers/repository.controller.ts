@@ -23,7 +23,11 @@ export class RepositoryController {
 
   @ApiOperation({ summary: 'Dettaglio di un repository' })
   @ApiParam({ name: 'repositoryId', description: 'ID del repository' })
-  @ApiResponse({ status: 200, description: 'Dati del repository', type: RepositoryResponseDto })
+  @ApiResponse({
+    status: 200,
+    description: 'Dati del repository',
+    type: RepositoryResponseDto,
+  })
   @ApiResponse({ status: 404, description: 'Repository non trovato' })
   @Get(':repositoryId')
   async getRepository(

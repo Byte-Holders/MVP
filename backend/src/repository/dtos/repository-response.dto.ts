@@ -10,7 +10,7 @@ export class RepositoryResponseDto {
   @ApiProperty({ description: 'Nome del repository' })
   name!: string;
 
-  @ApiPropertyOptional({ description: 'Data dell\'ultima scansione (ISO 8601)' })
+  @ApiPropertyOptional({ description: "Data dell'ultima scansione (ISO 8601)" })
   dateScan?: string;
 
   @ApiPropertyOptional({ description: 'Punteggio documentazione (0-100)' })

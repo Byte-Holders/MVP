@@ -41,8 +41,16 @@ export class WorkspaceRepositoryController {
 
   @ApiOperation({ summary: 'Lista repository del workspace' })
   @ApiParam({ name: 'workspaceId', description: 'ID del workspace' })
-  @ApiQuery({ name: 'searchInput', required: false, description: 'Filtra per nome repository' })
-  @ApiResponse({ status: 200, description: 'Lista repository', type: [RepositoryResponseDto] })
+  @ApiQuery({
+    name: 'searchInput',
+    required: false,
+    description: 'Filtra per nome repository',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Lista repository',
+    type: [RepositoryResponseDto],
+  })
   @Get()
   async getRepositories(
     @Param('workspaceId') workspaceId: string,
@@ -58,7 +66,10 @@ export class WorkspaceRepositoryController {
   @ApiOperation({ summary: 'Aggiungi un repository al workspace' })
   @ApiParam({ name: 'workspaceId', description: 'ID del workspace' })
   @ApiResponse({ status: 201, description: 'Repository aggiunto' })
-  @ApiResponse({ status: 400, description: 'URL non valido o token GitHub non valido' })
+  @ApiResponse({
+    status: 400,
+    description: 'URL non valido o token GitHub non valido',
+  })
   @Post()
   async addRepository(
     @Param('workspaceId') workspaceId: string,
