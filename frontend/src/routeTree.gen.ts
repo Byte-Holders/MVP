@@ -10,7 +10,6 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as WorkspacesRouteImport } from './routes/workspaces'
-import { Route as RepositoryRouteImport } from './routes/repository'
 import { Route as MembershipRouteImport } from './routes/membership'
 import { Route as CallbackRouteImport } from './routes/callback'
 import { Route as AboutRouteImport } from './routes/about'
@@ -25,11 +24,6 @@ import { Route as WorkspacesWorkspaceIdRepositoriesRepositoryIdRouteImport } fro
 const WorkspacesRoute = WorkspacesRouteImport.update({
   id: '/workspaces',
   path: '/workspaces',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const RepositoryRoute = RepositoryRouteImport.update({
-  id: '/repository',
-  path: '/repository',
   getParentRoute: () => rootRouteImport,
 } as any)
 const MembershipRoute = MembershipRouteImport.update({
@@ -92,7 +86,6 @@ export interface FileRoutesByFullPath {
   '/about': typeof AboutRoute
   '/callback': typeof CallbackRoute
   '/membership': typeof MembershipRoute
-  '/repository': typeof RepositoryRoute
   '/workspaces': typeof WorkspacesRouteWithChildren
   '/workspaces/$workspaceId': typeof WorkspacesWorkspaceIdRouteWithChildren
   '/workspaces/': typeof WorkspacesIndexRoute
@@ -106,7 +99,6 @@ export interface FileRoutesByTo {
   '/about': typeof AboutRoute
   '/callback': typeof CallbackRoute
   '/membership': typeof MembershipRoute
-  '/repository': typeof RepositoryRoute
   '/workspaces/$workspaceId': typeof WorkspacesWorkspaceIdRouteWithChildren
   '/workspaces': typeof WorkspacesIndexRoute
   '/workspaces/$workspaceId/members': typeof WorkspacesWorkspaceIdMembersRoute
@@ -119,7 +111,6 @@ export interface FileRoutesById {
   '/about': typeof AboutRoute
   '/callback': typeof CallbackRoute
   '/membership': typeof MembershipRoute
-  '/repository': typeof RepositoryRoute
   '/workspaces': typeof WorkspacesRouteWithChildren
   '/workspaces/$workspaceId': typeof WorkspacesWorkspaceIdRouteWithChildren
   '/workspaces/': typeof WorkspacesIndexRoute
@@ -135,7 +126,6 @@ export interface FileRouteTypes {
     | '/about'
     | '/callback'
     | '/membership'
-    | '/repository'
     | '/workspaces'
     | '/workspaces/$workspaceId'
     | '/workspaces/'
@@ -149,7 +139,6 @@ export interface FileRouteTypes {
     | '/about'
     | '/callback'
     | '/membership'
-    | '/repository'
     | '/workspaces/$workspaceId'
     | '/workspaces'
     | '/workspaces/$workspaceId/members'
@@ -161,7 +150,6 @@ export interface FileRouteTypes {
     | '/about'
     | '/callback'
     | '/membership'
-    | '/repository'
     | '/workspaces'
     | '/workspaces/$workspaceId'
     | '/workspaces/'
@@ -176,7 +164,6 @@ export interface RootRouteChildren {
   AboutRoute: typeof AboutRoute
   CallbackRoute: typeof CallbackRoute
   MembershipRoute: typeof MembershipRoute
-  RepositoryRoute: typeof RepositoryRoute
   WorkspacesRoute: typeof WorkspacesRouteWithChildren
 }
 
@@ -187,13 +174,6 @@ declare module '@tanstack/react-router' {
       path: '/workspaces'
       fullPath: '/workspaces'
       preLoaderRoute: typeof WorkspacesRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/repository': {
-      id: '/repository'
-      path: '/repository'
-      fullPath: '/repository'
-      preLoaderRoute: typeof RepositoryRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/membership': {
@@ -322,7 +302,6 @@ const rootRouteChildren: RootRouteChildren = {
   AboutRoute: AboutRoute,
   CallbackRoute: CallbackRoute,
   MembershipRoute: MembershipRoute,
-  RepositoryRoute: RepositoryRoute,
   WorkspacesRoute: WorkspacesRouteWithChildren,
 }
 export const routeTree = rootRouteImport

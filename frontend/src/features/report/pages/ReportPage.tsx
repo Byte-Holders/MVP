@@ -5,7 +5,7 @@ import { TechSection } from '../components/TechSection'
 import { TestSection } from '../components/TestSection'
 import { SecuritySection } from '../components/SecuritySection'
 import { DocsSection } from '../components/DocsSection'
-import { ScanButton } from '#/features/repo/components/ScanButton'
+import { ScanButton } from '#/features/scan/components/ScanButton'
 import { useGetRepository } from '../../workspaceRepository/hooks/useGetRepository'
 
 type Props = {

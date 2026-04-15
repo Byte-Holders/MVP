@@ -33,7 +33,7 @@ export class ReportService implements IReportService {
   ) {}
 
   async saveReport(report: ReportInfo): Promise<void> {
-    await this.reportRepository.save(report);
+    await this.reportRepository.saveReport(report);
 
     if (report.metadata?.target.branch === DEVELOP_BRANCH) {
       const { repositoryId } = report.metadata.target;
@@ -51,7 +51,7 @@ export class ReportService implements IReportService {
     branch: string,
     userId: string,
   ): Promise<ReportInfo> {
-    const entity = await this.reportRepository.findLatestByTarget(
+    const entity = await this.reportRepository.getReport(
       repositoryId,
       branch,
     );
