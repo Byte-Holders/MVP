@@ -110,7 +110,7 @@ describe('SecurityNodeHelper', () => {
 
   describe('getMark', () => {
     it('should pass with a calculated average if vulnerabilities exist', () => {
-      const vulns: any[] = [{ severity: 10 }, { severity: 5 }, { severity: 0 }];
+      const vulns: any[] = [{ severity: 10 }, { severity: 4 }, { severity: 0 }];
       expect(helper.getMark(vulns)).toBe(7);
     });
 
