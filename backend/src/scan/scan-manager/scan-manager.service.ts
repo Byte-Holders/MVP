@@ -145,7 +145,7 @@ export class ScanManagerService implements IScanManagerService {
   }
 
   async stopScan(scanId: string): Promise<void> {
-    const scan = await this.scanRepository.find(scanId); // TODO id
+    const scan = await this.scanRepository.find(scanId);
     if (!scan) {
       throw new NotFoundException(`Scan ${scanId} non trovato`);
     }

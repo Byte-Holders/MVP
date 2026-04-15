@@ -2,10 +2,12 @@ import {
   Body,
   Controller,
   Get,
+  HttpCode,
+  HttpStatus,
   Inject,
   InternalServerErrorException,
   Param,
-  Put,
+  Patch,
   UseGuards,
   UsePipes,
   ValidationPipe,
@@ -18,21 +20,24 @@ import { GetScanStatusDto } from './dtos/get-scan-status.dto';
 import { SetErrorStatusDto } from './dtos/set-error-status.dto';
 import { ScanStatus } from './enums/scan-status.enum';
 import { ScanAuthGuard } from '../scan-auth/scan-auth.guard';
+import { JwtAuthGuard } from '../../auth/jwt-auth.guard';
 
-@Controller('/scan/status')
+@Controller('/scan/:scanId/status')
 export class ScanStatusController {
   constructor(
     @Inject(ISCAN_STATUS_SERVICE_TOKEN)
     private readonly scanStatusService: IScanStatusService,
   ) {}
 
-  @Get('/repositories/:repositoryId/branches/:branch')
+  @Get('/')
   @UsePipes(new ValidationPipe())
+  @UseGuards(JwtAuthGuard)
   async getScanStatus(@Param() dto: GetScanStatusDto): Promise<ScanStatus> {
     return await this.scanStatusService.getScanStatus(dto.scanId);
   }
 
-  @Put('/')
+  @Patch('/')
+  @HttpCode(HttpStatus.NO_CONTENT)
   @UseGuards(ScanAuthGuard)
   @UsePipes(new ValidationPipe())
   async setErrorStatus(@Body() dto: SetErrorStatusDto): Promise<void> {
