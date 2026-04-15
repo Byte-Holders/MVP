@@ -25,9 +25,15 @@ export class WorkspaceUserController {
 
   @ApiOperation({ summary: 'Ottiene la lista degli utenti di un workspace' })
   @ApiParam({ name: 'workspaceId', description: 'ID del workspace' })
-  @ApiResponse({ status: 200, description: 'Lista degli utenti del workspace', type: [GetUsersOfWorkspaceResponseDto] })
+  @ApiResponse({
+    status: 200,
+    description: 'Lista degli utenti del workspace',
+    type: [GetUsersOfWorkspaceResponseDto],
+  })
   @Get(':workspaceId/users')
-  async getUsersOfWorkspace(@Param('workspaceId') workspaceId: string): Promise<GetUsersOfWorkspaceResponseDto[]> {
+  async getUsersOfWorkspace(
+    @Param('workspaceId') workspaceId: string,
+  ): Promise<GetUsersOfWorkspaceResponseDto[]> {
     const users: GetUsersOfWorkspaceResponseDto[] =
       await this.workspaceUserService.getUsersOfWorkspace(workspaceId);
     return users;
@@ -35,7 +41,7 @@ export class WorkspaceUserController {
 
   @ApiOperation({ summary: 'Rimuove un utente da un workspace' })
   @ApiParam({ name: 'workspaceId', description: 'ID del workspace' })
-  @ApiParam({ name: 'userId', description: 'ID dell\'utente' })
+  @ApiParam({ name: 'userId', description: "ID dell'utente" })
   @ApiResponse({ status: 200, description: 'Utente rimosso dal workspace' })
   @Delete(':workspaceId/users/:userId')
   async removeUserFromWorkspace(

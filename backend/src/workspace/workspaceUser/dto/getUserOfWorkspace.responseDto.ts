@@ -1,16 +1,16 @@
-import { ApiProperty } from "@nestjs/swagger";
+import { ApiProperty } from '@nestjs/swagger';
 
 export class GetUsersOfWorkspaceResponseDto {
   @ApiProperty({
-    description: 'ID dell\'utente'
+    description: "ID dell'utente",
   })
   userId!: string;
   @ApiProperty({
-    description: 'Username dell\'utente'
+    description: "Username dell'utente",
   })
   username!: string;
   @ApiProperty({
-    description: 'Ruolo dell\'utente nel workspace'
+    description: "Ruolo dell'utente nel workspace",
   })
   role!: string;
 }
