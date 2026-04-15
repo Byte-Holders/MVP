@@ -1,4 +1,4 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { Inject, Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { Target } from './scan/target.types';
@@ -15,12 +15,8 @@ interface ReportCallbackToken {
   TARGET_OWNER: string;
   TARGET_REPOSITORY: string;
   TARGET_BRANCH: string;
-  RECEIVER_URL: string;
-  AWS_ACCESS_KEY_ID: string;
-  AWS_SECRET_ACCESS_KEY: string;
-  AWS_SESSION_TOKEN: string;
-  AWS_BEARER_TOKEN_BEDROCK: string;
-  repositoryId: string;
+  RECEIVER_URL_SUCCESS: string;
+  RECEIVER_URL_FAILURE: string;
 }
 
 @Injectable()
@@ -34,6 +30,8 @@ export class AppService {
   ) {}
 
   async run() {
+    const logger = new Logger(AppService.name);
+
     const reportCallbackToken = this.configService.get<string>(
       'REPORT_CALLBACK_TOKEN',
     );
@@ -51,42 +49,50 @@ export class AppService {
       TARGET_OWNER,
       TARGET_REPOSITORY,
       TARGET_BRANCH,
-      RECEIVER_URL,
-      AWS_ACCESS_KEY_ID,
-      AWS_SECRET_ACCESS_KEY,
-      AWS_SESSION_TOKEN,
-      AWS_BEARER_TOKEN_BEDROCK,
-      repositoryId,
+      RECEIVER_URL_SUCCESS,
+      RECEIVER_URL_FAILURE,
     } = decoded;
 
-    if (
-      !TARGET_OWNER ||
-      !TARGET_REPOSITORY ||
-      !TARGET_BRANCH ||
-      !repositoryId
-    ) {
-      throw new Error(
-        `Mancano informazioni per lanciare scansioni.\nOwner: ${TARGET_OWNER}\nRepository: ${TARGET_REPOSITORY}\nBranch: ${TARGET_BRANCH}\nRepositoryId: ${repositoryId}`,
-      );
+    if (!RECEIVER_URL_FAILURE || !RECEIVER_URL_SUCCESS) {
+      throw new Error(`Mancano informazioni per riportare l'esito`);
     }
 
-    process.env.AWS_ACCESS_KEY_ID = AWS_ACCESS_KEY_ID;
-    process.env.AWS_SECRET_ACCESS_KEY = AWS_SECRET_ACCESS_KEY;
-    process.env.AWS_SESSION_TOKEN = AWS_SESSION_TOKEN;
-    process.env.AWS_BEARER_TOKEN_BEDROCK = AWS_BEARER_TOKEN_BEDROCK;
+    try {
+      if (!TARGET_OWNER || !TARGET_REPOSITORY || !TARGET_BRANCH) {
+        throw new Error(
+          `Mancano informazioni sul bersaglio delle scansioni scansioni.
+          Owner: ${TARGET_OWNER}
+          Repository: ${TARGET_REPOSITORY}
+          Branch: ${TARGET_BRANCH}`,
+        );
+      }
 
-    this.configService.set('RECEIVER_URL', RECEIVER_URL);
+      await this.scanService.validateBedrockAccess(
+        this.configService.get<string>('AWS_BEARER_TOKEN_BEDROCK'),
+      );
 
-    const target: Target = {
-      owner: TARGET_OWNER,
-      repository: TARGET_REPOSITORY,
-      branch: TARGET_BRANCH,
-      repositoryId,
-    };
+      this.configService.set('RECEIVER_URL_SUCCESS', RECEIVER_URL_SUCCESS);
+      this.configService.set('RECEIVER_URL_FAILURE', RECEIVER_URL_FAILURE);
 
-    const report = await this.scanService.scan(target);
-    if (!report) throw new Error('Non è stato generato alcun report');
+      const target: Target = {
+        owner: TARGET_OWNER,
+        repository: TARGET_REPOSITORY,
+        branch: TARGET_BRANCH,
+      };
 
-    await this.reporterService.sendReport(report, reportCallbackToken);
+      const report = await this.scanService.scan(target);
+      if (!report) throw new Error('Non è stato generato alcun report');
+      await this.reporterService.sendReport({
+        report,
+        token: reportCallbackToken,
+        target: RECEIVER_URL_SUCCESS,
+      });
+    } catch (e: unknown) {
+      logger.error(e);
+      await this.reporterService.sendErrorNotification({
+        token: reportCallbackToken,
+        target: RECEIVER_URL_FAILURE,
+      });
+    }
   }
 }

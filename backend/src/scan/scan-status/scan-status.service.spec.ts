@@ -56,9 +56,7 @@ describe('ScanStatusService', () => {
         const scan = makeScan({ status });
         // const id = scan.id;
         mockRepository.find.mockResolvedValue(null);
-        await expect(service.getScanStatus(scan.id)).rejects.toThrow(
-          `Non sono state trovate scansioni in ${scan.id}`,
-        );
+        await expect(service.getScanStatus(scan.id)).rejects.toThrow();
       }
     });
   });

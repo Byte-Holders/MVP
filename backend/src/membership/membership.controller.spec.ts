@@ -101,13 +101,14 @@ describe('MembershipController', () => {
   describe('manageInvite', () => {
     it('dovrebbe mappare correttamente il DTO e chiamare il service', async () => {
       // Arrange
+      const inviteId = 'invite123';
+
       const mockDto: ManageInviteDto = {
-        membershipId: 'invite123',
         action: ManageInviteAction.Accept,
       };
 
       // Act
-      await controller.manageInvite(mockDto);
+      await controller.manageInvite(inviteId, mockDto);
 
       // Assert: Verifichiamo la trasformazione in "ManageInviteInfo"
       expect(mockMembershipService.manageInvite).toHaveBeenCalledWith({

@@ -1,34 +1,34 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { InternalServerErrorException } from '@nestjs/common';
 import { ScanStatusController } from './scan-status.controller';
-import { ISCAN_STATUS_SERVICE_TOKEN } from './interfaces/iscan-status.service';
+import {
+  ISCAN_STATUS_SERVICE_TOKEN,
+  IScanStatusService,
+} from './interfaces/iscan-status.service';
 import { GetScanStatusDto } from './dtos/get-scan-status.dto';
-import { UpdateScanStatusFromContainerDto } from './dtos/update-scan-status-from-container.dto';
+import { SetErrorStatusDto } from './dtos/set-error-status.dto';
 import { ScanStatus } from './enums/scan-status.enum';
-import { ScanStatusUpdateFromContainer } from './enums/scan-status-update-from-container.enum';
 
-const makeGetDto = (): GetScanStatusDto => ({
-  repositoryId: 'myRepositoryId',
-  branch: 'myBranch',
-});
+const MOCK_SCAN_ID = 'myId';
+const MOCK_CONTAINER_TOKEN = 'myToken';
 
-const makeUpdateDto = (
-  overrides: Partial<UpdateScanStatusFromContainerDto> = {},
-): UpdateScanStatusFromContainerDto => ({
-  repositoryId: 'myRepositoryId',
-  branch: 'myBranch',
-  status: ScanStatusUpdateFromContainer.Completed,
-  ...overrides,
-});
+const mockGetScanStatusDto: GetScanStatusDto = {
+  scanId: MOCK_SCAN_ID,
+};
+
+const mockSetErrorStatusDto: SetErrorStatusDto = {
+  token: MOCK_CONTAINER_TOKEN,
+};
 
 describe('ScanStatusController', () => {
   let controller: ScanStatusController;
-  let mockService: { getScanStatus: jest.Mock; setScanStatus: jest.Mock };
+  let mockService: jest.Mocked<IScanStatusService>;
 
   beforeEach(async () => {
     mockService = {
       getScanStatus: jest.fn(),
       setScanStatus: jest.fn(),
+      setScanStatusFromToken: jest.fn(),
     };
 
     const module: TestingModule = await Test.createTestingModule({
@@ -49,7 +49,7 @@ describe('ScanStatusController', () => {
     it('returns each ScanStatus value', async () => {
       for (const status of Object.values(ScanStatus)) {
         mockService.getScanStatus.mockResolvedValue(status);
-        const result = await controller.getScanStatus(makeGetDto());
+        const result = await controller.getScanStatus(mockGetScanStatusDto);
         expect(result).toBe(status);
       }
     });
@@ -59,34 +59,35 @@ describe('ScanStatusController', () => {
         new Error('Error getting scan status'),
       );
 
-      await expect(controller.getScanStatus(makeGetDto())).rejects.toThrow(
-        'Error getting scan status',
-      );
+      await expect(
+        controller.getScanStatus(mockGetScanStatusDto),
+      ).rejects.toThrow();
     });
   });
 
-  describe('update', () => {
-    it('can be called on service with the allowed status values', async () => {
-      for (const status of Object.values(ScanStatusUpdateFromContainer)) {
-        await controller.update(makeUpdateDto({ status }));
-        expect(mockService.setScanStatus).toHaveReturned();
-      }
+  describe('setErrorStatus', () => {
+    it('calls the service on setScanStatusFromToken with the passed scanId and error status', async () => {
+      await controller.setErrorStatus(mockSetErrorStatusDto);
+      expect(mockService.setScanStatusFromToken).toHaveBeenCalledWith(
+        mockSetErrorStatusDto.token,
+        ScanStatus.Err,
+      );
     });
 
     it('throws InternalServerErrorException when the service throws', async () => {
-      mockService.setScanStatus.mockRejectedValue(
-        new Error('Error in service'),
-      );
+      mockService.setScanStatusFromToken.mockRejectedValue(new Error());
 
-      await expect(controller.update(makeUpdateDto())).rejects.toThrow(
-        InternalServerErrorException,
-      );
+      await expect(
+        controller.setErrorStatus(mockSetErrorStatusDto),
+      ).rejects.toThrow(InternalServerErrorException);
     });
+
     it('returns void on success', async () => {
       //Per controllare che effettivamente in caso di successo dell'update nulla venga ritornato
-      mockService.setScanStatus.mockResolvedValue(undefined);
-      const result = await controller.update(makeUpdateDto());
-      expect(result).toBeUndefined();
+      mockService.setScanStatusFromToken.mockResolvedValue(undefined);
+      await expect(
+        controller.setErrorStatus(mockSetErrorStatusDto),
+      ).resolves.toBeUndefined();
     });
   });
 });

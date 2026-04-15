@@ -3,18 +3,30 @@ import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Report } from '../scan/nodes/orchestrator/synthesizer/synthesizer.types';
 import * as rx from 'rxjs';
-import { IReporterService } from './ireporter-service.interface';
+import {
+  IReporterService,
+  SendErrorNotificationInfo,
+  SendReportInfo,
+} from './ireporter-service.interface';
 
 @Injectable()
 export class ReporterService implements IReporterService {
-  constructor(
-    private readonly httpService: HttpService,
-    private readonly configService: ConfigService,
-  ) {}
+  constructor(private readonly httpService: HttpService) {}
 
-  async sendReport(report: Report, token: string) {
-    const url = this.configService.get<string>('RECEIVER_URL');
-    if (url)
-      await rx.lastValueFrom(this.httpService.post(url, { report, token }));
+  async sendReport(info: SendReportInfo) {
+    await rx.lastValueFrom(
+      this.httpService.post(info.target, {
+        report: info.report,
+        token: info.token,
+      }),
+    );
+  }
+
+  async sendErrorNotification(info: SendErrorNotificationInfo): Promise<void> {
+    await rx.lastValueFrom(
+      this.httpService.patch(info.target, {
+        token: info.token,
+      }),
+    );
   }
 }

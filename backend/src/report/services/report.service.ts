@@ -8,6 +8,11 @@ import type { IWorkspaceUserService } from '../../workspace/workspaceUser/interf
 import { IWorkspaceUserServiceToken } from '../../workspace/workspaceUser/interfaces/IWorkspaceUserService';
 import { WorkspaceRole } from '../../workspace/roles.enum';
 import type { ReportInfo, VulnCounts } from '../types/report.type';
+import {
+  ISCAN_STATUS_SERVICE_TOKEN,
+  type IScanStatusService,
+} from '../../scan/scan-status/interfaces/iscan-status.service';
+import { ScanStatus } from '../../scan/scan-status/enums/scan-status.enum';
 
 const DEVELOP_BRANCH = 'develop';
 
@@ -30,10 +35,16 @@ export class ReportService implements IReportService {
     private readonly repositoryScoreWriter: IRepositoryScoreWriter,
     @Inject(IWorkspaceUserServiceToken)
     private readonly workspaceUserService: IWorkspaceUserService,
+    @Inject(ISCAN_STATUS_SERVICE_TOKEN)
+    private readonly scanStatusService: IScanStatusService,
   ) {}
 
-  async saveReport(report: ReportInfo): Promise<void> {
-    await this.reportRepository.saveReport(report);
+  async saveReport(report: ReportInfo, callbackToken: string): Promise<void> {
+    await this.scanStatusService.setScanStatusFromToken(
+      callbackToken,
+      ScanStatus.Completed,
+    );
+    await this.reportRepository.save(report);
 
     if (report.metadata?.target.branch === DEVELOP_BRANCH) {
       const { repositoryId } = report.metadata.target;

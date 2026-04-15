@@ -14,12 +14,12 @@ export function setupSwagger(app: INestApplication): void {
       { type: 'http', scheme: 'bearer', bearerFormat: 'JWT' },
       'registration-token',
     )
-    .addTag('user', 'Registrazione utente')
-    .addTag('workspaces', 'Gestione workspace')
+    .addTag('User', 'Registrazione utente')
+    .addTag('WorkspaceManager', 'Gestione workspace')
     .addTag('workspace-repositories', 'Repository associate a un workspace')
-    .addTag('workspace-users', 'Membri di un workspace')
-    .addTag('membership', 'Inviti e gestione membership')
-    .addTag('scan', 'Avvio e stato delle scansioni')
+    .addTag('WorkspaceUser', 'Membri di un workspace')
+    .addTag('Membership', 'Inviti e gestione membership')
+    .addTag('ScanManager', 'Avvio e stato delle scansioni')
     .addTag('repositories', 'Repository GitHub')
     .addTag('reports', 'Report di analisi')
     .build();

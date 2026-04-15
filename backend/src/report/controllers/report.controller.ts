@@ -67,7 +67,7 @@ export class ReportController {
         : undefined,
     };
 
-    return this.reportService.saveReport(reportInfo);
+    return this.reportService.saveReport(reportInfo, dto.token);
   }
 
   @ApiBearerAuth('access-token')
