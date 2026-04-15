@@ -1,10 +1,11 @@
 import { useQuery } from '@tanstack/react-query'
-import { getRepositoriesData } from '../model/getRepositoriesData'
+import { workspaceRepositoryRepository } from '../model/workspaceRepositoryRepository'
 
 export function useGetRepositories(workspaceId: string, searchInput?: string) {
   return useQuery({
     queryKey: ['repositories', workspaceId, searchInput],
-    queryFn: () => getRepositoriesData(workspaceId, searchInput),
+    queryFn: () =>
+      workspaceRepositoryRepository.getRepositories(workspaceId, searchInput),
     enabled: !!workspaceId,
   })
 }

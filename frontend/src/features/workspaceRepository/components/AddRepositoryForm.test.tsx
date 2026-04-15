@@ -4,13 +4,17 @@ import userEvent from '@testing-library/user-event'
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { AddRepositoryForm } from './AddRepositoryForm'
-import { addRepositoryData } from '../model/addRepositoryData'
 import type { ReactElement } from 'react'
 
-// Mock della chiamata API
-vi.mock('../model/addRepositoryData', () => ({
-  addRepositoryData: vi.fn(),
+vi.mock('../model/workspaceRepositoryRepository', () => ({
+  workspaceRepositoryRepository: {
+    getRepositories: vi.fn(),
+    addRepository: vi.fn(),
+    removeRepository: vi.fn(),
+  },
 }))
+
+import { workspaceRepositoryRepository } from '../model/workspaceRepositoryRepository'
 
 const renderWithClient = (ui: ReactElement) => {
   const queryClient = new QueryClient({
@@ -32,35 +36,35 @@ describe('AddRepositoryForm Component', () => {
     const user = userEvent.setup()
     renderWithClient(<AddRepositoryForm workspaceId={workspaceId} />)
 
-    // All'inizio il token non c'è (è pubblica di default)
     expect(
       screen.queryByPlaceholderText('GitHub token'),
     ).not.toBeInTheDocument()
 
-    // L'utente clicca su "Privata"
     const privateRadio = screen.getByLabelText('Privata')
     await user.click(privateRadio)
 
-    // Ora l'input del token deve essere visibile
     expect(screen.getByPlaceholderText('GitHub token')).toBeInTheDocument()
   })
 
   it('dovrebbe inviare i dati corretti per una repository pubblica', async () => {
     const user = userEvent.setup()
+    vi.mocked(workspaceRepositoryRepository.addRepository).mockResolvedValue(
+      undefined,
+    )
     renderWithClient(<AddRepositoryForm workspaceId={workspaceId} />)
 
-    // Compila l'URL
     const urlInput = screen.getByPlaceholderText(/URL repository/i)
     await user.type(urlInput, 'https://github.com/user/repo')
 
-    // Invia il form
     const submitButton = screen.getByRole('button', { name: /aggiungi/i })
     await user.click(submitButton)
 
-    // Verifica che l'API sia stata chiamata con l'URL ma SENZA accessToken
-    expect(addRepositoryData).toHaveBeenCalledWith(workspaceId, {
-      repositoryUrl: 'https://github.com/user/repo',
-      accessToken: undefined,
-    })
+    expect(workspaceRepositoryRepository.addRepository).toHaveBeenCalledWith(
+      workspaceId,
+      {
+        repositoryUrl: 'https://github.com/user/repo',
+        accessToken: undefined,
+      },
+    )
   })
 })

@@ -3,17 +3,18 @@ import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { useRegister } from './useRegister'
 
 vi.mock('../model/registerApi', () => ({
-  registerUser: vi.fn(),
+  authRepository: {
+    register: vi.fn(),
+  },
 }))
 
-import { registerUser } from '../model/registerApi'
-const mockRegisterUser = registerUser as ReturnType<typeof vi.fn>
+import { authRepository } from '../model/registerApi'
 
 describe('useRegister', () => {
   beforeEach(() => vi.clearAllMocks())
 
-  it('chiama registerUser quando register viene invocato', async () => {
-    mockRegisterUser.mockResolvedValue(undefined)
+  it('chiama authRepository.register quando register viene invocato', async () => {
+    vi.mocked(authRepository.register).mockResolvedValue(undefined)
 
     const { result } = renderHook(() => useRegister())
 
@@ -21,11 +22,13 @@ describe('useRegister', () => {
       await result.current.register()
     })
 
-    expect(mockRegisterUser).toHaveBeenCalledTimes(1)
+    expect(authRepository.register).toHaveBeenCalledTimes(1)
   })
 
-  it('propaga eccezioni di registerUser', async () => {
-    mockRegisterUser.mockRejectedValue(new Error('Errore registrazione'))
+  it('propaga eccezioni di authRepository.register', async () => {
+    vi.mocked(authRepository.register).mockRejectedValue(
+      new Error('Errore registrazione'),
+    )
 
     const { result } = renderHook(() => useRegister())
 

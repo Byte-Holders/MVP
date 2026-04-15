@@ -1,18 +1,12 @@
-import { fetchAuthSession } from 'aws-amplify/auth'
+import { apiGet } from '../../../api/apiClient'
+import type { IWorkspaceListRepository } from '../interfaces/repository/IWorkspaceListRepository'
 import type { WorkspaceListItem } from '../types/Workspace'
 
-export async function getWorkspaces(): Promise<WorkspaceListItem[]> {
-  //chiamata al backend per ottenere i workspace dell'utente, con gestione dell'autenticazione tramite token
-  const session = await fetchAuthSession()
-  const token = session.tokens?.accessToken?.toString()
-
-  const response = await fetch('/api/workspaces', {
-    headers: { Authorization: `Bearer ${token}` },
-  })
-  if (!response.ok) {
-    const body = await response.json().catch(() => ({}))
-    throw new Error(body?.message ?? 'Errore nel recupero dei workspace')
+class WorkspaceListRepository implements IWorkspaceListRepository {
+  async getWorkspaces(): Promise<WorkspaceListItem[]> {
+    return apiGet<WorkspaceListItem[]>('/api/workspaces')
   }
-
-  return response.json()
 }
+
+export const workspaceListRepository: IWorkspaceListRepository =
+  new WorkspaceListRepository()

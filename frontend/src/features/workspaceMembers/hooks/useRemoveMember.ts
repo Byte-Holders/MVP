@@ -1,11 +1,12 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { removeMemberData } from '../model/removeMemberData'
+import { workspaceMembersRepository } from '../model/workspaceMembersRepository'
 
 export function useRemoveMember(workspaceId: string) {
   const queryClient = useQueryClient()
 
   return useMutation({
-    mutationFn: (userId: string) => removeMemberData(workspaceId, userId),
+    mutationFn: (userId: string) =>
+      workspaceMembersRepository.removeMember(workspaceId, userId),
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: ['members', workspaceId] })
     },

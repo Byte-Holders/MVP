@@ -2,15 +2,18 @@ import '@testing-library/jest-dom'
 import { render, screen, waitFor } from '@testing-library/react'
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { WorkspaceList } from './WorkspaceList'
-import { getWorkspaces } from '../model/getWorkspacesApi'
 
 vi.mock('../model/getWorkspacesApi', () => ({
-  getWorkspaces: vi.fn(),
+  workspaceListRepository: {
+    getWorkspaces: vi.fn(),
+  },
 }))
 
 vi.mock('@tanstack/react-router', () => ({
   Link: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
 }))
+
+import { workspaceListRepository } from '../model/getWorkspacesApi'
 
 describe('WorkspaceList Component', () => {
   beforeEach(() => {
@@ -18,13 +21,17 @@ describe('WorkspaceList Component', () => {
   })
 
   it("dovrebbe mostrare il messaggio di caricamento all'inizio", () => {
-    vi.mocked(getWorkspaces).mockReturnValue(new Promise(() => {}))
+    vi.mocked(workspaceListRepository.getWorkspaces).mockReturnValue(
+      new Promise(() => {}),
+    )
     render(<WorkspaceList />)
     expect(screen.getByText(/loading workspaces/i)).toBeInTheDocument()
   })
 
   it('dovrebbe mostrare un errore se la chiamata API fallisce', async () => {
-    vi.mocked(getWorkspaces).mockRejectedValue(new Error('Errore di rete'))
+    vi.mocked(workspaceListRepository.getWorkspaces).mockRejectedValue(
+      new Error('Errore di rete'),
+    )
     render(<WorkspaceList />)
     await waitFor(() => {
       expect(screen.getByText('Errore di rete')).toBeInTheDocument()
@@ -32,7 +39,7 @@ describe('WorkspaceList Component', () => {
   })
 
   it('dovrebbe mostrare un messaggio se non ci sono workspace', async () => {
-    vi.mocked(getWorkspaces).mockResolvedValue([])
+    vi.mocked(workspaceListRepository.getWorkspaces).mockResolvedValue([])
     render(<WorkspaceList />)
     await waitFor(() => {
       expect(screen.getByText(/no workspaces yet/i)).toBeInTheDocument()
@@ -40,7 +47,7 @@ describe('WorkspaceList Component', () => {
   })
 
   it('dovrebbe renderizzare tutti i workspace quando i dati arrivano', async () => {
-    vi.mocked(getWorkspaces).mockResolvedValue([
+    vi.mocked(workspaceListRepository.getWorkspaces).mockResolvedValue([
       { id: 'ws-1', name: 'Workspace Alpha', owner: 'alice', role: 'owner' },
       { id: 'ws-2', name: 'Workspace Beta', owner: 'bob', role: 'member' },
     ])
@@ -52,10 +59,12 @@ describe('WorkspaceList Component', () => {
   })
 
   it('non dovrebbe mostrare il loader dopo il caricamento', async () => {
-    vi.mocked(getWorkspaces).mockResolvedValue([])
+    vi.mocked(workspaceListRepository.getWorkspaces).mockResolvedValue([])
     render(<WorkspaceList />)
     await waitFor(() => {
-      expect(screen.queryByText(/loading workspaces/i)).not.toBeInTheDocument()
+      expect(
+        screen.queryByText(/loading workspaces/i),
+      ).not.toBeInTheDocument()
     })
   })
 })

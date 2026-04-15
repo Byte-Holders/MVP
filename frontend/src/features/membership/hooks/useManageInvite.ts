@@ -1,5 +1,5 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { manageInviteData } from '../model/manageInviteData'
+import { membershipRepository } from '../model/membershipRepository'
 import type { InviteAction } from '../types'
 
 export function useManageInvite() {
@@ -12,7 +12,7 @@ export function useManageInvite() {
     }: {
       membershipId: string
       action: InviteAction
-    }) => manageInviteData(membershipId, action),
+    }) => membershipRepository.manageInvite(membershipId, action),
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: ['invites'] })
     },

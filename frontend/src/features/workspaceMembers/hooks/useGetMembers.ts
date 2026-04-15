@@ -1,10 +1,10 @@
 import { useQuery } from '@tanstack/react-query'
-import { getMembersData } from '../model/getMembersData'
+import { workspaceMembersRepository } from '../model/workspaceMembersRepository'
 
 export function useGetMembers(workspaceId: string) {
   return useQuery({
     queryKey: ['members', workspaceId],
-    queryFn: () => getMembersData(workspaceId),
+    queryFn: () => workspaceMembersRepository.getMembers(workspaceId),
     enabled: !!workspaceId,
   })
 }

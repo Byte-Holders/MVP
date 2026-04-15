@@ -1,5 +1,5 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { addRepositoryData } from '../model/addRepositoryData'
+import { workspaceRepositoryRepository } from '../model/workspaceRepositoryRepository'
 import type { AddRepositoryRequest } from '../types/repository'
 
 export function useAddRepository(workspaceId: string) {
@@ -7,7 +7,7 @@ export function useAddRepository(workspaceId: string) {
 
   return useMutation({
     mutationFn: (data: AddRepositoryRequest) =>
-      addRepositoryData(workspaceId, data),
+      workspaceRepositoryRepository.addRepository(workspaceId, data),
     onSuccess: () => {
       void queryClient.invalidateQueries({
         queryKey: ['repositories', workspaceId],

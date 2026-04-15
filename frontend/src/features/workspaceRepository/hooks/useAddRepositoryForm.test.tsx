@@ -2,15 +2,18 @@ import { renderHook, act } from '@testing-library/react'
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { useAddRepositoryForm } from './useAddRepositoryForm'
-import { addRepositoryData } from '../model/addRepositoryData'
 import type { ReactNode } from 'react'
 
-// 1. Mockiamo la chiamata API vera
-vi.mock('../model/addRepositoryData', () => ({
-  addRepositoryData: vi.fn(),
+vi.mock('../model/workspaceRepositoryRepository', () => ({
+  workspaceRepositoryRepository: {
+    getRepositories: vi.fn(),
+    addRepository: vi.fn(),
+    removeRepository: vi.fn(),
+  },
 }))
 
-// 2. Creiamo un wrapper per React Query
+import { workspaceRepositoryRepository } from '../model/workspaceRepositoryRepository'
+
 const createTestQueryClient = () =>
   new QueryClient({
     defaultOptions: { queries: { retry: false } },
@@ -57,7 +60,7 @@ describe('useAddRepositoryForm Hook', () => {
     })
 
     expect(result.current.isPrivate).toBe(false)
-    expect(result.current.token).toBe('') // Il token deve essersi svuotato!
+    expect(result.current.token).toBe('')
   })
 
   it('non dovrebbe chiamare mutate se url è vuoto', () => {
@@ -66,10 +69,9 @@ describe('useAddRepositoryForm Hook', () => {
     })
 
     act(() => {
-      // Passiamo un finto evento form (e.preventDefault)
       result.current.handleSubmit({ preventDefault: vi.fn() } as any)
     })
 
-    expect(addRepositoryData).not.toHaveBeenCalled()
+    expect(workspaceRepositoryRepository.addRepository).not.toHaveBeenCalled()
   })
 })

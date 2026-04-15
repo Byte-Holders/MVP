@@ -1,25 +1,28 @@
 import { useEffect, useState } from 'react'
-import { getWorkspaces } from '../model/getWorkspacesApi'
+import { workspaceListRepository } from '../model/getWorkspacesApi'
+import type { IWorkspaceListRepository } from '../interfaces/repository/IWorkspaceListRepository'
 import type { WorkspaceListItem } from '../types/Workspace'
 import type { IWorkspacesViewModel } from '../interfaces/IUseWorkspaces'
 
-export function useWorkspaces(): IWorkspacesViewModel {
+export function useWorkspaces(
+  repo: IWorkspaceListRepository = workspaceListRepository,
+): IWorkspacesViewModel {
   const [workspaces, setWorkspaces] = useState<WorkspaceListItem[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
-    //chiama l'API per ottenere i workspace dell'utente
-    getWorkspaces()
+    repo
+      .getWorkspaces()
       .then(setWorkspaces)
       .catch((err) => setError(err.message))
       .finally(() => setIsLoading(false))
   }, [])
 
-  // esposto per aggiornare la lista dopo una creazione
   function refresh() {
     setIsLoading(true)
-    getWorkspaces()
+    repo
+      .getWorkspaces()
       .then(setWorkspaces)
       .catch((err) => setError(err.message))
       .finally(() => setIsLoading(false))

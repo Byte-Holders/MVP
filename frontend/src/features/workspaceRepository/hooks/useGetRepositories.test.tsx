@@ -2,12 +2,17 @@ import { renderHook, waitFor } from '@testing-library/react'
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { useGetRepositories } from './useGetRepositories'
-import { getRepositoriesData } from '../model/getRepositoriesData'
 import type { ReactNode } from 'react'
 
-vi.mock('../model/getRepositoriesData', () => ({
-  getRepositoriesData: vi.fn(),
+vi.mock('../model/workspaceRepositoryRepository', () => ({
+  workspaceRepositoryRepository: {
+    getRepositories: vi.fn(),
+    addRepository: vi.fn(),
+    removeRepository: vi.fn(),
+  },
 }))
+
+import { workspaceRepositoryRepository } from '../model/workspaceRepositoryRepository'
 
 const createWrapper = () => {
   const queryClient = new QueryClient({
@@ -29,7 +34,9 @@ describe('useGetRepositories Hook', () => {
     const mockRepos = [
       { repositoryId: 'r-1', name: 'repo-a', ownerName: 'alice' },
     ]
-    vi.mocked(getRepositoriesData).mockResolvedValue(mockRepos)
+    vi.mocked(workspaceRepositoryRepository.getRepositories).mockResolvedValue(
+      mockRepos,
+    )
     const { result } = renderHook(() => useGetRepositories(workspaceId), {
       wrapper: createWrapper(),
     })
@@ -39,7 +46,9 @@ describe('useGetRepositories Hook', () => {
   })
 
   it('dovrebbe passare searchInput alla API', async () => {
-    vi.mocked(getRepositoriesData).mockResolvedValue([])
+    vi.mocked(workspaceRepositoryRepository.getRepositories).mockResolvedValue(
+      [],
+    )
     const { result } = renderHook(
       () => useGetRepositories(workspaceId, 'mio-repo'),
       { wrapper: createWrapper() },
@@ -47,7 +56,10 @@ describe('useGetRepositories Hook', () => {
     await waitFor(() => {
       expect(result.current.isLoading).toBe(false)
     })
-    expect(getRepositoriesData).toHaveBeenCalledWith(workspaceId, 'mio-repo')
+    expect(workspaceRepositoryRepository.getRepositories).toHaveBeenCalledWith(
+      workspaceId,
+      'mio-repo',
+    )
   })
 
   it('dovrebbe essere disabilitato se workspaceId è vuoto', () => {
@@ -58,7 +70,9 @@ describe('useGetRepositories Hook', () => {
   })
 
   it('dovrebbe restituire una lista vuota se non ci sono repository', async () => {
-    vi.mocked(getRepositoriesData).mockResolvedValue([])
+    vi.mocked(workspaceRepositoryRepository.getRepositories).mockResolvedValue(
+      [],
+    )
     const { result } = renderHook(() => useGetRepositories(workspaceId), {
       wrapper: createWrapper(),
     })

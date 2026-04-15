@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { addRepositoryData } from '../model/addRepositoryData'
+import { workspaceRepositoryRepository } from '../model/workspaceRepositoryRepository'
 import type { IAddRepositoryFormViewModel } from '../interfaces/IUseAddRepositoryForm'
 
 export function useAddRepositoryForm(
@@ -18,7 +18,11 @@ export function useAddRepositoryForm(
     }: {
       repositoryUrl: string
       accessToken?: string
-    }) => addRepositoryData(workspaceId, { repositoryUrl, accessToken }),
+    }) =>
+      workspaceRepositoryRepository.addRepository(workspaceId, {
+        repositoryUrl,
+        accessToken,
+      }),
     onSuccess: () => {
       void queryClient.invalidateQueries({
         queryKey: ['repositories', workspaceId],

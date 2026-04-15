@@ -4,16 +4,21 @@ import userEvent from '@testing-library/user-event'
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { RepositoryItem } from './RepositoryItem'
-import { removeRepositoryData } from '../model/removeRepositoryData'
 import type { ReactElement } from 'react'
 
-vi.mock('../model/removeRepositoryData', () => ({
-  removeRepositoryData: vi.fn(),
+vi.mock('../model/workspaceRepositoryRepository', () => ({
+  workspaceRepositoryRepository: {
+    getRepositories: vi.fn(),
+    addRepository: vi.fn(),
+    removeRepository: vi.fn(),
+  },
 }))
 
 vi.mock('@tanstack/react-router', () => ({
   Link: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
 }))
+
+import { workspaceRepositoryRepository } from '../model/workspaceRepositoryRepository'
 
 const renderWithClient = (ui: ReactElement) => {
   const queryClient = new QueryClient({
@@ -54,9 +59,11 @@ describe('RepositoryItem Component', () => {
     expect(screen.getByRole('button', { name: /rimuovi/i })).toBeInTheDocument()
   })
 
-  it('dovrebbe chiamare removeRepositoryData al click del bottone Rimuovi', async () => {
+  it('dovrebbe chiamare removeRepository al click del bottone Rimuovi', async () => {
     const user = userEvent.setup()
-    vi.mocked(removeRepositoryData).mockResolvedValue(undefined)
+    vi.mocked(
+      workspaceRepositoryRepository.removeRepository,
+    ).mockResolvedValue(undefined)
     renderWithClient(
       <RepositoryItem repository={mockRepo} workspaceId={workspaceId} />,
     )
@@ -64,16 +71,17 @@ describe('RepositoryItem Component', () => {
     await user.click(screen.getByRole('button', { name: /rimuovi/i }))
 
     await waitFor(() => {
-      expect(removeRepositoryData).toHaveBeenCalledWith(
-        workspaceId,
-        mockRepo.repositoryId,
-      )
+      expect(
+        workspaceRepositoryRepository.removeRepository,
+      ).toHaveBeenCalledWith(workspaceId, mockRepo.repositoryId)
     })
   })
 
   it('dovrebbe disabilitare il bottone durante la rimozione', async () => {
     const user = userEvent.setup()
-    vi.mocked(removeRepositoryData).mockReturnValue(new Promise(() => {}))
+    vi.mocked(
+      workspaceRepositoryRepository.removeRepository,
+    ).mockReturnValue(new Promise(() => {}))
     renderWithClient(
       <RepositoryItem repository={mockRepo} workspaceId={workspaceId} />,
     )
