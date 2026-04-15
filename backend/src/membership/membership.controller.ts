@@ -25,7 +25,7 @@ import { IMembershipServiceToken } from './interfaces/IMembershipService.interfa
 import { ApiOperation, ApiParam, ApiResponse } from '@nestjs/swagger';
 
 @UseGuards(JwtAuthGuard)
-@Controller()
+@Controller('invitations')
 export class MembershipController {
   constructor(
     @Inject(IMembershipServiceToken)
@@ -38,7 +38,7 @@ export class MembershipController {
     status: 400,
     description: "L'utente ha già un invito in sospeso per questo workspace",
   })
-  @Post('invitations')
+  @Post()
   @UsePipes(new ValidationPipe())
   async inviteUser(
     @Body() inviteUserDto: InviteUserDto,
@@ -59,7 +59,7 @@ export class MembershipController {
     description: 'Lista degli inviti ricevuti',
     type: [GetInviteResponseDto],
   })
-  @Get('invitations')
+  @Get()
   @UsePipes(new ValidationPipe())
   async getInvites(@User() user: RequestUser): Promise<GetInviteResponseDto[]> {
     return this.membershipService.getInvites(user.userId);
@@ -76,7 +76,7 @@ export class MembershipController {
     description: 'invito rifiutato perchè utente fa già parte del workspace',
   })
   @ApiParam({ name: 'id', description: "ID dell'invito da gestire" })
-  @Patch('invitations/:id')
+  @Patch(':id')
   @UsePipes(new ValidationPipe())
   async manageInvite(
     @Param('id') inviteId: string,
