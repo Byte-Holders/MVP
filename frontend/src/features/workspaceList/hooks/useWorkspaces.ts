@@ -1,8 +1,9 @@
 import { useEffect, useState } from 'react'
 import { getWorkspaces } from '../model/getWorkspacesApi'
 import type { WorkspaceListItem } from '../types/Workspace'
+import type { IWorkspacesViewModel } from '../interfaces/IUseWorkspaces'
 
-export function useWorkspaces() {
+export function useWorkspaces(): IWorkspacesViewModel {
   const [workspaces, setWorkspaces] = useState<WorkspaceListItem[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)

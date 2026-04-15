@@ -1,4 +1,10 @@
-import { Inject, Injectable, Logger, NotFoundException } from '@nestjs/common';
+import {
+  Inject,
+  Injectable,
+  InternalServerErrorException,
+  Logger,
+  NotFoundException,
+} from '@nestjs/common';
 import {
   ISCAN_REPOSITORY_TOKEN,
   type IScanRepository,
@@ -108,9 +114,16 @@ export class ScanManagerService implements IScanManagerService {
       count: 1,
     });
 
-    // TODO gestione errori
-    const result = await client.send(command);
-    const handle = result.tasks!.at(0)!.taskArn!;
+    let handle: string;
+    try {
+      const result = await client.send(command);
+      handle = result.tasks!.at(0)!.taskArn!;
+    } catch (err) {
+      this.logger.error(`Errore avvio container ECS: ${err}`);
+      throw new InternalServerErrorException(
+        `Impossibile avviare il container di scansione: ${err instanceof Error ? err.message : err}`,
+      );
+    }
     this.logger.debug(`Handle: ${handle}`);
 
     const scan: Scan = {

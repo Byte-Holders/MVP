@@ -5,6 +5,7 @@ import {
   signIn,
   logOut,
 } from '../model/authApi'
+import type { IAuthViewModel } from '../interfaces/IUseAuth'
 
 interface AuthState {
   isAuthenticated: boolean
@@ -12,7 +13,7 @@ interface AuthState {
   user: { username: string } | null
 }
 
-export function useAuth() {
+export function useAuth(): IAuthViewModel {
   const [authState, setAuthState] = useState<AuthState>({
     isAuthenticated: false,
     isLoading: true,

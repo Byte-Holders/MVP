@@ -1,4 +1,4 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { Inject, Injectable, UnauthorizedException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { PassportStrategy } from '@nestjs/passport';
 import { passportJwtSecret } from 'jwks-rsa';
@@ -34,7 +34,7 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt-auth') {
   async validate(payload: any) {
     const user: UserInfo | null = await this.userService.findBySub(payload.sub);
     if (!user) {
-      throw new Error(
+      throw new UnauthorizedException(
         'User con sub ' + payload.sub + ' non presente nel database',
       );
     }

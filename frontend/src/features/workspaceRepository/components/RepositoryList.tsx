@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { Link } from '@tanstack/react-router'
 import { useGetRepositories } from '../hooks/useGetRepositories'
 import { AddRepositoryForm } from './AddRepositoryForm'
 import { RepositoryItem } from './RepositoryItem'
@@ -17,7 +18,16 @@ export function RepositoryList({ workspaceId }: Props) {
 
   return (
     <div className="flex flex-col gap-4">
-      <h2 className="display-title text-xl">Repository</h2>
+      <div className="flex items-center justify-between">
+        <h2 className="display-title text-xl">Lista repository</h2>
+        <Link
+          to="/workspaces/$workspaceId/members"
+          params={{ workspaceId }}
+          className="rounded-lg border border-[var(--h-line)] bg-[var(--surface)] px-4 py-2 text-sm font-medium text-[var(--sea-ink)] transition-colors hover:bg-[var(--chip-line)]"
+        >
+          Membri
+        </Link>
+      </div>
 
       <AddRepositoryForm workspaceId={workspaceId} />
 

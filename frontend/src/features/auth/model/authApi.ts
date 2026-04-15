@@ -3,6 +3,7 @@ import {
   fetchAuthSession,
   signInWithRedirect,
   signOut,
+  deleteUser,
 } from 'aws-amplify/auth'
 import { cognitoConfig } from '../../../lib/amplify'
 
@@ -23,4 +24,8 @@ export async function logOut() {
   await signOut()
   const logoutUri = encodeURIComponent(window.location.origin + '/')
   window.location.href = `https://${cognitoConfig.domain}/logout?client_id=${cognitoConfig.clientId}&logout_uri=${logoutUri}`
+}
+
+export async function removeCurrentUser(): Promise<void> {
+  await deleteUser()
 }

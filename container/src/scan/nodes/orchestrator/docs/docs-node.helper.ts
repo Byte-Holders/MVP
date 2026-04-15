@@ -165,10 +165,10 @@ export class DocsNodeHelper {
       ]);
       const text = (response.content as string).trim();
       const match = text.match(/\b(\d+(?:\.\d+)?)\b/);
-      return match ? parseFloat(match[1]) : -1;
+      return match ? parseFloat(match[1]) : 0;
     } catch (err) {
       this.logger.error('Errore nel calcolo del voto:', err);
-      return -1;
+      return 0;
     }
   }
 
@@ -265,21 +265,17 @@ const TEXT_EXTENSIONS = new Set([
   '.html',
   '.css',
   '.scss',
-  '.less',
-  '.json',
   '.yaml',
   '.yml',
   '.toml',
   '.xml',
   '.env',
   '.md',
-  '.txt',
   '.sh',
   '.bash',
   '.dockerfile',
   '.sql',
   '.graphql',
-  '.proto',
 ]);
 
 const IGNORED_DIRS = new Set([

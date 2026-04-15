@@ -26,6 +26,7 @@ const mockReport = (): Report => ({
           id: 'myVulnerabilityId',
           description: 'myVulnerabilityDepDescription1',
           severity: 'HIGH',
+          description: 'myVulnerabilityDescription',
           packageName: 'myPackageName',
           packageVersion: 'myPackageVersion',
           fixVersion: undefined,
@@ -121,6 +122,7 @@ const mockReport = (): Report => ({
       owner: 'myTargetOwner',
       repository: 'myTargetRepository',
       branch: 'myTargetBranch',
+      repositoryId: 'myRepositoryId',
     },
   },
 });

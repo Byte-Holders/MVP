@@ -29,7 +29,6 @@ export class ScanStatusController {
   @Get('/repositories/:repositoryId/branches/:branch')
   @UsePipes(new ValidationPipe())
   async getScanStatus(@Param() dto: GetScanStatusDto): Promise<ScanStatus> {
-    console.log('Called');
     return await this.scanStatusService.getScanStatus(dto.scanId);
   }
 

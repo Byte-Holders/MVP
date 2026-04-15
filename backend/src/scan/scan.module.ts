@@ -29,8 +29,7 @@ import { ScanAuthGuard } from './scan-auth/scan-auth.guard';
         secret: configService.get<string>('JWT_SECRET_KEY'),
         signOptions: {
           expiresIn:
-            configService.get<number>('JWT_EXPIRATION_TIME_IN_SECONDS') ||
-            '3600s',
+            Number(configService.get('JWT_EXPIRATION_TIME_IN_SECONDS')) || 3600,
         },
       }),
       inject: [ConfigService],

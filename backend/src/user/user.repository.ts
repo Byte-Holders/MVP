@@ -14,7 +14,16 @@ export class UserRepository implements IUserRepository {
       .findOne({ sub: sub })
       .lean({ versionKey: false })
       .exec();
-    return user;
+    if (!user) {
+      return null;
+    } else {
+      return {
+        _id: user._id.toString(),
+        sub: user.sub,
+        username: user.username,
+        email: user.email,
+      };
+    }
   }
 
   async findByUsername(username: string): Promise<UserEntity | null> {
@@ -22,7 +31,16 @@ export class UserRepository implements IUserRepository {
       .findOne({ username: username })
       .lean({ versionKey: false })
       .exec();
-    return user;
+    if (!user) {
+      return null;
+    } else {
+      return {
+        _id: user._id.toString(),
+        sub: user.sub,
+        username: user.username,
+        email: user.email,
+      };
+    }
   }
 
   async create(
@@ -35,6 +53,12 @@ export class UserRepository implements IUserRepository {
       username: username,
       email: email,
     });
-    return (await user.save()).toObject({ versionKey: false });
+    const savedUser = (await user.save()).toObject({ versionKey: false });
+    return {
+      _id: savedUser._id.toString(),
+      sub: savedUser.sub,
+      username: savedUser.username,
+      email: savedUser.email,
+    };
   }
 }

@@ -39,7 +39,10 @@
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
     "react-hook-form": "^7.72.0",
+    "react-markdown": "^10.1.0",
     "react-oidc-context": "^3.3.1",
+    "recharts": "^3.8.1",
+    "remark-gfm": "^4.0.1",
     "sonner": "^2.0.7",
     "tailwind-merge": "^3.0.2",
     "tailwindcss": "^4.1.18",
@@ -48,7 +51,7 @@
     "zustand": "^5.0.12"
   },
   "devDependencies": {
-    "@tailwindcss/typography": "^0.5.16",
+    "@tailwindcss/typography": "^0.5.19",
     "@tanstack/devtools-vite": "latest",
     "@tanstack/eslint-config": "latest",
     "@tanstack/react-devtools": "latest",
@@ -60,6 +63,7 @@
     "@types/react": "^19.2.0",
     "@types/react-dom": "^19.2.0",
     "@vitejs/plugin-react": "^5.1.4",
+    "@vitest/coverage-v8": "^3.2.4",
     "jsdom": "^28.1.0",
     "lint-staged": "^16.4.0",
     "msw": "^2.13.2",
@@ -67,7 +71,7 @@
     "typescript": "^5.7.2",
     "vite": "^7.3.1",
     "vite-tsconfig-paths": "^5.1.4",
-    "vitest": "^3.0.5"
+    "vitest": "^3.2.4"
   },
   "pnpm": {
     "onlyBuiltDependencies": [

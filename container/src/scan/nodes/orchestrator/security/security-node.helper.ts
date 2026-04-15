@@ -20,7 +20,7 @@ type SemgrepResult = {
 
 type SemgrepMetadata = {
   category: string;
-  cwe: string[];
+  cwe: string | string[];
   owasp: string[];
   impact?: string;
 };
@@ -81,7 +81,10 @@ export class SecurityNodeHelper {
       severity: this.parseSeverity(r.extra?.severity),
       impact: r.extra?.metadata?.impact ?? '',
       category: r.extra?.metadata?.category ?? '',
-      cwe: r.extra?.metadata?.cwe ?? [],
+      cwe:
+        typeof r.extra?.metadata?.cwe === 'string'
+          ? r.extra?.metadata?.cwe
+          : r.extra?.metadata?.cwe[0],
       owasp: r.extra?.metadata?.owasp ?? [],
     }));
   }

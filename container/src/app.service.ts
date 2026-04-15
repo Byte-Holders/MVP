@@ -21,6 +21,7 @@ interface ReportCallbackToken {
   AWS_SECRET_ACCESS_KEY: string;
   AWS_SESSION_TOKEN: string;
   AWS_BEARER_TOKEN_BEDROCK: string;
+  repositoryId: string;
 }
 
 @Injectable()

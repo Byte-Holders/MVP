@@ -1,87 +1,222 @@
+import { Test, TestingModule } from '@nestjs/testing';
+import { WorkspaceRepositoryService } from './workspaceRepository.service';
+import { WorkspaceRepositoryToken } from '../interfaces/workspaceRepository.repository.interface';
+import { RepositoryReaderToken } from '../../../repository/interfaces/repository.reader.interface';
+import { RepositoryWriterToken } from '../../../repository/interfaces/repository.writer.interface';
+import type { RepositoryInfo } from '../../../repository/types/repository-info';
+
+const makeRepositoryInfo = (
+  overrides: Partial<RepositoryInfo> = {},
+): RepositoryInfo => ({
+  repositoryId: 'myRepositoryId',
+  ownerName: 'myOwner',
+  name: 'myRepo',
+  ...overrides,
+});
+
 describe('WorkspaceRepositoryService', () => {
-  // --- getRepositories ---
+  let service: WorkspaceRepositoryService;
+  let mockWorkspaceRepositoryRepository: {
+    getRepositories: jest.Mock;
+    addRepository: jest.Mock;
+    removeRepository: jest.Mock;
+  };
+  let mockRepositoryReader: { getRepositories: jest.Mock };
+  let mockRepositoryWriter: {
+    addRepository: jest.Mock;
+    updateToken: jest.Mock;
+  };
+
+  beforeEach(async () => {
+    mockWorkspaceRepositoryRepository = {
+      getRepositories: jest.fn(),
+      addRepository: jest.fn(),
+      removeRepository: jest.fn(),
+    };
+    mockRepositoryReader = { getRepositories: jest.fn() };
+    mockRepositoryWriter = { addRepository: jest.fn(), updateToken: jest.fn() };
+
+    const module: TestingModule = await Test.createTestingModule({
+      providers: [
+        WorkspaceRepositoryService,
+        {
+          provide: WorkspaceRepositoryToken,
+          useValue: mockWorkspaceRepositoryRepository,
+        },
+        { provide: RepositoryReaderToken, useValue: mockRepositoryReader },
+        { provide: RepositoryWriterToken, useValue: mockRepositoryWriter },
+      ],
+    }).compile();
+
+    service = module.get<WorkspaceRepositoryService>(
+      WorkspaceRepositoryService,
+    );
+  });
+
+  it('should be defined', () => {
+    expect(service).toBeDefined();
+  });
 
   describe('getRepositories', () => {
-    it('restituisce lista vuota se il workspace non ha repository', async () => {
-      // workspaceRepositoryRepository.getRepositories → []
-      // repositoryReader.getRepositories NON deve essere chiamato
-      // risultato atteso: []
+    it('returns an empty array when the workspace has no repositories', async () => {
+      mockWorkspaceRepositoryRepository.getRepositories.mockResolvedValue([]);
+
+      const result = await service.getRepositories('myWorkspaceId');
+
+      expect(result).toEqual([]);
+      expect(mockRepositoryReader.getRepositories).not.toHaveBeenCalled();
     });
 
-    it('restituisce le RepositoryInfo per gli id trovati', async () => {
-      // workspaceRepositoryRepository.getRepositories → ['id1', 'id2']
-      // repositoryReader.getRepositories(['id1','id2'], undefined) → [info1, info2]
-      // verifica che il risultato contenga entrambe le info
+    it('returns the repositories returned by the reader', async () => {
+      const ids = ['id1', 'id2'];
+      const repos = [
+        makeRepositoryInfo({ repositoryId: 'id1' }),
+        makeRepositoryInfo({ repositoryId: 'id2' }),
+      ];
+      mockWorkspaceRepositoryRepository.getRepositories.mockResolvedValue(ids);
+      mockRepositoryReader.getRepositories.mockResolvedValue(repos);
+
+      const result = await service.getRepositories('myWorkspaceId');
+
+      expect(mockRepositoryReader.getRepositories).toHaveBeenCalledWith(
+        ids,
+        undefined,
+      );
+      expect(result).toEqual(repos);
     });
 
-    it('passa searchInput a repositoryReader quando fornito', async () => {
-      // workspaceRepositoryRepository.getRepositories → ['id1']
-      // verifica che repositoryReader.getRepositories sia chiamato con ('keyword')
+    it('forwards the searchInput to the reader', async () => {
+      const ids = ['id1'];
+      mockWorkspaceRepositoryRepository.getRepositories.mockResolvedValue(ids);
+      mockRepositoryReader.getRepositories.mockResolvedValue([]);
+
+      await service.getRepositories('myWorkspaceId', 'mySearch');
+
+      expect(mockRepositoryReader.getRepositories).toHaveBeenCalledWith(
+        ids,
+        'mySearch',
+      );
     });
 
-    it('propaga NotFoundException se il workspace non esiste', async () => {
-      // workspaceRepositoryRepository.getRepositories → lancia NotFoundException
-      // atteso: il service rilancia la stessa eccezione
+    it('rejects when the workspace repository rejects', async () => {
+      mockWorkspaceRepositoryRepository.getRepositories.mockRejectedValue(
+        new Error('workspace not found'),
+      );
+
+      await expect(service.getRepositories('myWorkspaceId')).rejects.toThrow(
+        'workspace not found',
+      );
     });
   });
-
-  // --- addRepository ---
 
   describe('addRepository', () => {
-    it('aggiunge una repository pubblica senza token', async () => {
-      // repositoryWriter.addRepository(url, undefined) → 'newRepoId'
-      // workspaceRepositoryRepository.addRepository(workspaceId, 'newRepoId') chiamato
-      // nessuna eccezione
+    it('calls the writer then the workspace repository with the returned id', async () => {
+      mockRepositoryWriter.addRepository.mockResolvedValue('newRepoId');
+      mockWorkspaceRepositoryRepository.addRepository.mockResolvedValue(
+        undefined,
+      );
+
+      await service.addRepository(
+        'myWorkspaceId',
+        'https://github.com/owner/repo',
+        'myToken',
+      );
+
+      expect(mockRepositoryWriter.addRepository).toHaveBeenCalledWith(
+        'https://github.com/owner/repo',
+        'myToken',
+      );
+      expect(
+        mockWorkspaceRepositoryRepository.addRepository,
+      ).toHaveBeenCalledWith('myWorkspaceId', 'newRepoId');
     });
 
-    it('aggiunge una repository privata con token valido', async () => {
-      // repositoryWriter.addRepository(url, 'ghp_xxx') → 'newRepoId'
-      // verifica che il token venga passato correttamente
+    it('works without an access token', async () => {
+      mockRepositoryWriter.addRepository.mockResolvedValue('newRepoId');
+      mockWorkspaceRepositoryRepository.addRepository.mockResolvedValue(
+        undefined,
+      );
+
+      await service.addRepository(
+        'myWorkspaceId',
+        'https://github.com/owner/repo',
+      );
+
+      expect(mockRepositoryWriter.addRepository).toHaveBeenCalledWith(
+        'https://github.com/owner/repo',
+        undefined,
+      );
     });
 
-    it('propaga eccezione se repositoryWriter fallisce (token non valido)', async () => {
-      // repositoryWriter.addRepository → lancia UnauthorizedException
-      // workspaceRepositoryRepository.addRepository NON deve essere chiamato
-      // atteso: eccezione propagata
-    });
+    it('rejects when the writer rejects', async () => {
+      mockRepositoryWriter.addRepository.mockRejectedValue(
+        new Error('writer error'),
+      );
 
-    it('propaga NotFoundException se il workspace non esiste durante addRepository', async () => {
-      // repositoryWriter.addRepository → 'newRepoId'
-      // workspaceRepositoryRepository.addRepository → lancia NotFoundException
+      await expect(
+        service.addRepository('myWorkspaceId', 'https://github.com/owner/repo'),
+      ).rejects.toThrow('writer error');
+
+      expect(
+        mockWorkspaceRepositoryRepository.addRepository,
+      ).not.toHaveBeenCalled();
     });
   });
-
-  // --- removeRepository ---
 
   describe('removeRepository', () => {
-    it('delega correttamente la rimozione al repository', async () => {
-      // workspaceRepositoryRepository.removeRepository(repoId, workspaceId) chiamato
+    it('delegates to the workspace repository', async () => {
+      mockWorkspaceRepositoryRepository.removeRepository.mockResolvedValue(
+        undefined,
+      );
+
+      await service.removeRepository('myRepositoryId', 'myWorkspaceId');
+
+      expect(
+        mockWorkspaceRepositoryRepository.removeRepository,
+      ).toHaveBeenCalledWith('myRepositoryId', 'myWorkspaceId');
     });
 
-    it('propaga NotFoundException se workspace non trovato', async () => {
-      // workspaceRepositoryRepository.removeRepository → NotFoundException
-    });
+    it('rejects when the workspace repository rejects', async () => {
+      mockWorkspaceRepositoryRepository.removeRepository.mockRejectedValue(
+        new Error('repository not found'),
+      );
 
-    it('propaga NotFoundException se repo non presente nel workspace', async () => {
-      // workspaceRepositoryRepository.removeRepository → NotFoundException('Repository non trovata')
-    });
-
-    // ⚠️ TEST CHE DOCUMENTA IL GAP — da implementare
-    it('TODO: dovrebbe eliminare i dati della repo se non appartiene ad altri workspace', async () => {
-      // comportamento atteso ma non ancora implementato
-      // questo test FALLIRÀ finché non si implementa la logica
-      expect(true).toBe(false); // placeholder esplicito
+      await expect(
+        service.removeRepository('myRepositoryId', 'myWorkspaceId'),
+      ).rejects.toThrow('repository not found');
     });
   });
 
-  // --- updateToken ---
-
   describe('updateToken', () => {
-    // ⚠️ TEST CHE DOCUMENTA IL TODO
-    it('TODO: dovrebbe aggiornare il token della repository', async () => {
-      // al momento il metodo è vuoto e non fa nulla
-      // il test documenta che la funzionalità è attesa
-      expect(true).toBe(false); // fallisce intenzionalmente
+    it('delegates to the repository writer after verifying ownership', async () => {
+      mockWorkspaceRepositoryRepository.getRepositories.mockResolvedValue([
+        'myRepositoryId',
+      ]);
+      mockRepositoryWriter.updateToken.mockResolvedValue(undefined);
+
+      await expect(
+        service.updateToken('myRepositoryId', 'myWorkspaceId', 'myToken'),
+      ).resolves.toBeUndefined();
+
+      expect(
+        mockWorkspaceRepositoryRepository.getRepositories,
+      ).toHaveBeenCalledWith('myWorkspaceId');
+      expect(mockRepositoryWriter.updateToken).toHaveBeenCalledWith(
+        'myRepositoryId',
+        'myToken',
+      );
+    });
+
+    it('throws NotFoundException when repository is not in the workspace', async () => {
+      mockWorkspaceRepositoryRepository.getRepositories.mockResolvedValue([
+        'otherId',
+      ]);
+
+      await expect(
+        service.updateToken('myRepositoryId', 'myWorkspaceId', 'myToken'),
+      ).rejects.toThrow('Repository non trovata nel workspace');
+
+      expect(mockRepositoryWriter.updateToken).not.toHaveBeenCalled();
     });
   });
 });
