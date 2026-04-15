@@ -24,7 +24,6 @@ const mockReport = (): Report => ({
       vulnerabilities: [
         {
           id: 'myVulnerabilityId',
-          description: 'myVulnerabilityDepDescription1',
           severity: 'HIGH',
           description: 'myVulnerabilityDescription',
           packageName: 'myPackageName',
@@ -44,7 +43,7 @@ const mockReport = (): Report => ({
           severity: 5,
           impact: 'MEDIUM',
           category: 'myVulnerabilityCategory1',
-          cwe: ['CWE-0-0'],
+          cwe: 'CWE-0-0',
           owasp: ['OWASP-top-10-2025'],
         },
         {
@@ -55,7 +54,7 @@ const mockReport = (): Report => ({
           severity: 10,
           impact: 'LOW',
           category: 'myVulnerabilityCategory',
-          cwe: ['CWE-0-0'],
+          cwe: 'CWE-0-0',
           owasp: ['OWASP-top-10-2025'],
         },
       ],
@@ -122,7 +121,6 @@ const mockReport = (): Report => ({
       owner: 'myTargetOwner',
       repository: 'myTargetRepository',
       branch: 'myTargetBranch',
-      repositoryId: 'myRepositoryId',
     },
   },
 });
@@ -156,7 +154,7 @@ describe('AppService', () => {
 
     scanner = {
       scan: jest.fn(),
-      validateCredentials: jest.fn(),
+      validateBedrockAccess: jest.fn(),
     };
 
     configService = {
@@ -253,7 +251,7 @@ describe('AppService', () => {
     );
 
     it('calls sendErrorNotification with RECEIVER_URL_FAILURE and the token if using invalid AWS credentials', async () => {
-      scanner.validateCredentials.mockRejectedValue(new Error());
+      scanner.validateBedrockAccess.mockRejectedValue(new Error());
 
       await appService.run();
 

@@ -1,4 +1,4 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { Inject, Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { Target } from './scan/target.types';
@@ -17,11 +17,6 @@ interface ReportCallbackToken {
   TARGET_BRANCH: string;
   RECEIVER_URL_SUCCESS: string;
   RECEIVER_URL_FAILURE: string;
-  AWS_ACCESS_KEY_ID: string;
-  AWS_SECRET_ACCESS_KEY: string;
-  AWS_SESSION_TOKEN: string;
-  AWS_BEARER_TOKEN_BEDROCK: string;
-  repositoryId: string;
 }
 
 @Injectable()
@@ -35,6 +30,8 @@ export class AppService {
   ) {}
 
   async run() {
+    const logger = new Logger(AppService.name);
+
     const reportCallbackToken = this.configService.get<string>(
       'REPORT_CALLBACK_TOKEN',
     );
@@ -54,10 +51,6 @@ export class AppService {
       TARGET_BRANCH,
       RECEIVER_URL_SUCCESS,
       RECEIVER_URL_FAILURE,
-      AWS_ACCESS_KEY_ID,
-      AWS_SECRET_ACCESS_KEY,
-      AWS_SESSION_TOKEN,
-      AWS_BEARER_TOKEN_BEDROCK,
     } = decoded;
 
     if (!RECEIVER_URL_FAILURE || !RECEIVER_URL_SUCCESS) {
@@ -67,30 +60,16 @@ export class AppService {
     try {
       if (!TARGET_OWNER || !TARGET_REPOSITORY || !TARGET_BRANCH) {
         throw new Error(
-          `Mancano informazioni sul bersaglio delle scansioni scansioni.`,
+          `Mancano informazioni sul bersaglio delle scansioni scansioni.
+          Owner: ${TARGET_OWNER}
+          Repository: ${TARGET_REPOSITORY}
+          Branch: ${TARGET_BRANCH}`,
         );
       }
 
-      if (
-        !AWS_ACCESS_KEY_ID ||
-        !AWS_SECRET_ACCESS_KEY ||
-        !AWS_SESSION_TOKEN ||
-        !AWS_BEARER_TOKEN_BEDROCK
-      ) {
-        throw new Error(`Mancano i dati di collegamento ad AWS`);
-      }
-
-      await this.scanService.validateCredentials({
-        accessKeyId: AWS_ACCESS_KEY_ID,
-        secretAccessKey: AWS_SECRET_ACCESS_KEY,
-        sessionToken: AWS_SESSION_TOKEN,
-        bedrockBearerToken: AWS_BEARER_TOKEN_BEDROCK,
-      });
-
-      process.env.AWS_ACCESS_KEY_ID = AWS_ACCESS_KEY_ID;
-      process.env.AWS_SECRET_ACCESS_KEY = AWS_SECRET_ACCESS_KEY;
-      process.env.AWS_SESSION_TOKEN = AWS_SESSION_TOKEN;
-      process.env.AWS_BEARER_TOKEN_BEDROCK = AWS_BEARER_TOKEN_BEDROCK;
+      await this.scanService.validateBedrockAccess(
+        this.configService.get<string>('AWS_BEARER_TOKEN_BEDROCK'),
+      );
 
       this.configService.set('RECEIVER_URL_SUCCESS', RECEIVER_URL_SUCCESS);
       this.configService.set('RECEIVER_URL_FAILURE', RECEIVER_URL_FAILURE);
@@ -108,7 +87,8 @@ export class AppService {
         token: reportCallbackToken,
         target: RECEIVER_URL_SUCCESS,
       });
-    } catch {
+    } catch (e: unknown) {
+      logger.error(e);
       await this.reporterService.sendErrorNotification({
         token: reportCallbackToken,
         target: RECEIVER_URL_FAILURE,
