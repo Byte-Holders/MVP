@@ -15,7 +15,9 @@ vi.mock('recharts', () => ({
 }))
 vi.mock('../../../components/ScoreBar', () => ({
   ScoreBar: ({ label, value }: { label: string; value: number }) => (
-    <div data-testid="score-bar">{label}: {value}</div>
+    <div data-testid="score-bar">
+      {label}: {value}
+    </div>
   ),
 }))
 
@@ -27,15 +29,46 @@ const emptyProps = {
 const propsWithVulns = {
   vulnerabilitiesReport: {
     vulnerabilities: [
-      { id: 'CVE-001', path: 'src/auth.ts', description: 'SQL Injection', remediation: 'Usa prepared statements', severity: 9, impact: 'Critical', category: 'Injection', cwe: 'CWE-89', owasp: ['A03'] },
-      { id: 'CVE-002', path: 'src/api.ts', description: 'XSS', remediation: 'Sanifica input', severity: 5, impact: 'Medium', category: 'XSS' },
+      {
+        id: 'CVE-001',
+        path: 'src/auth.ts',
+        description: 'SQL Injection',
+        remediation: 'Usa prepared statements',
+        severity: 9,
+        impact: 'Critical',
+        category: 'Injection',
+        cwe: 'CWE-89',
+        owasp: ['A03'],
+      },
+      {
+        id: 'CVE-002',
+        path: 'src/api.ts',
+        description: 'XSS',
+        remediation: 'Sanifica input',
+        severity: 5,
+        impact: 'Medium',
+        category: 'XSS',
+      },
     ],
     mark: 4,
   },
   depsReport: {
     vulnerabilities: [
-      { id: 'DEP-001', severity: 'High', packageName: 'lodash', packageVersion: '4.17.0', description: 'Prototype pollution', fixVersion: '4.17.21' },
-      { id: 'DEP-002', severity: 'Critical', packageName: 'axios', packageVersion: '0.21.0', description: 'SSRF' },
+      {
+        id: 'DEP-001',
+        severity: 'High',
+        packageName: 'lodash',
+        packageVersion: '4.17.0',
+        description: 'Prototype pollution',
+        fixVersion: '4.17.21',
+      },
+      {
+        id: 'DEP-002',
+        severity: 'Critical',
+        packageName: 'axios',
+        packageVersion: '0.21.0',
+        description: 'SSRF',
+      },
     ],
     vulnerabilityAnalysis: 'Aggiornare le dipendenze.',
   },
@@ -54,7 +87,9 @@ describe('SecuritySection', () => {
 
   it('dovrebbe mostrare il messaggio verde se non ci sono vulnerabilità', () => {
     render(<SecuritySection {...emptyProps} />)
-    expect(screen.getByText('Nessuna vulnerabilità rilevata.')).toBeInTheDocument()
+    expect(
+      screen.getByText('Nessuna vulnerabilità rilevata.'),
+    ).toBeInTheDocument()
   })
 
   it('dovrebbe mostrare i contatori overview', () => {
@@ -89,7 +124,9 @@ describe('SecuritySection', () => {
 
   it('dovrebbe mostrare il toggle delle dipendenze vulnerabili', () => {
     render(<SecuritySection {...propsWithVulns} />)
-    expect(screen.getByText(/Dipendenze vulnerabili \(2 pacchetti/)).toBeInTheDocument()
+    expect(
+      screen.getByText(/Dipendenze vulnerabili \(2 pacchetti/),
+    ).toBeInTheDocument()
   })
 
   it('dovrebbe espandere la tabella dipendenze al click', () => {

@@ -2,7 +2,9 @@ import { render, screen, fireEvent } from '@testing-library/react'
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { NewWorkspaceDialog } from './NewWorkspaceDialog'
 
-vi.mock('../hooks/useNewWorkspaceForm', () => ({ useNewWorkspaceForm: vi.fn() }))
+vi.mock('../hooks/useNewWorkspaceForm', () => ({
+  useNewWorkspaceForm: vi.fn(),
+}))
 vi.mock('@/components/ui/dialog', () => ({
   Dialog: ({ children }: any) => <div>{children}</div>,
   DialogTrigger: ({ children }: any) => <div>{children}</div>,
@@ -16,11 +18,15 @@ vi.mock('@/components/ui/dialog', () => ({
 vi.mock('@/components/ui/field', () => ({
   Field: ({ children }: any) => <div>{children}</div>,
   FieldGroup: ({ children }: any) => <div>{children}</div>,
-  FieldLabel: ({ children, htmlFor }: any) => <label htmlFor={htmlFor}>{children}</label>,
+  FieldLabel: ({ children, htmlFor }: any) => (
+    <label htmlFor={htmlFor}>{children}</label>
+  ),
   FieldError: ({ errors }: any) => <span>{errors?.[0]}</span>,
 }))
 vi.mock('@/components/ui/button', () => ({
-  Button: ({ children, ...props }: any) => <button {...props}>{children}</button>,
+  Button: ({ children, ...props }: any) => (
+    <button {...props}>{children}</button>
+  ),
 }))
 vi.mock('@/components/ui/input', () => ({
   Input: (props: any) => <input {...props} />,
@@ -28,14 +34,27 @@ vi.mock('@/components/ui/input', () => ({
 
 import { useNewWorkspaceForm } from '../hooks/useNewWorkspaceForm'
 
-const makeForm = (overrides: Partial<{ value: string; isTouched: boolean; isValid: boolean }> = {}) => {
+const makeForm = (
+  overrides: Partial<{
+    value: string
+    isTouched: boolean
+    isValid: boolean
+  }> = {},
+) => {
   const { value = '', isTouched = false, isValid = true } = overrides
   return {
     handleSubmit: vi.fn(),
     Field: ({ children }: any) =>
       children({
         name: 'name',
-        state: { value, meta: { isTouched, isValid, errors: isValid ? [] : ['Nome troppo corto'] } },
+        state: {
+          value,
+          meta: {
+            isTouched,
+            isValid,
+            errors: isValid ? [] : ['Nome troppo corto'],
+          },
+        },
         handleBlur: vi.fn(),
         handleChange: vi.fn(),
       }),
@@ -45,12 +64,17 @@ const makeForm = (overrides: Partial<{ value: string; isTouched: boolean; isVali
 describe('NewWorkspaceDialog', () => {
   beforeEach(() => {
     vi.clearAllMocks()
-    vi.mocked(useNewWorkspaceForm).mockReturnValue({ form: makeForm() as any, serverError: null })
+    vi.mocked(useNewWorkspaceForm).mockReturnValue({
+      form: makeForm() as any,
+      serverError: null,
+    })
   })
 
   it('dovrebbe mostrare il bottone di apertura dialog', () => {
     render(<NewWorkspaceDialog />)
-    expect(screen.getByRole('button', { name: '+ New Workspace' })).toBeInTheDocument()
+    expect(
+      screen.getByRole('button', { name: '+ New Workspace' }),
+    ).toBeInTheDocument()
   })
 
   it('dovrebbe mostrare il titolo e la descrizione del dialog', () => {
@@ -67,16 +91,23 @@ describe('NewWorkspaceDialog', () => {
   it('dovrebbe mostrare i bottoni Cancel e Create Workspace', () => {
     render(<NewWorkspaceDialog />)
     expect(screen.getByRole('button', { name: 'Cancel' })).toBeInTheDocument()
-    expect(screen.getByRole('button', { name: 'Create Workspace' })).toBeInTheDocument()
+    expect(
+      screen.getByRole('button', { name: 'Create Workspace' }),
+    ).toBeInTheDocument()
   })
 
   it('dovrebbe chiamare handleSubmit al submit del form', () => {
     const handleSubmit = vi.fn()
     const form = makeForm()
     form.handleSubmit = handleSubmit
-    vi.mocked(useNewWorkspaceForm).mockReturnValue({ form: form as any, serverError: null })
+    vi.mocked(useNewWorkspaceForm).mockReturnValue({
+      form: form as any,
+      serverError: null,
+    })
     render(<NewWorkspaceDialog />)
-    fireEvent.submit(screen.getByRole('button', { name: 'Create Workspace' }).closest('form')!)
+    fireEvent.submit(
+      screen.getByRole('button', { name: 'Create Workspace' }).closest('form')!,
+    )
     expect(handleSubmit).toHaveBeenCalled()
   })
 

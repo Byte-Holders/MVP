@@ -62,10 +62,7 @@ export class ReportService implements IReportService {
     branch: string,
     userId: string,
   ): Promise<ReportInfo> {
-    const entity = await this.reportRepository.getReport(
-      repositoryId,
-      branch,
-    );
+    const entity = await this.reportRepository.getReport(repositoryId, branch);
     if (!entity) {
       throw new NotFoundException(
         `Report non trovato per repository ${repositoryId}@${branch}`,

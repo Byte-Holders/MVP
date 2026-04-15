@@ -12,7 +12,11 @@ const mockReport = {
     depsReport: { vulnerabilities: [], vulnerabilityAnalysis: '' },
     vulnerabilitiesReport: { vulnerabilities: [], mark: 0 },
     docsReport: { readmeReport: '', commentReport: '', mark: 0 },
-    testReport: { coverageReport: { statements: 0, branches: 0, functions: 0, lines: 0 }, failedTests: [], testsRun: 0 },
+    testReport: {
+      coverageReport: { statements: 0, branches: 0, functions: 0, lines: 0 },
+      failedTests: [],
+      testsRun: 0,
+    },
     techReport: { libraries: [], frameworks: [], languages: [] },
   },
 }
@@ -41,6 +45,8 @@ describe('getReportRepository', () => {
 
   it('dovrebbe propagare gli errori della API', async () => {
     vi.mocked(apiGet).mockRejectedValue(new Error('Report non trovato'))
-    await expect(getReportRepository.getReport('repo-1', 'main')).rejects.toThrow('Report non trovato')
+    await expect(
+      getReportRepository.getReport('repo-1', 'main'),
+    ).rejects.toThrow('Report non trovato')
   })
 })

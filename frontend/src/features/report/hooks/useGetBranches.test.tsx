@@ -25,7 +25,10 @@ describe('useGetBranches', () => {
   })
 
   it('dovrebbe restituire la lista di branch', async () => {
-    vi.mocked(getBranchesRepository.getBranches).mockResolvedValue(['main', 'develop'])
+    vi.mocked(getBranchesRepository.getBranches).mockResolvedValue([
+      'main',
+      'develop',
+    ])
     const { result } = renderHook(() => useGetBranches('repo-1'), {
       wrapper: createWrapper(),
     })
@@ -42,7 +45,9 @@ describe('useGetBranches', () => {
   })
 
   it('dovrebbe restituire isLoading true inizialmente', () => {
-    vi.mocked(getBranchesRepository.getBranches).mockReturnValue(new Promise(() => {}))
+    vi.mocked(getBranchesRepository.getBranches).mockReturnValue(
+      new Promise(() => {}),
+    )
     const { result } = renderHook(() => useGetBranches('repo-1'), {
       wrapper: createWrapper(),
     })

@@ -41,7 +41,10 @@ describe('RepositoryService', () => {
           provide: RepositoryFindRepositoryToken,
           useValue: mockFindRepository,
         },
-        { provide: GitHubBranchesRepositoryToken, useValue: mockGitHubRepository },
+        {
+          provide: GitHubBranchesRepositoryToken,
+          useValue: mockGitHubRepository,
+        },
       ],
     }).compile();
 

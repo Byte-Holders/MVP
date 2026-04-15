@@ -41,11 +41,15 @@ describe('getBranchesRepository', () => {
 
   it('dovrebbe propagare errori diversi da 404/403', async () => {
     vi.mocked(apiGet).mockRejectedValue(new ApiError(500, 'Errore server'))
-    await expect(getBranchesRepository.getBranches('repo-1')).rejects.toThrow('Errore server')
+    await expect(getBranchesRepository.getBranches('repo-1')).rejects.toThrow(
+      'Errore server',
+    )
   })
 
   it('dovrebbe propagare errori non-ApiError', async () => {
     vi.mocked(apiGet).mockRejectedValue(new Error('Errore di rete'))
-    await expect(getBranchesRepository.getBranches('repo-1')).rejects.toThrow('Errore di rete')
+    await expect(getBranchesRepository.getBranches('repo-1')).rejects.toThrow(
+      'Errore di rete',
+    )
   })
 })

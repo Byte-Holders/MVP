@@ -34,7 +34,9 @@ describe('useAddRepository', () => {
   })
 
   it('dovrebbe chiamare addRepository con i parametri corretti', async () => {
-    vi.mocked(addRepositoryRepository.addRepository).mockResolvedValue(undefined)
+    vi.mocked(addRepositoryRepository.addRepository).mockResolvedValue(
+      undefined,
+    )
     const { result } = renderHook(() => useAddRepository(workspaceId), {
       wrapper: createWrapper(),
     })
@@ -50,7 +52,9 @@ describe('useAddRepository', () => {
   })
 
   it('dovrebbe impostare isPending true durante la mutazione', async () => {
-    vi.mocked(addRepositoryRepository.addRepository).mockReturnValue(new Promise(() => {}))
+    vi.mocked(addRepositoryRepository.addRepository).mockReturnValue(
+      new Promise(() => {}),
+    )
     const { result } = renderHook(() => useAddRepository(workspaceId), {
       wrapper: createWrapper(),
     })

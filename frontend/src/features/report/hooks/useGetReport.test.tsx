@@ -24,7 +24,16 @@ const mockReport = {
     depsReport: { vulnerabilities: [], vulnerabilityAnalysis: '' },
     vulnerabilitiesReport: { vulnerabilities: [], mark: 8 },
     docsReport: { readmeReport: 'ok', commentReport: 'ok', mark: 7 },
-    testReport: { coverageReport: { statements: 80, branches: 70, functions: 90, lines: 80 }, failedTests: [], testsRun: 10 },
+    testReport: {
+      coverageReport: {
+        statements: 80,
+        branches: 70,
+        functions: 90,
+        lines: 80,
+      },
+      failedTests: [],
+      testsRun: 10,
+    },
     techReport: { libraries: [], frameworks: [], languages: [] },
   },
 }
@@ -42,7 +51,10 @@ describe('useGetReport', () => {
     await waitFor(() => {
       expect(result.current.data).toEqual(mockReport)
     })
-    expect(getReportRepository.getReport).toHaveBeenCalledWith('repo-1', 'develop')
+    expect(getReportRepository.getReport).toHaveBeenCalledWith(
+      'repo-1',
+      'develop',
+    )
   })
 
   it('dovrebbe essere disabilitato se branch è undefined', () => {
@@ -53,7 +65,9 @@ describe('useGetReport', () => {
   })
 
   it('dovrebbe restituire isLoading true inizialmente', () => {
-    vi.mocked(getReportRepository.getReport).mockReturnValue(new Promise(() => {}))
+    vi.mocked(getReportRepository.getReport).mockReturnValue(
+      new Promise(() => {}),
+    )
     const { result } = renderHook(() => useGetReport('repo-1', 'main'), {
       wrapper: createWrapper(),
     })

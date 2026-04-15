@@ -41,19 +41,27 @@ describe('TestSection', () => {
 
   it('dovrebbe mostrare il messaggio se non ci sono test', () => {
     render(<TestSection testReport={{ ...baseReport, testsRun: 0 }} />)
-    expect(screen.getByText('Nessun test rilevato nel progetto.')).toBeInTheDocument()
+    expect(
+      screen.getByText('Nessun test rilevato nel progetto.'),
+    ).toBeInTheDocument()
   })
 
   it('non dovrebbe mostrare il messaggio se ci sono test', () => {
     render(<TestSection testReport={baseReport} />)
-    expect(screen.queryByText('Nessun test rilevato nel progetto.')).not.toBeInTheDocument()
+    expect(
+      screen.queryByText('Nessun test rilevato nel progetto.'),
+    ).not.toBeInTheDocument()
   })
 
   it('dovrebbe mostrare i test falliti', () => {
     const report = {
       ...baseReport,
       failedTests: [
-        { name: 'test-a', path: 'src/a.test.ts', messageSummary: 'Expected true' },
+        {
+          name: 'test-a',
+          path: 'src/a.test.ts',
+          messageSummary: 'Expected true',
+        },
       ],
     }
     render(<TestSection testReport={report} />)

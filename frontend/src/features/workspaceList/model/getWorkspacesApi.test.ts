@@ -13,7 +13,9 @@ describe('workspaceListRepository', () => {
   })
 
   it('dovrebbe chiamare apiGet con il percorso corretto', async () => {
-    const mockWorkspaces = [{ id: 'ws-1', name: 'Alpha', owner: 'alice', role: 'owner' }]
+    const mockWorkspaces = [
+      { id: 'ws-1', name: 'Alpha', owner: 'alice', role: 'owner' },
+    ]
     vi.mocked(apiGet).mockResolvedValue(mockWorkspaces)
     const result = await workspaceListRepository.getWorkspaces()
     expect(apiGet).toHaveBeenCalledWith('/api/workspaces')
@@ -28,6 +30,8 @@ describe('workspaceListRepository', () => {
 
   it('dovrebbe propagare gli errori della API', async () => {
     vi.mocked(apiGet).mockRejectedValue(new Error('Non autorizzato'))
-    await expect(workspaceListRepository.getWorkspaces()).rejects.toThrow('Non autorizzato')
+    await expect(workspaceListRepository.getWorkspaces()).rejects.toThrow(
+      'Non autorizzato',
+    )
   })
 })

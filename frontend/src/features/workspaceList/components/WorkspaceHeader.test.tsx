@@ -7,14 +7,23 @@ vi.mock('@tanstack/react-router', () => ({
 }))
 
 vi.mock('../hooks/useGetWorkspace', () => ({ useGetWorkspace: vi.fn() }))
-vi.mock('../../workspaceMembers/hooks/useGetMembers', () => ({ useGetMembers: vi.fn() }))
-vi.mock('../../workspaceRepository/hooks/useGetRepositories', () => ({ useGetRepositories: vi.fn() }))
+vi.mock('../../workspaceMembers/hooks/useGetMembers', () => ({
+  useGetMembers: vi.fn(),
+}))
+vi.mock('../../workspaceRepository/hooks/useGetRepositories', () => ({
+  useGetRepositories: vi.fn(),
+}))
 
 import { useGetWorkspace } from '../hooks/useGetWorkspace'
 import { useGetMembers } from '../../workspaceMembers/hooks/useGetMembers'
 import { useGetRepositories } from '../../workspaceRepository/hooks/useGetRepositories'
 
-const mockWorkspace = { id: 'ws-1', name: 'My Workspace', owner: 'alice', role: 'OWNER' }
+const mockWorkspace = {
+  id: 'ws-1',
+  name: 'My Workspace',
+  owner: 'alice',
+  role: 'OWNER',
+}
 
 describe('WorkspaceHeader', () => {
   beforeEach(() => {
@@ -24,54 +33,82 @@ describe('WorkspaceHeader', () => {
   })
 
   it('dovrebbe mostrare lo skeleton durante il caricamento', () => {
-    vi.mocked(useGetWorkspace).mockReturnValue({ data: undefined, isLoading: true } as any)
+    vi.mocked(useGetWorkspace).mockReturnValue({
+      data: undefined,
+      isLoading: true,
+    } as any)
     const { container } = render(<WorkspaceHeader workspaceId="ws-1" />)
     expect(container.querySelector('.animate-pulse')).toBeInTheDocument()
   })
 
   it('dovrebbe restituire null se workspace non trovato', () => {
-    vi.mocked(useGetWorkspace).mockReturnValue({ data: undefined, isLoading: false } as any)
+    vi.mocked(useGetWorkspace).mockReturnValue({
+      data: undefined,
+      isLoading: false,
+    } as any)
     const { container } = render(<WorkspaceHeader workspaceId="ws-1" />)
     expect(container.firstChild).toBeNull()
   })
 
   it('dovrebbe mostrare nome e owner del workspace', () => {
-    vi.mocked(useGetWorkspace).mockReturnValue({ data: mockWorkspace, isLoading: false } as any)
+    vi.mocked(useGetWorkspace).mockReturnValue({
+      data: mockWorkspace,
+      isLoading: false,
+    } as any)
     render(<WorkspaceHeader workspaceId="ws-1" />)
     expect(screen.getByText('My Workspace')).toBeInTheDocument()
     expect(screen.getByText('alice')).toBeInTheDocument()
   })
 
   it('dovrebbe mostrare il badge del ruolo', () => {
-    vi.mocked(useGetWorkspace).mockReturnValue({ data: mockWorkspace, isLoading: false } as any)
+    vi.mocked(useGetWorkspace).mockReturnValue({
+      data: mockWorkspace,
+      isLoading: false,
+    } as any)
     render(<WorkspaceHeader workspaceId="ws-1" />)
     expect(screen.getByText('OWNER')).toBeInTheDocument()
   })
 
   it('dovrebbe mostrare le iniziali del workspace nell avatar', () => {
-    vi.mocked(useGetWorkspace).mockReturnValue({ data: mockWorkspace, isLoading: false } as any)
+    vi.mocked(useGetWorkspace).mockReturnValue({
+      data: mockWorkspace,
+      isLoading: false,
+    } as any)
     render(<WorkspaceHeader workspaceId="ws-1" />)
     expect(screen.getByText('MW')).toBeInTheDocument()
   })
 
   it('dovrebbe mostrare il conteggio membri se disponibile', () => {
-    vi.mocked(useGetWorkspace).mockReturnValue({ data: mockWorkspace, isLoading: false } as any)
-    vi.mocked(useGetMembers).mockReturnValue({ data: [{ id: 'u1' }, { id: 'u2' }] } as any)
+    vi.mocked(useGetWorkspace).mockReturnValue({
+      data: mockWorkspace,
+      isLoading: false,
+    } as any)
+    vi.mocked(useGetMembers).mockReturnValue({
+      data: [{ id: 'u1' }, { id: 'u2' }],
+    } as any)
     render(<WorkspaceHeader workspaceId="ws-1" />)
     expect(screen.getByText('2')).toBeInTheDocument()
     expect(screen.getByText('membri')).toBeInTheDocument()
   })
 
   it('dovrebbe mostrare il conteggio repository se disponibile', () => {
-    vi.mocked(useGetWorkspace).mockReturnValue({ data: mockWorkspace, isLoading: false } as any)
-    vi.mocked(useGetRepositories).mockReturnValue({ data: [{ repositoryId: 'r1' }] } as any)
+    vi.mocked(useGetWorkspace).mockReturnValue({
+      data: mockWorkspace,
+      isLoading: false,
+    } as any)
+    vi.mocked(useGetRepositories).mockReturnValue({
+      data: [{ repositoryId: 'r1' }],
+    } as any)
     render(<WorkspaceHeader workspaceId="ws-1" />)
     expect(screen.getByText('1')).toBeInTheDocument()
     expect(screen.getByText('repository')).toBeInTheDocument()
   })
 
   it('non dovrebbe mostrare stats se i dati non sono ancora caricati', () => {
-    vi.mocked(useGetWorkspace).mockReturnValue({ data: mockWorkspace, isLoading: false } as any)
+    vi.mocked(useGetWorkspace).mockReturnValue({
+      data: mockWorkspace,
+      isLoading: false,
+    } as any)
     render(<WorkspaceHeader workspaceId="ws-1" />)
     expect(screen.queryByText('membri')).not.toBeInTheDocument()
     expect(screen.queryByText('repository')).not.toBeInTheDocument()

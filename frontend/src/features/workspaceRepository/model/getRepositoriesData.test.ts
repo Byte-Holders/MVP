@@ -27,7 +27,9 @@ describe('getRepositoriesRepository', () => {
   it('dovrebbe aggiungere il query param searchInput se fornito', async () => {
     vi.mocked(apiGet).mockResolvedValue([mockRepos[0]])
     await getRepositoriesRepository.getRepositories('ws-1', 'repo-a')
-    expect(apiGet).toHaveBeenCalledWith('/api/workspaces/ws-1/repositories?searchInput=repo-a')
+    expect(apiGet).toHaveBeenCalledWith(
+      '/api/workspaces/ws-1/repositories?searchInput=repo-a',
+    )
   })
 
   it('dovrebbe codificare correttamente searchInput con caratteri speciali', async () => {
@@ -40,6 +42,8 @@ describe('getRepositoriesRepository', () => {
 
   it('dovrebbe propagare gli errori della API', async () => {
     vi.mocked(apiGet).mockRejectedValue(new Error('Non autorizzato'))
-    await expect(getRepositoriesRepository.getRepositories('ws-1')).rejects.toThrow('Non autorizzato')
+    await expect(
+      getRepositoriesRepository.getRepositories('ws-1'),
+    ).rejects.toThrow('Non autorizzato')
   })
 })

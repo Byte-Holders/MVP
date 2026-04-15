@@ -3,7 +3,9 @@ import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { ReportPage } from './ReportPage'
 
 vi.mock('../hooks/useReportPage', () => ({ useReportPage: vi.fn() }))
-vi.mock('../../workspaceRepository/hooks/useGetRepository', () => ({ useGetRepository: vi.fn() }))
+vi.mock('../../workspaceRepository/hooks/useGetRepository', () => ({
+  useGetRepository: vi.fn(),
+}))
 vi.mock('../components/BranchSelector', () => ({
   BranchSelector: () => <div data-testid="branch-selector" />,
 }))
@@ -44,7 +46,16 @@ const mockReport = {
     depsReport: { vulnerabilities: [], vulnerabilityAnalysis: '', list: [] },
     vulnerabilitiesReport: { vulnerabilities: [], mark: 8 },
     docsReport: { readmeReport: 'ok', commentReport: 'ok', mark: 7 },
-    testReport: { coverageReport: { statements: 80, branches: 70, functions: 90, lines: 80 }, failedTests: [], testsRun: 10 },
+    testReport: {
+      coverageReport: {
+        statements: 80,
+        branches: 70,
+        functions: 90,
+        lines: 80,
+      },
+      failedTests: [],
+      testsRun: 10,
+    },
     techReport: { libraries: [], frameworks: [], languages: [] },
   },
 }
@@ -74,7 +85,10 @@ describe('ReportPage', () => {
   })
 
   it('dovrebbe mostrare skeleton durante il caricamento del report', () => {
-    vi.mocked(useReportPage).mockReturnValue({ ...defaultReportPage, reportLoading: true })
+    vi.mocked(useReportPage).mockReturnValue({
+      ...defaultReportPage,
+      reportLoading: true,
+    })
     const { container } = render(<ReportPage {...props} />)
     expect(container.querySelector('.animate-pulse')).toBeInTheDocument()
   })
@@ -85,11 +99,16 @@ describe('ReportPage', () => {
       reportError: new Error('Non trovato'),
     })
     render(<ReportPage {...props} />)
-    expect(screen.getByText('Nessun report disponibile per questo branch.')).toBeInTheDocument()
+    expect(
+      screen.getByText('Nessun report disponibile per questo branch.'),
+    ).toBeInTheDocument()
   })
 
   it('dovrebbe mostrare le sezioni del report quando i dati sono disponibili', () => {
-    vi.mocked(useReportPage).mockReturnValue({ ...defaultReportPage, report: mockReport as any })
+    vi.mocked(useReportPage).mockReturnValue({
+      ...defaultReportPage,
+      report: mockReport as any,
+    })
     render(<ReportPage {...props} />)
     expect(screen.getByTestId('tech-section')).toBeInTheDocument()
     expect(screen.getByTestId('test-section')).toBeInTheDocument()
@@ -107,7 +126,10 @@ describe('ReportPage', () => {
   })
 
   it('non dovrebbe mostrare la SummarySection se il report non ha summary', () => {
-    vi.mocked(useReportPage).mockReturnValue({ ...defaultReportPage, report: mockReport as any })
+    vi.mocked(useReportPage).mockReturnValue({
+      ...defaultReportPage,
+      report: mockReport as any,
+    })
     render(<ReportPage {...props} />)
     expect(screen.queryByTestId('summary-section')).not.toBeInTheDocument()
   })

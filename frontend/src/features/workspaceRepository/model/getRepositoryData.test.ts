@@ -13,7 +13,11 @@ describe('getRepositoryRepository', () => {
   })
 
   it('dovrebbe chiamare apiGet con il percorso corretto', async () => {
-    const mockRepo = { repositoryId: 'repo-1', name: 'my-repo', ownerName: 'alice' }
+    const mockRepo = {
+      repositoryId: 'repo-1',
+      name: 'my-repo',
+      ownerName: 'alice',
+    }
     vi.mocked(apiGet).mockResolvedValue(mockRepo)
     const result = await getRepositoryRepository.getRepository('repo-1')
     expect(apiGet).toHaveBeenCalledWith('/api/repositories/repo-1')
@@ -22,6 +26,8 @@ describe('getRepositoryRepository', () => {
 
   it('dovrebbe propagare gli errori della API', async () => {
     vi.mocked(apiGet).mockRejectedValue(new Error('Non trovato'))
-    await expect(getRepositoryRepository.getRepository('repo-x')).rejects.toThrow('Non trovato')
+    await expect(
+      getRepositoryRepository.getRepository('repo-x'),
+    ).rejects.toThrow('Non trovato')
   })
 })

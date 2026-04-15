@@ -44,7 +44,9 @@ describe('useGetRepository', () => {
     vi.mocked(getRepositoryRepository.getRepository).mockResolvedValue(mockRepo)
     renderHook(() => useGetRepository('repo-1'), { wrapper: createWrapper() })
     await waitFor(() => {
-      expect(getRepositoryRepository.getRepository).toHaveBeenCalledWith('repo-1')
+      expect(getRepositoryRepository.getRepository).toHaveBeenCalledWith(
+        'repo-1',
+      )
     })
   })
 
@@ -56,7 +58,9 @@ describe('useGetRepository', () => {
   })
 
   it('dovrebbe restituire isLoading true inizialmente', () => {
-    vi.mocked(getRepositoryRepository.getRepository).mockReturnValue(new Promise(() => {}))
+    vi.mocked(getRepositoryRepository.getRepository).mockReturnValue(
+      new Promise(() => {}),
+    )
     const { result } = renderHook(() => useGetRepository('repo-1'), {
       wrapper: createWrapper(),
     })

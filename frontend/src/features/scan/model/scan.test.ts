@@ -26,7 +26,11 @@ describe('scanRepository', () => {
 
     it('dovrebbe chiamare apiPost con il payload corretto', async () => {
       vi.mocked(apiPost).mockResolvedValue({ scanId: 'scan-xyz' })
-      const payload = { workspaceId: 'ws-1', repositoryId: 'repo-1', branch: 'main' }
+      const payload = {
+        workspaceId: 'ws-1',
+        repositoryId: 'repo-1',
+        branch: 'main',
+      }
       await scanRepository.requestScan(payload)
       expect(apiPost).toHaveBeenCalledWith('/api/scan', payload)
     })
@@ -34,7 +38,11 @@ describe('scanRepository', () => {
     it('dovrebbe propagare gli errori della API', async () => {
       vi.mocked(apiPost).mockRejectedValue(new Error('Errore di rete'))
       await expect(
-        scanRepository.requestScan({ workspaceId: 'ws-1', repositoryId: 'repo-1', branch: 'main' }),
+        scanRepository.requestScan({
+          workspaceId: 'ws-1',
+          repositoryId: 'repo-1',
+          branch: 'main',
+        }),
       ).rejects.toThrow('Errore di rete')
     })
   })
@@ -48,7 +56,9 @@ describe('scanRepository', () => {
 
     it('dovrebbe propagare gli errori della API', async () => {
       vi.mocked(apiPatch).mockRejectedValue(new Error('Stop fallito'))
-      await expect(scanRepository.stopScan('scan-abc')).rejects.toThrow('Stop fallito')
+      await expect(scanRepository.stopScan('scan-abc')).rejects.toThrow(
+        'Stop fallito',
+      )
     })
   })
 })

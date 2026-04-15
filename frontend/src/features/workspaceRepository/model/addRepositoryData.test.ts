@@ -37,7 +37,9 @@ describe('addRepositoryRepository', () => {
   it('dovrebbe propagare gli errori della API', async () => {
     vi.mocked(apiPost).mockRejectedValue(new Error('Repository già aggiunto'))
     await expect(
-      addRepositoryRepository.addRepository('ws-1', { repositoryUrl: 'https://github.com/org/repo' }),
+      addRepositoryRepository.addRepository('ws-1', {
+        repositoryUrl: 'https://github.com/org/repo',
+      }),
     ).rejects.toThrow('Repository già aggiunto')
   })
 })
