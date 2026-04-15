@@ -1,4 +1,9 @@
-import { ForbiddenException, NotFoundException, ServiceUnavailableException, UnauthorizedException } from '@nestjs/common';
+import {
+  ForbiddenException,
+  NotFoundException,
+  ServiceUnavailableException,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { GitHubRepository } from './github.repository';
 
 const mockFetch = jest.fn();
@@ -50,7 +55,10 @@ describe('GitHubRepository', () => {
 
       await repo.getBranches('owner', 'repo');
 
-      const [, options] = mockFetch.mock.calls[0] as [string, { headers: Record<string, string> }];
+      const [, options] = mockFetch.mock.calls[0] as [
+        string,
+        { headers: Record<string, string> },
+      ];
       expect(options.headers['Authorization']).toBeUndefined();
     });
 

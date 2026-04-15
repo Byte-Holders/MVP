@@ -5,7 +5,9 @@ import { Types } from 'mongoose';
 import { RepositoryRepository } from './repository.repository';
 import { Repository } from '../schemas/repository.schema';
 
-const makeDoc = (overrides: Partial<Repository & { _id: Types.ObjectId }> = {}) => {
+const makeDoc = (
+  overrides: Partial<Repository & { _id: Types.ObjectId }> = {},
+) => {
   const id = overrides._id ?? new Types.ObjectId();
   return {
     _id: id,
@@ -59,11 +61,22 @@ describe('RepositoryRepository', () => {
       ];
       mockModel.find.mockResolvedValue(docs);
 
-      const result = await repo.getRepositories([id1.toString(), id2.toString()]);
+      const result = await repo.getRepositories([
+        id1.toString(),
+        id2.toString(),
+      ]);
 
       expect(result).toHaveLength(2);
-      expect(result[0]).toMatchObject({ repositoryId: id1.toString(), ownerName: 'alice', name: 'alpha' });
-      expect(result[1]).toMatchObject({ repositoryId: id2.toString(), ownerName: 'bob', name: 'beta' });
+      expect(result[0]).toMatchObject({
+        repositoryId: id1.toString(),
+        ownerName: 'alice',
+        name: 'alpha',
+      });
+      expect(result[1]).toMatchObject({
+        repositoryId: id2.toString(),
+        ownerName: 'bob',
+        name: 'beta',
+      });
     });
 
     it('passes searchInput as a case-insensitive regex filter', async () => {
@@ -83,7 +96,9 @@ describe('RepositoryRepository', () => {
 
       await repo.getRepositories([], 'a.b*c');
 
-      const [filter] = mockModel.find.mock.calls[0] as [Record<string, unknown>];
+      const [filter] = mockModel.find.mock.calls[0] as [
+        Record<string, unknown>,
+      ];
       expect((filter['name'] as { $regex: string }).$regex).toBe('a\\.b\\*c');
     });
 
@@ -92,7 +107,9 @@ describe('RepositoryRepository', () => {
 
       await repo.getRepositories([]);
 
-      const [filter] = mockModel.find.mock.calls[0] as [Record<string, unknown>];
+      const [filter] = mockModel.find.mock.calls[0] as [
+        Record<string, unknown>,
+      ];
       expect(filter['name']).toBeUndefined();
     });
   });
