@@ -15,7 +15,8 @@ import { RepositoryScoreRepositoryToken } from './interfaces/repository.score-re
 import { RepositoryReaderToken } from './interfaces/repository.reader.interface';
 import { RepositoryWriterToken } from './interfaces/repository.writer.interface';
 import { RepositoryScoreWriterToken } from './interfaces/repository.score-writer.interface';
-import { GitHubRepositoryToken } from './interfaces/github.repository.interface';
+import { GitHubBranchesRepositoryToken } from './interfaces/github.branches-repository.interface';
+import { GitHubAccessRepositoryToken } from './interfaces/github.access-repository.interface';
 
 @Module({
   imports: [
@@ -38,7 +39,11 @@ import { GitHubRepositoryToken } from './interfaces/github.repository.interface'
       useClass: RepositoryRepository,
     },
     {
-      provide: GitHubRepositoryToken,
+      provide: GitHubBranchesRepositoryToken,
+      useClass: GitHubRepository,
+    },
+    {
+      provide: GitHubAccessRepositoryToken,
       useClass: GitHubRepository,
     },
     {

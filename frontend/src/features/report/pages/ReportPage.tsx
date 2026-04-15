@@ -5,13 +5,12 @@ import { TechSection } from '../components/TechSection'
 import { TestSection } from '../components/TestSection'
 import { SecuritySection } from '../components/SecuritySection'
 import { DocsSection } from '../components/DocsSection'
-import { ScanButton } from '#/features/repo/components/ScanButton'
+import { ScanButton } from '#/features/scan/components/ScanButton'
+import { useGetRepository } from '../../workspaceRepository/hooks/useGetRepository'
 
 type Props = {
   workspaceId: string
   repositoryId: string
-  ownerName: string
-  name: string
 }
 
 const NAV_ITEMS = [
@@ -28,12 +27,11 @@ function scrollTo(id: string) {
     ?.scrollIntoView({ behavior: 'smooth', block: 'start' })
 }
 
-export function ReportPage({
-  workspaceId,
-  repositoryId,
-  ownerName,
-  name,
-}: Props) {
+export function ReportPage({ workspaceId, repositoryId }: Props) {
+  const { data: repository } = useGetRepository(repositoryId)
+  const ownerName = repository?.ownerName ?? ''
+  const name = repository?.name ?? ''
+
   const {
     branches,
     branchesLoading,

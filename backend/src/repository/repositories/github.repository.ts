@@ -5,10 +5,13 @@ import {
   ServiceUnavailableException,
   UnauthorizedException,
 } from '@nestjs/common';
-import type { IGitHubRepository } from '../interfaces/github.repository.interface';
+import type { IGitHubBranchesRepository } from '../interfaces/github.branches-repository.interface';
+import type { IGitHubAccessRepository } from '../interfaces/github.access-repository.interface';
 
 @Injectable()
-export class GitHubRepository implements IGitHubRepository {
+export class GitHubRepository
+  implements IGitHubBranchesRepository, IGitHubAccessRepository
+{
   async getBranches(
     ownerName: string,
     name: string,

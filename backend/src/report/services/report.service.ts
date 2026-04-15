@@ -62,7 +62,7 @@ export class ReportService implements IReportService {
     branch: string,
     userId: string,
   ): Promise<ReportInfo> {
-    const entity = await this.reportRepository.findLatestByTarget(
+    const entity = await this.reportRepository.getReport(
       repositoryId,
       branch,
     );

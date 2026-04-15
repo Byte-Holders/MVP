@@ -2,7 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { RepositoryWriterService } from './repository-writer.service';
 import { RepositoryFindRepositoryToken } from '../interfaces/repository.find-repository.interface';
 import { RepositoryPersistRepositoryToken } from '../interfaces/repository.persist-repository.interface';
-import { GitHubRepositoryToken } from '../interfaces/github.repository.interface';
+import { GitHubAccessRepositoryToken } from '../interfaces/github.access-repository.interface';
 import type { RepositoryEntity } from '../entities/repository.entity';
 
 const makeEntity = (
@@ -54,7 +54,7 @@ describe('RepositoryWriterService', () => {
           provide: RepositoryPersistRepositoryToken,
           useValue: mockPersistRepository,
         },
-        { provide: GitHubRepositoryToken, useValue: mockGitHubRepository },
+        { provide: GitHubAccessRepositoryToken, useValue: mockGitHubRepository },
       ],
     }).compile();
 

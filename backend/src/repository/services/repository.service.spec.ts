@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { RepositoryService } from './repository.service';
 import { RepositoryFindRepositoryToken } from '../interfaces/repository.find-repository.interface';
-import { GitHubRepositoryToken } from '../interfaces/github.repository.interface';
+import { GitHubBranchesRepositoryToken } from '../interfaces/github.branches-repository.interface';
 import type { RepositoryEntity } from '../entities/repository.entity';
 
 const makeEntity = (
@@ -41,7 +41,7 @@ describe('RepositoryService', () => {
           provide: RepositoryFindRepositoryToken,
           useValue: mockFindRepository,
         },
-        { provide: GitHubRepositoryToken, useValue: mockGitHubRepository },
+        { provide: GitHubBranchesRepositoryToken, useValue: mockGitHubRepository },
       ],
     }).compile();
 

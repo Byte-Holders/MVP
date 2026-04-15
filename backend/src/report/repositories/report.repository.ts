@@ -12,24 +12,22 @@ export class ReportRepository implements IReportRepository {
     private readonly reportModel: Model<ReportSchemaClass>,
   ) {}
 
-  async save(report: ReportEntity): Promise<ReportEntity> {
+  async saveReport(report: ReportEntity): Promise<void> {
     const { repositoryId, branch } = report.metadata!.target;
-    const doc = await this.reportModel
+    await this.reportModel
       .findOneAndUpdate(
         {
           'metadata.target.repositoryId': repositoryId,
           'metadata.target.branch': branch,
         },
         { $set: report },
-        { upsert: true, returnDocument: 'after' },
+        { upsert: true },
       )
       .lean()
       .exec();
-
-    return this.toEntity(doc);
   }
 
-  async findLatestByTarget(
+  async getReport(
     repositoryId: string,
     branch: string,
   ): Promise<ReportEntity | null> {

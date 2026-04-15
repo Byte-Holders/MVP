@@ -1,6 +1,6 @@
 import type { StartScanInfo } from '../../model/scan'
 
-export interface IRepoRepository {
+export interface IScanRepository {
   requestScan(payload: StartScanInfo): Promise<string>
   stopScan(scanId: string): Promise<void>
 }

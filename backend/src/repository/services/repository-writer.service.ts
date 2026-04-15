@@ -4,8 +4,8 @@ import type { IRepositoryFindRepository } from '../interfaces/repository.find-re
 import { RepositoryFindRepositoryToken } from '../interfaces/repository.find-repository.interface';
 import type { IRepositoryPersistRepository } from '../interfaces/repository.persist-repository.interface';
 import { RepositoryPersistRepositoryToken } from '../interfaces/repository.persist-repository.interface';
-import type { IGitHubRepository } from '../interfaces/github.repository.interface';
-import { GitHubRepositoryToken } from '../interfaces/github.repository.interface';
+import type { IGitHubAccessRepository } from '../interfaces/github.access-repository.interface';
+import { GitHubAccessRepositoryToken } from '../interfaces/github.access-repository.interface';
 
 @Injectable()
 export class RepositoryWriterService implements IRepositoryWriter {
@@ -14,8 +14,8 @@ export class RepositoryWriterService implements IRepositoryWriter {
     private readonly repositoryFindRepository: IRepositoryFindRepository,
     @Inject(RepositoryPersistRepositoryToken)
     private readonly repositoryPersistRepository: IRepositoryPersistRepository,
-    @Inject(GitHubRepositoryToken)
-    private readonly gitHubRepository: IGitHubRepository,
+    @Inject(GitHubAccessRepositoryToken)
+    private readonly gitHubRepository: IGitHubAccessRepository,
   ) {}
 
   async addRepository(

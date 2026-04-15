@@ -1,5 +1,5 @@
 import { apiPost, apiPatch } from '../../../api/apiClient'
-import type { IRepoRepository } from '../interfaces/model/IRepoRepository'
+import type { IScanRepository } from '../interfaces/model/IScanRepository'
 
 export interface StartScanInfo {
   workspaceId: string
@@ -7,7 +7,7 @@ export interface StartScanInfo {
   branch: string
 }
 
-class RepoRepository implements IRepoRepository {
+class ScanRepository implements IScanRepository {
   async requestScan(payload: StartScanInfo): Promise<string> {
     const data = await apiPost<{ scanId: string }>('/api/scan', payload)
     return data.scanId
@@ -18,4 +18,4 @@ class RepoRepository implements IRepoRepository {
   }
 }
 
-export const scanRepository: IRepoRepository = new RepoRepository()
+export const scanRepository: IScanRepository = new ScanRepository()
