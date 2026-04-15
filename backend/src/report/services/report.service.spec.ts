@@ -112,16 +112,16 @@ const MOCK_TOKEN = 'myToken';
 describe('ReportService', () => {
   let service: ReportService;
   let mockRepository: {
-    save: jest.Mock;
-    findLatestByTarget: jest.Mock;
+    saveReport: jest.Mock;
+    getReport: jest.Mock;
   };
   let mockWorkspaceUserService: { getUserRoleForRepository: jest.Mock };
   let mockScanStatusService: jest.Mocked<IScanStatusService>;
 
   beforeEach(async () => {
     mockRepository = {
-      save: jest.fn(),
-      findLatestByTarget: jest.fn(),
+      saveReport: jest.fn(),
+      getReport: jest.fn(),
     };
     mockWorkspaceUserService = {
       getUserRoleForRepository: jest.fn().mockResolvedValue(null),
@@ -161,7 +161,7 @@ describe('ReportService', () => {
   describe('saveReport', () => {
     it('updates the scan status with Completed Status and delegates to the repository', async () => {
       const report = makeReport();
-      mockRepository.save.mockResolvedValue(report);
+      mockRepository.saveReport.mockResolvedValue(report);
 
       await service.saveReport(report, MOCK_TOKEN);
 
@@ -171,7 +171,7 @@ describe('ReportService', () => {
         ScanStatus.Completed,
       );
 
-      expect(mockRepository.save).toHaveBeenCalledWith({
+      expect(mockRepository.saveReport).toHaveBeenCalledWith({
         summary: report.summary,
         data: report.data,
         metadata: report.metadata,
@@ -187,7 +187,7 @@ describe('ReportService', () => {
         service.saveReport(makeReport(), MOCK_TOKEN),
       ).rejects.toThrow();
 
-      expect(mockRepository.save).not.toHaveBeenCalled();
+      expect(mockRepository.saveReport).not.toHaveBeenCalled();
     });
   });
 
@@ -195,7 +195,7 @@ describe('ReportService', () => {
     it('returns full report with vulnCounts for non-PM users', async () => {
       const report = makeReport();
       const { repositoryId, branch } = report.metadata!.target;
-      mockRepository.findLatestByTarget.mockResolvedValue(report);
+      mockRepository.getReport.mockResolvedValue(report);
       mockWorkspaceUserService.getUserRoleForRepository.mockResolvedValue(
         WorkspaceRole.TECH_LEAD,
       );
@@ -226,7 +226,7 @@ describe('ReportService', () => {
     it('hides dep list and vuln lists for PROJECT_MANAGER but keeps counts and marks', async () => {
       const report = makeReport();
       const { repositoryId, branch } = report.metadata!.target;
-      mockRepository.findLatestByTarget.mockResolvedValue(report);
+      mockRepository.getReport.mockResolvedValue(report);
       mockWorkspaceUserService.getUserRoleForRepository.mockResolvedValue(
         WorkspaceRole.PROJECT_MANAGER,
       );
@@ -256,7 +256,7 @@ describe('ReportService', () => {
     it('returns full report with vulnCounts when user has no workspace role', async () => {
       const report = makeReport();
       const { repositoryId, branch } = report.metadata!.target;
-      mockRepository.findLatestByTarget.mockResolvedValue(report);
+      mockRepository.getReport.mockResolvedValue(report);
       mockWorkspaceUserService.getUserRoleForRepository.mockResolvedValue(null);
 
       const result = await service.getReport(repositoryId, branch, 'user-x');
@@ -272,7 +272,7 @@ describe('ReportService', () => {
     });
 
     it('throws NotFoundException when report is not found', async () => {
-      mockRepository.findLatestByTarget.mockResolvedValue(null);
+      mockRepository.getReport.mockResolvedValue(null);
 
       await expect(
         service.getReport('myRepositoryId', 'main', 'user-1'),

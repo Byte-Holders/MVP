@@ -8,6 +8,8 @@ import {
 import { GetScanStatusDto } from './dtos/get-scan-status.dto';
 import { SetErrorStatusDto } from './dtos/set-error-status.dto';
 import { ScanStatus } from './enums/scan-status.enum';
+import { ScanAuthGuard } from '../scan-auth/scan-auth.guard';
+import { JwtAuthGuard } from '../../auth/jwt-auth.guard';
 
 const MOCK_SCAN_ID = 'myId';
 const MOCK_CONTAINER_TOKEN = 'myToken';
@@ -36,7 +38,12 @@ describe('ScanStatusController', () => {
       providers: [
         { provide: ISCAN_STATUS_SERVICE_TOKEN, useValue: mockService },
       ],
-    }).compile();
+    })
+      .overrideGuard(JwtAuthGuard)
+      .useValue({ canActivate: () => true })
+      .overrideGuard(ScanAuthGuard)
+      .useValue({ canActivate: () => true })
+      .compile();
 
     controller = module.get<ScanStatusController>(ScanStatusController);
   });
