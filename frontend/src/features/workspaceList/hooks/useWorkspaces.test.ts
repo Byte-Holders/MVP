@@ -34,7 +34,9 @@ describe('useWorkspaces Hook', () => {
   })
 
   it('dovrebbe gestire un errore API correttamente', async () => {
-    vi.mocked(mockRepo.getWorkspaces).mockRejectedValue(new Error('Errore di rete'))
+    vi.mocked(mockRepo.getWorkspaces).mockRejectedValue(
+      new Error('Errore di rete'),
+    )
     const { result } = renderHook(() => useWorkspaces(mockRepo))
     await waitFor(() => {
       expect(result.current.isLoading).toBe(false)
@@ -44,7 +46,9 @@ describe('useWorkspaces Hook', () => {
   })
 
   it('dovrebbe aggiornare i dati quando si chiama refresh()', async () => {
-    const initialData = [{ id: 'ws-1', name: 'Alpha', owner: 'alice', role: 'owner' }]
+    const initialData = [
+      { id: 'ws-1', name: 'Alpha', owner: 'alice', role: 'owner' },
+    ]
     const refreshedData = [
       { id: 'ws-1', name: 'Alpha', owner: 'alice', role: 'owner' },
       { id: 'ws-2', name: 'Beta', owner: 'bob', role: 'member' },
@@ -58,7 +62,9 @@ describe('useWorkspaces Hook', () => {
       expect(result.current.workspaces).toEqual(initialData)
     })
 
-    act(() => { result.current.refresh() })
+    act(() => {
+      result.current.refresh()
+    })
 
     await waitFor(() => {
       expect(result.current.workspaces).toEqual(refreshedData)
@@ -73,7 +79,9 @@ describe('useWorkspaces Hook', () => {
     })
 
     vi.mocked(mockRepo.getWorkspaces).mockReturnValue(new Promise(() => {}))
-    act(() => { result.current.refresh() })
+    act(() => {
+      result.current.refresh()
+    })
 
     expect(result.current.isLoading).toBe(true)
   })

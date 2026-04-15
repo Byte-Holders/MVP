@@ -11,7 +11,9 @@ vi.mock('../model/removeRepositoryData', () => ({
 import { removeRepositoryRepository } from '../model/removeRepositoryData'
 
 const createWrapper = () => {
-  const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } })
+  const queryClient = new QueryClient({
+    defaultOptions: { queries: { retry: false } },
+  })
   return ({ children }: { children: ReactNode }) => (
     <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
   )
@@ -20,30 +22,51 @@ const createWrapper = () => {
 describe('useRemoveRepository Hook', () => {
   const workspaceId = 'ws-1'
 
-  beforeEach(() => { vi.clearAllMocks() })
+  beforeEach(() => {
+    vi.clearAllMocks()
+  })
 
   it('dovrebbe chiamare removeRepository con i parametri corretti', async () => {
-    vi.mocked(removeRepositoryRepository.removeRepository).mockResolvedValue(undefined)
-    const { result } = renderHook(() => useRemoveRepository(workspaceId), { wrapper: createWrapper() })
+    vi.mocked(removeRepositoryRepository.removeRepository).mockResolvedValue(
+      undefined,
+    )
+    const { result } = renderHook(() => useRemoveRepository(workspaceId), {
+      wrapper: createWrapper(),
+    })
 
-    act(() => { result.current.mutate({ repositoryId: 'repo-1' }) })
+    act(() => {
+      result.current.mutate({ repositoryId: 'repo-1' })
+    })
 
     await vi.waitFor(() => {
-      expect(removeRepositoryRepository.removeRepository).toHaveBeenCalledWith(workspaceId, 'repo-1')
+      expect(removeRepositoryRepository.removeRepository).toHaveBeenCalledWith(
+        workspaceId,
+        'repo-1',
+      )
     })
   })
 
   it('dovrebbe impostare isPending a true durante la mutazione', async () => {
-    vi.mocked(removeRepositoryRepository.removeRepository).mockReturnValue(new Promise(() => {}))
-    const { result } = renderHook(() => useRemoveRepository(workspaceId), { wrapper: createWrapper() })
+    vi.mocked(removeRepositoryRepository.removeRepository).mockReturnValue(
+      new Promise(() => {}),
+    )
+    const { result } = renderHook(() => useRemoveRepository(workspaceId), {
+      wrapper: createWrapper(),
+    })
 
-    act(() => { result.current.mutate({ repositoryId: 'repo-2' }) })
+    act(() => {
+      result.current.mutate({ repositoryId: 'repo-2' })
+    })
 
-    await waitFor(() => { expect(result.current.isPending).toBe(true) })
+    await waitFor(() => {
+      expect(result.current.isPending).toBe(true)
+    })
   })
 
   it('dovrebbe iniziare con isPending a false', () => {
-    const { result } = renderHook(() => useRemoveRepository(workspaceId), { wrapper: createWrapper() })
+    const { result } = renderHook(() => useRemoveRepository(workspaceId), {
+      wrapper: createWrapper(),
+    })
     expect(result.current.isPending).toBe(false)
   })
 })

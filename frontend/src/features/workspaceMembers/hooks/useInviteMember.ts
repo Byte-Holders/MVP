@@ -25,5 +25,14 @@ export function useInviteMember(workspaceId: string): IInviteMemberViewModel {
     mutate()
   }
 
-  return { username, setUsername, role, setRole, isPending, error, isSuccess, handleSubmit }
+  return {
+    username,
+    setUsername,
+    role,
+    setRole,
+    isPending,
+    error,
+    isSuccess,
+    handleSubmit,
+  }
 }

@@ -32,7 +32,9 @@ describe('AddRepositoryForm Component', () => {
     const user = userEvent.setup()
     renderWithClient(<AddRepositoryForm workspaceId={workspaceId} />)
 
-    expect(screen.queryByPlaceholderText('GitHub token')).not.toBeInTheDocument()
+    expect(
+      screen.queryByPlaceholderText('GitHub token'),
+    ).not.toBeInTheDocument()
 
     await user.click(screen.getByLabelText('Privata'))
 
@@ -41,7 +43,9 @@ describe('AddRepositoryForm Component', () => {
 
   it('dovrebbe inviare i dati corretti per una repository pubblica', async () => {
     const user = userEvent.setup()
-    vi.mocked(addRepositoryRepository.addRepository).mockResolvedValue(undefined)
+    vi.mocked(addRepositoryRepository.addRepository).mockResolvedValue(
+      undefined,
+    )
     renderWithClient(<AddRepositoryForm workspaceId={workspaceId} />)
 
     await user.type(

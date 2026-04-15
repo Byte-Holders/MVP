@@ -11,4 +11,5 @@ class AddRepositoryRepository implements IAddRepositoryRepository {
   }
 }
 
-export const addRepositoryRepository: IAddRepositoryRepository = new AddRepositoryRepository()
+export const addRepositoryRepository: IAddRepositoryRepository =
+  new AddRepositoryRepository()

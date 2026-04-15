@@ -3,9 +3,13 @@ import type { IManageInviteRepository } from '../interfaces/model/IManageInviteR
 import type { InviteAction } from '../types'
 
 class ManageInviteRepository implements IManageInviteRepository {
-  async manageInvite(membershipId: string, action: InviteAction): Promise<void> {
+  async manageInvite(
+    membershipId: string,
+    action: InviteAction,
+  ): Promise<void> {
     return apiPost('/api/membership/manage', { membershipId, action })
   }
 }
 
-export const manageInviteRepository: IManageInviteRepository = new ManageInviteRepository()
+export const manageInviteRepository: IManageInviteRepository =
+  new ManageInviteRepository()

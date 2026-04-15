@@ -7,4 +7,5 @@ class RemoveMemberRepository implements IRemoveMemberRepository {
   }
 }
 
-export const removeMemberRepository: IRemoveMemberRepository = new RemoveMemberRepository()
+export const removeMemberRepository: IRemoveMemberRepository =
+  new RemoveMemberRepository()

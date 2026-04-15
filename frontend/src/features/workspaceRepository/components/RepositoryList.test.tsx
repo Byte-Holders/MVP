@@ -27,7 +27,9 @@ const renderWithClient = (ui: React.ReactElement) => {
 describe('RepositoryList Component', () => {
   const workspaceId = 'ws-test-123'
 
-  beforeEach(() => { vi.clearAllMocks() })
+  beforeEach(() => {
+    vi.clearAllMocks()
+  })
 
   it("dovrebbe mostrare il messaggio di caricamento all'inizio", () => {
     vi.mocked(getRepositoriesRepository.getRepositories).mockReturnValue(
@@ -41,14 +43,32 @@ describe('RepositoryList Component', () => {
     vi.mocked(getRepositoriesRepository.getRepositories).mockResolvedValue([])
     renderWithClient(<RepositoryList workspaceId={workspaceId} />)
     await waitFor(() => {
-      expect(screen.getByText(/nessun repository aggiunto/i)).toBeInTheDocument()
+      expect(
+        screen.getByText(/nessun repository aggiunto/i),
+      ).toBeInTheDocument()
     })
   })
 
   it('dovrebbe renderizzare la lista di repository quando i dati arrivano', async () => {
     vi.mocked(getRepositoriesRepository.getRepositories).mockResolvedValue([
-      { repositoryId: 'repo-1', name: 'app-frontend', ownerName: 'giacomo', dateScan: '2024-01-01', documentationScore: 80, codeCoverage: 70, cvss: 0 },
-      { repositoryId: 'repo-2', name: 'api-backend', ownerName: 'giacomo', dateScan: '2024-01-02', documentationScore: 90, codeCoverage: 85, cvss: 2 },
+      {
+        repositoryId: 'repo-1',
+        name: 'app-frontend',
+        ownerName: 'giacomo',
+        dateScan: '2024-01-01',
+        documentationScore: 80,
+        codeCoverage: 70,
+        cvss: 0,
+      },
+      {
+        repositoryId: 'repo-2',
+        name: 'api-backend',
+        ownerName: 'giacomo',
+        dateScan: '2024-01-02',
+        documentationScore: 90,
+        codeCoverage: 85,
+        cvss: 2,
+      },
     ])
     renderWithClient(<RepositoryList workspaceId={workspaceId} />)
     await waitFor(() => {
@@ -62,7 +82,10 @@ describe('RepositoryList Component', () => {
     vi.mocked(getRepositoriesRepository.getRepositories).mockResolvedValue([])
     renderWithClient(<RepositoryList workspaceId={workspaceId} />)
 
-    await user.type(screen.getByPlaceholderText(/cerca per nome/i), 'test-search')
+    await user.type(
+      screen.getByPlaceholderText(/cerca per nome/i),
+      'test-search',
+    )
 
     await waitFor(() => {
       expect(getRepositoriesRepository.getRepositories).toHaveBeenCalledWith(

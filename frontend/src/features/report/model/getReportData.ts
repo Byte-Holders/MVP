@@ -10,4 +10,5 @@ class GetReportRepository implements IGetReportRepository {
   }
 }
 
-export const getReportRepository: IGetReportRepository = new GetReportRepository()
+export const getReportRepository: IGetReportRepository =
+  new GetReportRepository()

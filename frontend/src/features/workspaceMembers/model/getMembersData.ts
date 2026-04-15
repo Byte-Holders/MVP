@@ -8,4 +8,5 @@ class GetMembersRepository implements IGetMembersRepository {
   }
 }
 
-export const getMembersRepository: IGetMembersRepository = new GetMembersRepository()
+export const getMembersRepository: IGetMembersRepository =
+  new GetMembersRepository()

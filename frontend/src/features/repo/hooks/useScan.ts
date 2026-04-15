@@ -1,7 +1,10 @@
 import { useMutation } from '@tanstack/react-query'
 import { scanRepository } from '../model/scan'
 import type { StartScanInfo } from '../model/scan'
-import type { IScanViewModel, IStopScanViewModel } from '../interfaces/viewModel/IUseScan'
+import type {
+  IScanViewModel,
+  IStopScanViewModel,
+} from '../interfaces/viewModel/IUseScan'
 
 export function useScan(payload: StartScanInfo): IScanViewModel {
   const { mutate, isPending, isSuccess, error, reset, data } = useMutation({

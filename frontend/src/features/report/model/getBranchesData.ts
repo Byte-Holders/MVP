@@ -4,9 +4,14 @@ import type { IGetBranchesRepository } from '../interfaces/model/IGetBranchesRep
 class GetBranchesRepository implements IGetBranchesRepository {
   async getBranches(repositoryId: string): Promise<string[]> {
     try {
-      return await apiGet<string[]>(`/api/repositories/${repositoryId}/branches`)
+      return await apiGet<string[]>(
+        `/api/repositories/${repositoryId}/branches`,
+      )
     } catch (err) {
-      if (err instanceof ApiError && (err.status === 404 || err.status === 403)) {
+      if (
+        err instanceof ApiError &&
+        (err.status === 404 || err.status === 403)
+      ) {
         return []
       }
       throw err
@@ -14,4 +19,5 @@ class GetBranchesRepository implements IGetBranchesRepository {
   }
 }
 
-export const getBranchesRepository: IGetBranchesRepository = new GetBranchesRepository()
+export const getBranchesRepository: IGetBranchesRepository =
+  new GetBranchesRepository()
