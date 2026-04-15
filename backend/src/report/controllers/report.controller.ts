@@ -18,8 +18,16 @@ import { ReportResponseDto } from '../dtos/report-response.dto';
 import type { ReportInfo } from '../types/report.type';
 import { JwtAuthGuard } from '../../auth/jwt-auth.guard';
 import { User } from '../../auth/customDecorators/user.decorator';
+import {
+  ApiTags,
+  ApiBearerAuth,
+  ApiOperation,
+  ApiResponse,
+  ApiParam,
+} from '@nestjs/swagger';
 
-@Controller('reports')
+@ApiTags('reports')
+@Controller()
 export class ReportController {
   constructor(
     @Inject(ReportServiceToken)
@@ -27,7 +35,10 @@ export class ReportController {
     private readonly jwtService: JwtService,
   ) {}
 
-  @Post()
+  @ApiOperation({ summary: 'Salva un report (chiamata dal container di scansione)' })
+  @ApiResponse({ status: 201, description: 'Report salvato' })
+  @ApiResponse({ status: 401, description: 'Token scan non valido o scaduto' })
+  @Post('reports')
   @UsePipes(new ValidationPipe({ transform: true }))
   async saveReport(@Body() dto: SaveReportDto): Promise<void> {
     let repositoryId: string;
@@ -57,7 +68,13 @@ export class ReportController {
     return this.reportService.saveReport(reportInfo);
   }
 
-  @Get(':repositoryId/branches/:branch')
+  @ApiBearerAuth('access-token')
+  @ApiOperation({ summary: 'Recupera il report di una branch' })
+  @ApiParam({ name: 'repositoryId', description: 'ID del repository' })
+  @ApiParam({ name: 'branch', description: 'Nome della branch' })
+  @ApiResponse({ status: 200, description: 'Report trovato', type: ReportResponseDto })
+  @ApiResponse({ status: 404, description: 'Report non trovato' })
+  @Get('repositories/:repositoryId/branches/:branch/report')
   @UseGuards(JwtAuthGuard)
   async getReport(
     @Param('repositoryId') repositoryId: string,

@@ -5,7 +5,7 @@ import type { ReportInfo } from '../types/report'
 class GetReportRepository implements IGetReportRepository {
   async getReport(repositoryId: string, branch: string): Promise<ReportInfo> {
     return apiGet<ReportInfo>(
-      `/api/reports/${repositoryId}/branches/${encodeURIComponent(branch)}`,
+      `/api/repositories/${repositoryId}/branches/${encodeURIComponent(branch)}/report`,
     )
   }
 }
