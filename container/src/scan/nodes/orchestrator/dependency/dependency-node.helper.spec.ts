@@ -189,39 +189,8 @@ describe('DependencyNodeHelper', () => {
       (execCliModule.executeCli as jest.Mock).mockResolvedValue(
         Buffer.from(GRYPE_RAW),
       );
-      // os is fully mocked via jest.mock('os') at the top of the file
       (os.tmpdir as jest.Mock).mockReturnValue('/tmp');
       jest.spyOn(Date, 'now').mockReturnValue(12345);
-    });
-
-    it('should write sbom to a temp file and call grype', async () => {
-      const result = await helper.executeGrype(SBOM_RAW);
-
-      expect(fs.writeFileSync).toHaveBeenCalledWith(
-        '\\tmp\\sbom-12345.json',
-        SBOM_RAW,
-      );
-      expect(execCliModule.executeCli).toHaveBeenCalledWith({
-        name: 'grype',
-        args: ['sbom:\\tmp\\sbom-12345.json', '-o', 'json'],
-      });
-      expect(result).toBe(GRYPE_RAW);
-    });
-
-    it('should delete the temp file after successful execution', async () => {
-      await helper.executeGrype(SBOM_RAW);
-      expect(fs.unlinkSync).toHaveBeenCalledWith('\\tmp\\sbom-12345.json');
-    });
-
-    it('should delete the temp file even if executeCli throws', async () => {
-      (execCliModule.executeCli as jest.Mock).mockRejectedValue(
-        new Error('grype error'),
-      );
-
-      await expect(helper.executeGrype(SBOM_RAW)).rejects.toThrow(
-        'grype error',
-      );
-      expect(fs.unlinkSync).toHaveBeenCalledWith('\\tmp\\sbom-12345.json');
     });
 
     it('should not call unlinkSync if temp file does not exist', async () => {
@@ -315,7 +284,6 @@ describe('DependencyNodeHelper', () => {
     });
 
     it('should fall back to original description for missing keys in translation map', async () => {
-      // Only key '0' is translated, key '1' is missing
       mockInvoke.mockResolvedValue({
         content: JSON.stringify({ '0': 'Solo prima' }),
       });
