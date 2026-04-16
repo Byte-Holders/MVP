@@ -1,4 +1,5 @@
 import {
+  ConflictException,
   Inject,
   Injectable,
   InternalServerErrorException,
@@ -142,7 +143,7 @@ export class ScanManagerService implements IScanManagerService {
       throw new NotFoundException(`Scan ${scanId} non trovato`);
     }
     if (scan.status != ScanStatus.Started) {
-      throw new Error(`Scan ${scanId} non in corso.`);
+      throw new ConflictException(`Scan ${scanId} non in corso.`);
     }
 
     const client = new ECSClient({
@@ -156,11 +157,9 @@ export class ScanManagerService implements IScanManagerService {
     await client.send(new StopTaskCommand(commandInput));
     this.logger.log(`Task stopped`);
 
-    const updated: Scan = {
-      ...scan,
+    await this.scanRepository.update(scanId, {
       status: ScanStatus.Stopped,
-    };
-
-    await this.scanRepository.update(scanId, updated);
+      endTime: new Date(),
+    });
   }
 }

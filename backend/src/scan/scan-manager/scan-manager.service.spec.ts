@@ -193,7 +193,7 @@ describe('ScanManagerService', () => {
 
       expect(mockScanRepository.update).toHaveBeenCalledWith(
         mockStartedScan.id,
-        { ...mockStartedScan, status: ScanStatus.Stopped },
+        expect.objectContaining({ status: ScanStatus.Stopped }),
       );
     });
   });

@@ -41,9 +41,10 @@ export function useScanStatus(
   return { scanStatus, isStatusLoading }
 }
 
-export function useStopScan(): IStopScanViewModel {
+export function useStopScan(onSettled?: () => void): IStopScanViewModel {
   const { mutate, isPending, error, reset } = useMutation({
     mutationFn: (scanId: string) => scanRepository.stopScan(scanId),
+    onSettled,
   })
 
   return {
