@@ -65,7 +65,9 @@ describe('Header', () => {
     it('non mostra Logout né NewWorkspaceDialog', () => {
       render(<Header />)
       expect(screen.queryByText('Logout')).not.toBeInTheDocument()
-      expect(screen.queryByTestId('new-workspace-dialog')).not.toBeInTheDocument()
+      expect(
+        screen.queryByTestId('new-workspace-dialog'),
+      ).not.toBeInTheDocument()
     })
 
     it('chiama login al click su Accedi', async () => {

@@ -11,7 +11,9 @@ vi.mock('../model/getInvitesData', () => ({
 import { getInvitesRepository } from '../model/getInvitesData'
 
 const wrapper = () => {
-  const client = new QueryClient({ defaultOptions: { queries: { retry: false } } })
+  const client = new QueryClient({
+    defaultOptions: { queries: { retry: false } },
+  })
   return ({ children }: { children: React.ReactNode }) =>
     createElement(QueryClientProvider, { client }, children)
 }
@@ -39,7 +41,9 @@ describe('useGetInvites', () => {
   })
 
   it('restituisce isError se la query fallisce', async () => {
-    vi.mocked(getInvitesRepository.getInvites).mockRejectedValue(new Error('fail'))
+    vi.mocked(getInvitesRepository.getInvites).mockRejectedValue(
+      new Error('fail'),
+    )
 
     const { result } = renderHook(() => useGetInvites(), { wrapper: wrapper() })
 

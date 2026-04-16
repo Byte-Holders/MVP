@@ -39,7 +39,9 @@ describe('UpdateTokenForm Component', () => {
     const user = userEvent.setup()
     renderWithClient(<UpdateTokenForm {...props} />)
 
-    await user.click(screen.getByRole('button', { name: /aggiorna github token/i }))
+    await user.click(
+      screen.getByRole('button', { name: /aggiorna github token/i }),
+    )
     await user.type(
       screen.getByPlaceholderText('GitHub token'),
       'myInvalidToken',
@@ -59,7 +61,9 @@ describe('UpdateTokenForm Component', () => {
     )
     renderWithClient(<UpdateTokenForm {...props} />)
 
-    await user.click(screen.getByRole('button', { name: /aggiorna github token/i }))
+    await user.click(
+      screen.getByRole('button', { name: /aggiorna github token/i }),
+    )
     await user.type(
       screen.getByPlaceholderText('GitHub token'),
       'ghp_' + 'a'.repeat(36),

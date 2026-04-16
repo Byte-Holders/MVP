@@ -22,8 +22,14 @@ describe('useInvitePage', () => {
 
   beforeEach(() => {
     vi.clearAllMocks()
-    vi.mocked(useGetInvites).mockReturnValue({ data: [invite], isLoading: false } as any)
-    vi.mocked(useManageInvite).mockReturnValue({ mutate: mockMutate, isPending: false } as any)
+    vi.mocked(useGetInvites).mockReturnValue({
+      data: [invite],
+      isLoading: false,
+    } as any)
+    vi.mocked(useManageInvite).mockReturnValue({
+      mutate: mockMutate,
+      isPending: false,
+    } as any)
   })
 
   it('espone gli inviti e lo stato di caricamento', () => {
@@ -38,11 +44,17 @@ describe('useInvitePage', () => {
     act(() => {
       result.current.handleAction('inv-1', 'Accept')
     })
-    expect(mockMutate).toHaveBeenCalledWith({ membershipId: 'inv-1', action: 'Accept' })
+    expect(mockMutate).toHaveBeenCalledWith({
+      membershipId: 'inv-1',
+      action: 'Accept',
+    })
   })
 
   it('restituisce array vuoto se data è undefined', () => {
-    vi.mocked(useGetInvites).mockReturnValue({ data: undefined, isLoading: true } as any)
+    vi.mocked(useGetInvites).mockReturnValue({
+      data: undefined,
+      isLoading: true,
+    } as any)
     const { result } = renderHook(() => useInvitePage())
     expect(result.current.invites).toEqual([])
     expect(result.current.isLoading).toBe(true)

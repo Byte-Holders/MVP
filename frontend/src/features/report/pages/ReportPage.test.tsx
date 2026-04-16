@@ -33,7 +33,10 @@ vi.mock('../components/UpdateTokenForm', () => ({
 
 vi.mock('@tanstack/react-query', async (importOriginal) => {
   const actual = await importOriginal<typeof import('@tanstack/react-query')>()
-  return { ...actual, useQueryClient: vi.fn(() => ({ invalidateQueries: vi.fn() })) }
+  return {
+    ...actual,
+    useQueryClient: vi.fn(() => ({ invalidateQueries: vi.fn() })),
+  }
 })
 
 import { useReportPage } from '../hooks/useReportPage'

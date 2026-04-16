@@ -8,8 +8,14 @@ interface Props {
 
 export function UpdateTokenForm({ workspaceId, repositoryId }: Props) {
   const [open, setOpen] = useState(false)
-  const { token, setToken, isPending, clientError, serverError, handleSubmit: onSubmit } =
-    useUpdateToken(workspaceId, repositoryId, () => setOpen(false))
+  const {
+    token,
+    setToken,
+    isPending,
+    clientError,
+    serverError,
+    handleSubmit: onSubmit,
+  } = useUpdateToken(workspaceId, repositoryId, () => setOpen(false))
 
   return (
     <div className="flex items-center gap-1.5">
@@ -27,7 +33,13 @@ export function UpdateTokenForm({ workspaceId, repositoryId }: Props) {
             : 'border-[var(--chip-line)] bg-[var(--chip-bg)] text-[var(--sea-ink-soft)] hover:border-[var(--lagoon)]/30 hover:text-[var(--lagoon-deep)]',
         ].join(' ')}
       >
-        <svg viewBox="0 0 16 16" width="14" height="14" fill="currentColor" aria-hidden="true">
+        <svg
+          viewBox="0 0 16 16"
+          width="14"
+          height="14"
+          fill="currentColor"
+          aria-hidden="true"
+        >
           <path d="M11.5 1a3.5 3.5 0 1 0 0 7 3.5 3.5 0 0 0 0-7zm-5 3.5a5 5 0 1 1 2.121 4.072L5.5 11.5H4v1.5H2.5V14.5H1v-2.5l4.428-4.428A5.016 5.016 0 0 1 6.5 4.5zM11 4a1 1 0 1 0 0 2 1 1 0 0 0 0-2z" />
         </svg>
       </button>

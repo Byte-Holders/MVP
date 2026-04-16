@@ -10,7 +10,10 @@ vi.mock('../hooks/useScan', () => ({
 
 vi.mock('@tanstack/react-query', async (importOriginal) => {
   const actual = await importOriginal<typeof import('@tanstack/react-query')>()
-  return { ...actual, useQueryClient: vi.fn(() => ({ removeQueries: vi.fn() })) }
+  return {
+    ...actual,
+    useQueryClient: vi.fn(() => ({ removeQueries: vi.fn() })),
+  }
 })
 
 import { useScan, useStopScan, useScanStatus } from '../hooks/useScan'
@@ -38,7 +41,10 @@ describe('ScanButton', () => {
     vi.clearAllMocks()
     vi.mocked(useScan).mockReturnValue(defaultScan)
     vi.mocked(useStopScan).mockReturnValue(defaultStop)
-    vi.mocked(useScanStatus).mockReturnValue({ scanStatus: undefined, isStatusLoading: false })
+    vi.mocked(useScanStatus).mockReturnValue({
+      scanStatus: undefined,
+      isStatusLoading: false,
+    })
   })
 
   it('dovrebbe mostrare il bottone "Lancia scansione" di default', () => {

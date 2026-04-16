@@ -14,7 +14,9 @@ const mockInvalidate = vi.fn()
 
 describe('newWorkspaceSchema', () => {
   it('valida un nome corretto', () => {
-    expect(newWorkspaceSchema.safeParse({ name: 'MyWorkspace' }).success).toBe(true)
+    expect(newWorkspaceSchema.safeParse({ name: 'MyWorkspace' }).success).toBe(
+      true,
+    )
   })
 
   it('rifiuta un nome troppo corto', () => {
@@ -22,7 +24,9 @@ describe('newWorkspaceSchema', () => {
   })
 
   it('rifiuta un nome troppo lungo', () => {
-    expect(newWorkspaceSchema.safeParse({ name: 'A'.repeat(31) }).success).toBe(false)
+    expect(newWorkspaceSchema.safeParse({ name: 'A'.repeat(31) }).success).toBe(
+      false,
+    )
   })
 })
 
@@ -45,7 +49,7 @@ describe('useNewWorkspaceForm', () => {
     expect(result.current.form).toBeDefined()
   })
 
-  it('imposta serverError se createWorkspace lancia un\'eccezione', async () => {
+  it("imposta serverError se createWorkspace lancia un'eccezione", async () => {
     mockRepo.createWorkspace.mockRejectedValue(new Error('Already exists'))
     mockInvalidate.mockResolvedValue(undefined)
 
@@ -73,7 +77,9 @@ describe('useNewWorkspaceForm', () => {
       await result.current.form.handleSubmit()
     })
 
-    await waitFor(() => expect(mockNavigate).toHaveBeenCalledWith({ to: '/workspace/ws-new' }))
+    await waitFor(() =>
+      expect(mockNavigate).toHaveBeenCalledWith({ to: '/workspace/ws-new' }),
+    )
   })
 
   it('imposta serverError se createWorkspace fallisce con un nome valido', async () => {
@@ -90,6 +96,8 @@ describe('useNewWorkspaceForm', () => {
       await result.current.form.handleSubmit()
     })
 
-    await waitFor(() => expect(result.current.serverError).toBe('Duplicate name'))
+    await waitFor(() =>
+      expect(result.current.serverError).toBe('Duplicate name'),
+    )
   })
 })
