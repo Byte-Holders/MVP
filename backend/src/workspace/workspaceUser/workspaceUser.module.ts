@@ -32,6 +32,9 @@ import { ICheckIfUserInWorkspaceToken } from './interfaces/ICheckIfUserInWorkspa
     },
     {
       provide: IUserRoleReaderToken,
+      useClass: WorkspaceUserService,
+    },
+    {
       provide: ICheckIfUserInWorkspaceToken,
       useClass: WorkspaceUserService,
     },

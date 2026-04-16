@@ -40,11 +40,11 @@ export class ReportService implements IReportService {
   ) {}
 
   async saveReport(report: ReportInfo, callbackToken: string): Promise<void> {
+    await this.reportRepository.saveReport(report);
     await this.scanStatusService.setScanStatusFromToken(
       callbackToken,
       ScanStatus.Completed,
     );
-    await this.reportRepository.saveReport(report);
 
     if (report.metadata?.target.branch === DEVELOP_BRANCH) {
       const { repositoryId } = report.metadata.target;
