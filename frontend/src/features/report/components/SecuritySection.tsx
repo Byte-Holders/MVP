@@ -306,7 +306,7 @@ export function SecuritySection({ vulnerabilitiesReport, depsReport }: Props) {
                   >
                     <div className="flex items-center gap-2 min-w-0">
                       <span
-                        className={`flex-shrink-0 rounded-full px-2 py-0.5 text-sm font-semibold ${cfg.bg} ${cfg.text}`}
+                        className={`flex-shrink-0 inline-block w-24 text-center rounded-full py-0.5 text-sm font-semibold ${cfg.bg} ${cfg.text}`}
                       >
                         {label}
                       </span>
@@ -423,7 +423,7 @@ export function SecuritySection({ vulnerabilitiesReport, depsReport }: Props) {
                                     className="flex items-center gap-1.5 min-w-0"
                                   >
                                     <span
-                                      className={`flex-shrink-0 rounded-full px-2 py-0.5 text-sm font-semibold ${cfg.bg} ${cfg.text}`}
+                                      className={`flex-shrink-0 inline-block w-24 text-center rounded-full py-0.5 text-sm font-semibold ${cfg.bg} ${cfg.text}`}
                                     >
                                       {v.severity}
                                     </span>
