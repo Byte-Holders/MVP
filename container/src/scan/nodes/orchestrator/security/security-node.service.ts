@@ -32,7 +32,8 @@ export class SecurityNodeService implements INodeScanService {
     try {
       await this.helper.executeSemgrep(repoPath, reportPath);
       const units = await this.helper.parseResults(reportPath);
-      const mark = this.helper.getMark(units);
+      const translated_units = await this.helper.translateDescriptions(units);
+      const mark = this.helper.getMark(translated_units);
       this.logger.log(`Analisi della sicurezza terminato. Voto: ${mark}`);
       return {
         vulnerabilitiesReport: { vulnerabilities: units, mark },
