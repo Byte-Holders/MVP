@@ -1,5 +1,8 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { DependencyNodeHelper, DependencyVulnerability } from './dependency-node.helper';
+import {
+  DependencyNodeHelper,
+  DependencyVulnerability,
+} from './dependency-node.helper';
 import * as execCliModule from '../../../exec.cli';
 import * as fs from 'fs';
 import * as os from 'os';
@@ -27,7 +30,6 @@ jest.mock('@langchain/aws', () => ({
     invoke: jest.fn(),
   })),
 }));
-
 
 const SBOM_RAW = JSON.stringify({
   artifacts: [
@@ -87,7 +89,9 @@ describe('DependencyNodeHelper', () => {
 
     const { ChatBedrockConverse } = require('@langchain/aws');
     mockInvoke = jest.fn();
-    (ChatBedrockConverse as jest.Mock).mockImplementation(() => ({ invoke: mockInvoke }));
+    (ChatBedrockConverse as jest.Mock).mockImplementation(() => ({
+      invoke: mockInvoke,
+    }));
 
     const module: TestingModule = await Test.createTestingModule({
       providers: [DependencyNodeHelper],
@@ -95,7 +99,6 @@ describe('DependencyNodeHelper', () => {
 
     helper = module.get<DependencyNodeHelper>(DependencyNodeHelper);
   });
-
 
   describe('createModel', () => {
     it('should instantiate ChatBedrockConverse with default config', () => {
@@ -117,10 +120,10 @@ describe('DependencyNodeHelper', () => {
       helper.createModel();
 
       expect(ChatBedrockConverse).toHaveBeenCalledWith(
-          expect.objectContaining({
-            model: 'my-custom-model',
-            region: 'us-east-1',
-          }),
+        expect.objectContaining({
+          model: 'my-custom-model',
+          region: 'us-east-1',
+        }),
       );
 
       delete process.env.BEDROCK_MODEL_ID;
@@ -128,10 +131,11 @@ describe('DependencyNodeHelper', () => {
     });
   });
 
-
   describe('executeSyft', () => {
     it('should call executeCli with the correct syft command', async () => {
-      (execCliModule.executeCli as jest.Mock).mockResolvedValue(Buffer.from(SBOM_RAW));
+      (execCliModule.executeCli as jest.Mock).mockResolvedValue(
+        Buffer.from(SBOM_RAW),
+      );
 
       const result = await helper.executeSyft('/repo/path');
 
@@ -143,12 +147,15 @@ describe('DependencyNodeHelper', () => {
     });
 
     it('should propagate errors thrown by executeCli', async () => {
-      (execCliModule.executeCli as jest.Mock).mockRejectedValue(new Error('syft not found'));
+      (execCliModule.executeCli as jest.Mock).mockRejectedValue(
+        new Error('syft not found'),
+      );
 
-      await expect(helper.executeSyft('/repo/path')).rejects.toThrow('syft not found');
+      await expect(helper.executeSyft('/repo/path')).rejects.toThrow(
+        'syft not found',
+      );
     });
   });
-
 
   describe('parseSbom', () => {
     it('should parse artifacts into DepsReportUnit list', () => {
@@ -179,7 +186,9 @@ describe('DependencyNodeHelper', () => {
   describe('executeGrype', () => {
     beforeEach(() => {
       (fs.existsSync as jest.Mock).mockReturnValue(true);
-      (execCliModule.executeCli as jest.Mock).mockResolvedValue(Buffer.from(GRYPE_RAW));
+      (execCliModule.executeCli as jest.Mock).mockResolvedValue(
+        Buffer.from(GRYPE_RAW),
+      );
       // os is fully mocked via jest.mock('os') at the top of the file
       (os.tmpdir as jest.Mock).mockReturnValue('/tmp');
       jest.spyOn(Date, 'now').mockReturnValue(12345);
@@ -188,7 +197,10 @@ describe('DependencyNodeHelper', () => {
     it('should write sbom to a temp file and call grype', async () => {
       const result = await helper.executeGrype(SBOM_RAW);
 
-      expect(fs.writeFileSync).toHaveBeenCalledWith('\\tmp\\sbom-12345.json', SBOM_RAW);
+      expect(fs.writeFileSync).toHaveBeenCalledWith(
+        '\\tmp\\sbom-12345.json',
+        SBOM_RAW,
+      );
       expect(execCliModule.executeCli).toHaveBeenCalledWith({
         name: 'grype',
         args: ['sbom:\\tmp\\sbom-12345.json', '-o', 'json'],
@@ -202,15 +214,21 @@ describe('DependencyNodeHelper', () => {
     });
 
     it('should delete the temp file even if executeCli throws', async () => {
-      (execCliModule.executeCli as jest.Mock).mockRejectedValue(new Error('grype error'));
+      (execCliModule.executeCli as jest.Mock).mockRejectedValue(
+        new Error('grype error'),
+      );
 
-      await expect(helper.executeGrype(SBOM_RAW)).rejects.toThrow('grype error');
+      await expect(helper.executeGrype(SBOM_RAW)).rejects.toThrow(
+        'grype error',
+      );
       expect(fs.unlinkSync).toHaveBeenCalledWith('\\tmp\\sbom-12345.json');
     });
 
     it('should not call unlinkSync if temp file does not exist', async () => {
       (fs.existsSync as jest.Mock).mockReturnValue(false);
-      (execCliModule.executeCli as jest.Mock).mockRejectedValue(new Error('fail'));
+      (execCliModule.executeCli as jest.Mock).mockRejectedValue(
+        new Error('fail'),
+      );
 
       await expect(helper.executeGrype(SBOM_RAW)).rejects.toThrow('fail');
       expect(fs.unlinkSync).not.toHaveBeenCalled();
@@ -264,7 +282,10 @@ describe('DependencyNodeHelper', () => {
     });
 
     it('should call the LLM and replace descriptions with translated ones', async () => {
-      const translatedMap = { '0': 'Vulnerabilità di iniezione', '1': 'Problema minore' };
+      const translatedMap = {
+        '0': 'Vulnerabilità di iniezione',
+        '1': 'Problema minore',
+      };
       mockInvoke.mockResolvedValue({ content: JSON.stringify(translatedMap) });
 
       const result = await helper.translateDescriptions(MOCK_VULNERABILITIES);
@@ -295,7 +316,9 @@ describe('DependencyNodeHelper', () => {
 
     it('should fall back to original description for missing keys in translation map', async () => {
       // Only key '0' is translated, key '1' is missing
-      mockInvoke.mockResolvedValue({ content: JSON.stringify({ '0': 'Solo prima' }) });
+      mockInvoke.mockResolvedValue({
+        content: JSON.stringify({ '0': 'Solo prima' }),
+      });
 
       const result = await helper.translateDescriptions(MOCK_VULNERABILITIES);
 
@@ -315,16 +338,25 @@ describe('DependencyNodeHelper', () => {
     beforeEach(() => {
       (fs.existsSync as jest.Mock).mockReturnValue(true);
       (fs.readFileSync as jest.Mock).mockReturnValue(
-          JSON.stringify({ dependencies: { lodash: '^4.17.21', nestjs: '^10.0.0' } }),
+        JSON.stringify({
+          dependencies: { lodash: '^4.17.21', nestjs: '^10.0.0' },
+        }),
       );
     });
 
     it('should read package.json and call the LLM', async () => {
       mockInvoke.mockResolvedValue({ content: JSON.stringify(LLM_RESPONSE) });
 
-      const result = await helper.analyzeDependencies('/repo', LIST, MOCK_VULNERABILITIES);
+      const result = await helper.analyzeDependencies(
+        '/repo',
+        LIST,
+        MOCK_VULNERABILITIES,
+      );
 
-      expect(fs.readFileSync).toHaveBeenCalledWith(path.join('/repo', 'package.json'), 'utf-8');
+      expect(fs.readFileSync).toHaveBeenCalledWith(
+        path.join('/repo', 'package.json'),
+        'utf-8',
+      );
       expect(mockInvoke).toHaveBeenCalledTimes(1);
       expect(result).toEqual(LLM_RESPONSE);
     });
@@ -334,7 +366,11 @@ describe('DependencyNodeHelper', () => {
         content: '```json\n' + JSON.stringify(LLM_RESPONSE) + '\n```',
       });
 
-      const result = await helper.analyzeDependencies('/repo', LIST, MOCK_VULNERABILITIES);
+      const result = await helper.analyzeDependencies(
+        '/repo',
+        LIST,
+        MOCK_VULNERABILITIES,
+      );
       expect(result.libraries).toEqual(LLM_RESPONSE.libraries);
     });
 
@@ -350,23 +386,43 @@ describe('DependencyNodeHelper', () => {
     it('should return empty defaults when LLM throws', async () => {
       mockInvoke.mockRejectedValue(new Error('LLM failure'));
 
-      const result = await helper.analyzeDependencies('/repo', LIST, MOCK_VULNERABILITIES);
+      const result = await helper.analyzeDependencies(
+        '/repo',
+        LIST,
+        MOCK_VULNERABILITIES,
+      );
 
-      expect(result).toEqual({ libraries: [], frameworks: [], vulnerabilityAnalysis: '' });
+      expect(result).toEqual({
+        libraries: [],
+        frameworks: [],
+        vulnerabilityAnalysis: '',
+      });
     });
 
     it('should return empty defaults when LLM returns invalid JSON', async () => {
       mockInvoke.mockResolvedValue({ content: 'not json' });
 
-      const result = await helper.analyzeDependencies('/repo', LIST, MOCK_VULNERABILITIES);
+      const result = await helper.analyzeDependencies(
+        '/repo',
+        LIST,
+        MOCK_VULNERABILITIES,
+      );
 
-      expect(result).toEqual({ libraries: [], frameworks: [], vulnerabilityAnalysis: '' });
+      expect(result).toEqual({
+        libraries: [],
+        frameworks: [],
+        vulnerabilityAnalysis: '',
+      });
     });
 
     it('should guard against missing fields in the LLM JSON response', async () => {
       mockInvoke.mockResolvedValue({ content: JSON.stringify({}) });
 
-      const result = await helper.analyzeDependencies('/repo', LIST, MOCK_VULNERABILITIES);
+      const result = await helper.analyzeDependencies(
+        '/repo',
+        LIST,
+        MOCK_VULNERABILITIES,
+      );
 
       expect(result.libraries).toEqual([]);
       expect(result.frameworks).toEqual([]);

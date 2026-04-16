@@ -2,7 +2,10 @@ import { Injectable, Logger } from '@nestjs/common';
 import { DepsReport } from './deps-report.type';
 import { WorkflowState } from '../workflow-state.type';
 import { INodeScanService } from '../inode-scan-service.interface';
-import { DependencyNodeHelper, DependencyVulnerability } from './dependency-node.helper';
+import {
+  DependencyNodeHelper,
+  DependencyVulnerability,
+} from './dependency-node.helper';
 
 export const DEPENDENCY_NODE_SERVICE_TOKEN = 'DependencyNodeService';
 
@@ -12,7 +15,11 @@ export class DependencyNodeService implements INodeScanService {
 
   constructor(private readonly helper: DependencyNodeHelper) {}
 
-  async scan({ repoPath }: { repoPath: string }): Promise<Partial<WorkflowState>> {
+  async scan({
+    repoPath,
+  }: {
+    repoPath: string;
+  }): Promise<Partial<WorkflowState>> {
     this.logger.log(`Inizio analisi delle dipendenze in: ${repoPath}`);
 
     const defaultReport: DepsReport = {
@@ -32,17 +39,24 @@ export class DependencyNodeService implements INodeScanService {
         const grypeRaw = await this.helper.executeGrype(sbomRaw);
         rawVulnerabilities = this.helper.parseGrype(grypeRaw);
       } catch (grypeError: unknown) {
-        this.logger.error(`Analisi Grype fallita: ${(grypeError as Error).message}`);
+        this.logger.error(
+          `Analisi Grype fallita: ${(grypeError as Error).message}`,
+        );
       }
 
       // Traduzione in italiano delle descrizioni
-      const translatedVulnerabilities = await this.helper.translateDescriptions(rawVulnerabilities);
+      const translatedVulnerabilities =
+        await this.helper.translateDescriptions(rawVulnerabilities);
 
       const { libraries, frameworks, vulnerabilityAnalysis } =
-          await this.helper.analyzeDependencies(repoPath, list, translatedVulnerabilities);
+        await this.helper.analyzeDependencies(
+          repoPath,
+          list,
+          translatedVulnerabilities,
+        );
 
       this.logger.log(
-          `Analisi delle dipendenze terminata. Identificate ${libraries.length} librerie e ${frameworks.length} framework.`,
+        `Analisi delle dipendenze terminata. Identificate ${libraries.length} librerie e ${frameworks.length} framework.`,
       );
 
       const depsReport: DepsReport = {
@@ -62,7 +76,9 @@ export class DependencyNodeService implements INodeScanService {
 
       return { depsReport };
     } catch (error: unknown) {
-      this.logger.error(`Analisi delle dipendenze fallita: ${(error as Error).message}`);
+      this.logger.error(
+        `Analisi delle dipendenze fallita: ${(error as Error).message}`,
+      );
       return { depsReport: defaultReport };
     }
   }

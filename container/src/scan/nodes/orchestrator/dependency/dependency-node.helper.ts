@@ -90,7 +90,7 @@ export class DependencyNodeHelper {
     };
 
     this.logger.log(
-        `Grype: trovate ${grypeReport.matches?.length ?? 0} vulnerabilità totali.`,
+      `Grype: trovate ${grypeReport.matches?.length ?? 0} vulnerabilità totali.`,
     );
 
     return (grypeReport.matches ?? []).map((m) => ({
@@ -100,27 +100,27 @@ export class DependencyNodeHelper {
       packageName: m.artifact.name,
       packageVersion: m.artifact.version,
       fixVersion:
-          m.vulnerability.fix.state === 'fixed'
-              ? m.vulnerability.fix.versions[0]
-              : undefined,
+        m.vulnerability.fix.state === 'fixed'
+          ? m.vulnerability.fix.versions[0]
+          : undefined,
     }));
   }
 
   async translateDescriptions(
-      vulnerabilities: DependencyVulnerability[],
+    vulnerabilities: DependencyVulnerability[],
   ): Promise<DependencyVulnerability[]> {
     if (vulnerabilities.length === 0) return vulnerabilities;
 
     this.logger.log(
-        `Traduzione di ${vulnerabilities.length} descrizioni di dipendenze in corso...`,
+      `Traduzione di ${vulnerabilities.length} descrizioni di dipendenze in corso...`,
     );
 
     const descriptionsMap = vulnerabilities.reduce(
-        (acc, vuln, index) => {
-          if (vuln.description) acc[index] = vuln.description;
-          return acc;
-        },
-        {} as Record<number, string>,
+      (acc, vuln, index) => {
+        if (vuln.description) acc[index] = vuln.description;
+        return acc;
+      },
+      {} as Record<number, string>,
     );
 
     if (Object.keys(descriptionsMap).length === 0) return vulnerabilities;
@@ -130,15 +130,15 @@ export class DependencyNodeHelper {
     try {
       const response = await model.invoke([
         new SystemMessage(
-            `Sei un esperto di sicurezza software. Traduci in lingua italiana le descrizioni delle vulnerabilità delle dipendenze fornite nel seguente JSON. 
+          `Sei un esperto di sicurezza software. Traduci in lingua italiana le descrizioni delle vulnerabilità delle dipendenze fornite nel seguente JSON. 
            Mantieni le chiavi numeriche originali. Rispondi SOLO ed esclusivamente con il JSON del dizionario tradotto, senza alcun markdown o testo introduttivo.`,
         ),
         new HumanMessage(JSON.stringify(descriptionsMap)),
       ]);
 
       const content = (response.content as string)
-          .replace(/```json|```/g, '')
-          .trim();
+        .replace(/```json|```/g, '')
+        .trim();
 
       const translatedMap = JSON.parse(content) as Record<string, string>;
 
@@ -148,17 +148,17 @@ export class DependencyNodeHelper {
       }));
     } catch (error) {
       this.logger.error(
-          'Errore durante la traduzione LLM, mantengo i testi originali.',
-          error,
+        'Errore durante la traduzione LLM, mantengo i testi originali.',
+        error,
       );
       return vulnerabilities;
     }
   }
 
   async analyzeDependencies(
-      repoPath: string,
-      list: DepsReportUnit[],
-      vulnerabilities: DependencyVulnerability[],
+    repoPath: string,
+    list: DepsReportUnit[],
+    vulnerabilities: DependencyVulnerability[],
   ): Promise<DependencyAnalysis> {
     let packageJsonContent = '{}';
     try {
@@ -175,7 +175,7 @@ export class DependencyNodeHelper {
     try {
       const response = await model.invoke([
         new SystemMessage(
-            `Sei un esperto di architettura e sicurezza software in typescript. Ricevi una lista di dipendenze software e un elenco di vulnerabilità.
+          `Sei un esperto di architettura e sicurezza software in typescript. Ricevi una lista di dipendenze software e un elenco di vulnerabilità.
         Ti viene anche fornito un file package.json che contiene le librerie esplicitamente utilizzate in un progetto.
         Restituisci SOLO un JSON con questa struttura, senza markdown:
         {
@@ -191,13 +191,13 @@ export class DependencyNodeHelper {
         Assicurati che il documento JSON che produci sia valido.`,
         ),
         new HumanMessage(
-            `Dipendenze:\n${JSON.stringify(list)}\n\nVulnerabilità:\n${JSON.stringify(vulnerabilities)}\npackage.json:${packageJsonContent}`,
+          `Dipendenze:\n${JSON.stringify(list)}\n\nVulnerabilità:\n${JSON.stringify(vulnerabilities)}\npackage.json:${packageJsonContent}`,
         ),
       ]);
 
       const raw = (response.content as string)
-          .replace(/```json|```/g, '')
-          .trim();
+        .replace(/```json|```/g, '')
+        .trim();
       const parsed = JSON.parse(raw);
 
       return {
@@ -206,10 +206,7 @@ export class DependencyNodeHelper {
         vulnerabilityAnalysis: parsed.vulnerabilityAnalysis ?? '',
       };
     } catch (error) {
-      this.logger.error(
-          "Errore durante l'analisi LLM delle dipendenze",
-          error,
-      );
+      this.logger.error("Errore durante l'analisi LLM delle dipendenze", error);
       return { libraries: [], frameworks: [], vulnerabilityAnalysis: '' };
     }
   }

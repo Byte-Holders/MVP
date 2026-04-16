@@ -100,30 +100,35 @@ export class SecurityNodeHelper {
     }));
   }
 
-  async translateDescriptions(units: VulnerabilityUnit[]): Promise<VulnerabilityUnit[]> {
+  async translateDescriptions(
+    units: VulnerabilityUnit[],
+  ): Promise<VulnerabilityUnit[]> {
     if (units.length === 0) return units;
 
     this.logger.log(`Traduzione di ${units.length} descrizioni in corso...`);
 
-    const descriptionsMap = units.reduce((acc, unit, index) => {
-      if (unit.description) acc[index] = unit.description;
-      return acc;
-    }, {} as Record<number, string>);
+    const descriptionsMap = units.reduce(
+      (acc, unit, index) => {
+        if (unit.description) acc[index] = unit.description;
+        return acc;
+      },
+      {} as Record<number, string>,
+    );
 
     const model = this.createModel();
 
     try {
       const response = await model.invoke([
         new SystemMessage(
-            `Sei un esperto di sicurezza. Traduci in italiano le descrizioni delle vulnerabilità fornite nel JSON. 
-           Mantieni le chiavi numeriche originali. Rispondi SOLO con il JSON del dizionario tradotto, senza markdown.`
+          `Sei un esperto di sicurezza. Traduci in italiano le descrizioni delle vulnerabilità fornite nel JSON. 
+           Mantieni le chiavi numeriche originali. Rispondi SOLO con il JSON del dizionario tradotto, senza markdown.`,
         ),
         new HumanMessage(JSON.stringify(descriptionsMap)),
       ]);
 
       const content = (response.content as string)
-          .replace(/```json|```/g, '')
-          .trim();
+        .replace(/```json|```/g, '')
+        .trim();
 
       const translatedMap = JSON.parse(content) as Record<string, string>;
 
@@ -133,7 +138,10 @@ export class SecurityNodeHelper {
         description: translatedMap[index.toString()] ?? unit.description,
       }));
     } catch (error) {
-      this.logger.error('Errore durante la traduzione LLM, mantengo i testi originali', error);
+      this.logger.error(
+        'Errore durante la traduzione LLM, mantengo i testi originali',
+        error,
+      );
       return units;
     }
   }
