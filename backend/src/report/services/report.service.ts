@@ -4,8 +4,8 @@ import type { IReportRepository } from '../interfaces/ireport.repository.interfa
 import { ReportRepositoryToken } from '../interfaces/ireport.repository.interface';
 import type { IRepositoryScoreWriter } from '../../repository/interfaces/repository.score-writer.interface';
 import { RepositoryScoreWriterToken } from '../../repository/interfaces/repository.score-writer.interface';
-import type { IWorkspaceUserService } from '../../workspace/workspaceUser/interfaces/IWorkspaceUserService';
-import { IWorkspaceUserServiceToken } from '../../workspace/workspaceUser/interfaces/IWorkspaceUserService';
+import type { IUserRoleReader } from '../../workspace/workspaceUser/interfaces/IUserRoleReader';
+import { IUserRoleReaderToken } from '../../workspace/workspaceUser/interfaces/IUserRoleReader';
 import { WorkspaceRole } from '../../workspace/roles.enum';
 import type { ReportInfo, VulnCounts } from '../types/report.type';
 import {
@@ -33,8 +33,8 @@ export class ReportService implements IReportService {
     private readonly reportRepository: IReportRepository,
     @Inject(RepositoryScoreWriterToken)
     private readonly repositoryScoreWriter: IRepositoryScoreWriter,
-    @Inject(IWorkspaceUserServiceToken)
-    private readonly workspaceUserService: IWorkspaceUserService,
+    @Inject(IUserRoleReaderToken)
+    private readonly workspaceUserService: IUserRoleReader,
     @Inject(ISCAN_STATUS_SERVICE_TOKEN)
     private readonly scanStatusService: IScanStatusService,
   ) {}
