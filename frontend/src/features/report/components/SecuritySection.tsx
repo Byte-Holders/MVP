@@ -275,7 +275,7 @@ export function SecuritySection({ vulnerabilitiesReport, depsReport }: Props) {
           <p className="mb-1 text-xs font-medium text-[var(--sea-ink)] opacity-60">
             Analisi
           </p>
-          <div className="prose prose-sm dark:prose-invert max-w-none text-xs text-[var(--sea-ink)] opacity-80">
+          <div className="prose prose-sm dark:prose-invert max-w-none text-sm text-[var(--sea-ink)] opacity-80">
             <ReactMarkdown remarkPlugins={[remarkGfm]}>
               {depsReport.vulnerabilityAnalysis}
             </ReactMarkdown>
@@ -331,7 +331,7 @@ export function SecuritySection({ vulnerabilitiesReport, depsReport }: Props) {
                           <span className="font-medium text-[var(--sea-ink)] opacity-60">
                             Rimedio
                           </span>
-                          <div className="prose prose-sm dark:prose-invert max-w-none text-xs text-[var(--sea-ink)] opacity-80 mt-1">
+                          <div className="prose prose-sm dark:prose-invert max-w-none text-sm text-[var(--sea-ink)] opacity-80 mt-1">
                             <ReactMarkdown remarkPlugins={[remarkGfm]}>
                               {v.remediation}
                             </ReactMarkdown>
