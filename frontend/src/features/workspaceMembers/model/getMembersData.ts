@@ -4,7 +4,7 @@ import type { WorkspaceMember } from '../types/workspaceMember'
 
 class GetMembersRepository implements IGetMembersRepository {
   async getMembers(workspaceId: string): Promise<WorkspaceMember[]> {
-    return apiGet<WorkspaceMember[]>(`/api/workspace/${workspaceId}/users`)
+    return apiGet<WorkspaceMember[]>(`/api/workspaces/${workspaceId}/users`)
   }
 }
 

@@ -15,6 +15,7 @@ describe('WorkspaceUserService', () => {
     removeUserFromWorkspace: jest.fn(),
     getUserRoleForRepository: jest.fn(),
     addUserToWorkspace: jest.fn(),
+    getWorkspaceOwner: jest.fn(),
   };
 
   beforeEach(async () => {

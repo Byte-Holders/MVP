@@ -16,6 +16,7 @@ export interface IWorkspaceUserRepository {
     repositoryId: string,
     userId: string,
   ): Promise<WorkspaceRole | null>;
+  getWorkspaceOwner(workspaceId: string): Promise<string>;
 }
 
 export const IWorkspaceUserRepositoryToken = 'IWorkspaceUserRepository';
