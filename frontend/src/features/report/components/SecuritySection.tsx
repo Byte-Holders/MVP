@@ -310,7 +310,7 @@ export function SecuritySection({ vulnerabilitiesReport, depsReport }: Props) {
                       >
                         {label}
                       </span>
-                      <span className="font-medium text-[var(--sea-ink)] truncate">
+                      <span className="font-medium text-[var(--sea-ink)] break-words min-w-0">
                         {v.description || v.id}
                       </span>
                     </div>
@@ -427,7 +427,7 @@ export function SecuritySection({ vulnerabilitiesReport, depsReport }: Props) {
                                     >
                                       {v.severity}
                                     </span>
-                                    <span className="text-sm text-[var(--sea-ink)] opacity-70 truncate">
+                                    <span className="text-sm text-[var(--sea-ink)] opacity-70 break-words min-w-0">
                                       {v.description ?? v.id}
                                     </span>
                                   </div>
