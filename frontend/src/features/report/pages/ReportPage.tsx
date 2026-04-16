@@ -56,7 +56,10 @@ export function ReportPage({ workspaceId, repositoryId }: Props) {
               {name}
             </h1>
           </div>
-          <UpdateTokenForm workspaceId={workspaceId} repositoryId={repositoryId} />
+          <UpdateTokenForm
+            workspaceId={workspaceId}
+            repositoryId={repositoryId}
+          />
         </div>
         <div className="flex items-center gap-3">
           <label

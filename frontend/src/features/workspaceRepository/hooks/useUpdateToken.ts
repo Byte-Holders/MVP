@@ -2,8 +2,7 @@ import { useState } from 'react'
 import { useMutation } from '@tanstack/react-query'
 import { updateTokenRepository } from '../model/updateTokenData'
 
-const TOKEN_REGEX =
-  /^(ghp_[a-zA-Z0-9]{36}|github_pat_[a-zA-Z0-9_]{82})$/
+const TOKEN_REGEX = /^(ghp_[a-zA-Z0-9]{36}|github_pat_[a-zA-Z0-9_]{82})$/
 
 export function useUpdateToken(workspaceId: string, repositoryId: string) {
   const [token, setToken] = useState('')
@@ -25,5 +24,12 @@ export function useUpdateToken(workspaceId: string, repositoryId: string) {
     mutate(token)
   }
 
-  return { token, setToken, isPending, clientError, serverError: error, handleSubmit }
+  return {
+    token,
+    setToken,
+    isPending,
+    clientError,
+    serverError: error,
+    handleSubmit,
+  }
 }
