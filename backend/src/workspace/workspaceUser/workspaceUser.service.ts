@@ -6,6 +6,7 @@ import {
 } from '@nestjs/common';
 import { IAddUserToWorkspace } from './interfaces/IAddUserToWorkspace.interface';
 import { IWorkspaceUserService } from './interfaces/IWorkspaceUserService';
+import type { IUserRoleReader } from './interfaces/IUserRoleReader';
 import {
   type IWorkspaceUserRepository,
   IWorkspaceUserRepositoryToken,
@@ -15,7 +16,8 @@ import { ICheckIfUserInWorkspace } from './interfaces/ICheckIfUserInWorkspace';
 
 @Injectable()
 export class WorkspaceUserService
-  implements IWorkspaceUserService, IAddUserToWorkspace, ICheckIfUserInWorkspace
+  implements IWorkspaceUserService, IAddUserToWorkspace, IUserRoleReader, ICheckIfUserInWorkspace
+
 {
   constructor(
     @Inject(IWorkspaceUserRepositoryToken)
