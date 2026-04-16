@@ -13,7 +13,7 @@ Amplify.configure({
       loginWith: {
         oauth: {
           domain: cognitoConfig.domain,
-          scopes: ['openid', 'email', 'phone'],
+          scopes: ['openid', 'email', 'phone', 'aws.cognito.signin.user.admin'],
           redirectSignIn: [
             'https://develop.dfk7n70x1c1hn.amplifyapp.com/callback',
             'http://localhost:3000/callback',
