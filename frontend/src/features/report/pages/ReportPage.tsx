@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { useQueryClient } from '@tanstack/react-query'
 import { useReportPage } from '../hooks/useReportPage'
 import { BranchSelector } from '../components/BranchSelector'
@@ -31,6 +32,7 @@ function scrollTo(id: string) {
 
 export function ReportPage({ workspaceId, repositoryId }: Props) {
   const queryClient = useQueryClient()
+  const [scanActive, setScanActive] = useState(false)
   const { data: repository } = useGetRepository(repositoryId)
   const ownerName = repository?.ownerName ?? ''
   const name = repository?.name ?? ''
@@ -87,11 +89,12 @@ export function ReportPage({ workspaceId, repositoryId }: Props) {
             repositoryId={repositoryId}
             branch={selectedBranch ?? ''}
             onCompleted={handleScanCompleted}
+            onScanActiveChange={setScanActive}
           />
         </div>
       </div>
 
-      {reportLoading && (
+      {reportLoading && !scanActive && (
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
           {[...Array(4)].map((_, i) => (
             <div
@@ -102,7 +105,7 @@ export function ReportPage({ workspaceId, repositoryId }: Props) {
         </div>
       )}
 
-      {reportError && (
+      {reportError && !scanActive && (
         <div className="rounded-2xl border border-red-200 bg-red-50 p-5 text-sm text-red-600 dark:border-red-900/50 dark:bg-red-900/20 dark:text-red-400">
           Nessun report disponibile per questo branch.
         </div>

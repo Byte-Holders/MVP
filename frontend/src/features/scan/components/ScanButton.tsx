@@ -1,16 +1,15 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef } from 'react'
 import { useQueryClient } from '@tanstack/react-query'
 import { useScan, useScanStatus, useStopScan } from '../hooks/useScan'
 
 const TERMINAL_STATES = ['completed', 'stopped', 'error']
-
-type TerminalStatus = 'completed' | 'stopped' | 'error' | null
 
 interface ScanButtonProps {
   workspaceId: string
   repositoryId: string
   branch: string
   onCompleted?: () => void
+  onScanActiveChange?: (active: boolean) => void
 }
 
 export function ScanButton({
@@ -18,24 +17,35 @@ export function ScanButton({
   repositoryId,
   branch,
   onCompleted,
+  onScanActiveChange,
 }: ScanButtonProps) {
   const { triggerScan, scanId, isPending, isSuccess, error, reset } = useScan({
     workspaceId,
     repositoryId,
     branch,
   })
-  const { triggerStop, isStopping, stopError } = useStopScan()
+  const { triggerStop, isStopping, stopError } = useStopScan(() => {
+    queryClient.removeQueries({ queryKey: ['scanStatus', scanId] })
+    reset()
+  })
   const { scanStatus } = useScanStatus(scanId)
   const queryClient = useQueryClient()
-  const [terminalStatus, setTerminalStatus] = useState<TerminalStatus>(null)
+  const completedRef = useRef(false)
 
+  const scanRunning = isSuccess && !!scanId
+
+  // Reset the guard whenever a new scan starts
   useEffect(() => {
-    if (!scanStatus || !TERMINAL_STATES.includes(scanStatus)) return
-    setTerminalStatus(scanStatus as TerminalStatus)
-    if (scanStatus === 'completed') {
-      void queryClient.invalidateQueries({
-        queryKey: ['report', repositoryId, branch],
-      })
+    if (isSuccess && scanId) {
+      completedRef.current = false
+    }
+  }, [isSuccess, scanId])
+
+  function completeScan(status: string) {
+    if (completedRef.current) return
+    completedRef.current = true
+
+    if (status === 'completed') {
       onCompleted?.()
     }
     queryClient.removeQueries({ queryKey: ['scanStatus', scanId] })
@@ -50,41 +60,48 @@ export function ScanButton({
     branch,
   ])
 
-  const scanRunning = isSuccess && !!scanId
+  useEffect(() => {
+    onScanActiveChange?.(scanRunning)
+  }, [scanRunning, onScanActiveChange])
 
-  function handleNewScan() {
-    setTerminalStatus(null)
-    reset()
-    triggerScan()
-  }
+  // Primary path: scan status reaches a terminal state
+  useEffect(() => {
+    if (!scanStatus || !TERMINAL_STATES.includes(scanStatus)) return
+    completeScan(scanStatus)
+  }, [scanStatus]) // eslint-disable-line react-hooks/exhaustive-deps
 
-  if (terminalStatus) {
-    const config = {
-      completed: {
-        label: 'Scansione completata',
-        className:
-          'rounded-lg bg-green-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-green-500',
-      },
-      stopped: {
-        label: 'Scansione fermata',
-        className:
-          'rounded-lg bg-yellow-500 px-4 py-2 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-yellow-400',
-      },
-      error: {
-        label: 'Scansione fallita',
-        className:
-          'rounded-lg bg-red-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-red-500',
-      },
-    }[terminalStatus]
+  // Fallback: after 90s start polling the report every 8s.
+  // If the report appears while the scan is running, mark as completed.
+  useEffect(() => {
+    if (!scanRunning) return
 
-    return (
-      <div className="flex flex-col items-end gap-1">
-        <button onClick={handleNewScan} className={config.className}>
-          {config.label} — Rilancia
-        </button>
-      </div>
-    )
-  }
+    let interval: ReturnType<typeof setInterval>
+
+    const timeout = setTimeout(() => {
+      void queryClient.refetchQueries({ queryKey: ['report', repositoryId, branch], type: 'active' })
+      interval = setInterval(() => {
+        void queryClient.refetchQueries({ queryKey: ['report', repositoryId, branch], type: 'active' })
+      }, 8_000)
+    }, 90_000)
+
+    const unsubscribe = queryClient.getQueryCache().subscribe((event) => {
+      if (
+        event.type === 'updated' &&
+        event.query.queryKey[0] === 'report' &&
+        event.query.queryKey[1] === repositoryId &&
+        event.query.queryKey[2] === branch &&
+        event.query.state.status === 'success'
+      ) {
+        completeScan('completed')
+      }
+    })
+
+    return () => {
+      clearTimeout(timeout)
+      clearInterval(interval)
+      unsubscribe()
+    }
+  }, [scanRunning, repositoryId, branch]) // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <div className="flex flex-col items-end gap-1">
@@ -101,9 +118,7 @@ export function ScanButton({
         </button>
       ) : (
         <button
-          onClick={() => {
-            triggerStop(scanId)
-          }}
+          onClick={() => triggerStop(scanId)}
           disabled={isStopping}
           className="rounded-lg bg-red-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-red-500 disabled:opacity-50"
         >
