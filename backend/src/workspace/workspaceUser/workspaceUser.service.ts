@@ -16,8 +16,11 @@ import { ICheckIfUserInWorkspace } from './interfaces/ICheckIfUserInWorkspace';
 
 @Injectable()
 export class WorkspaceUserService
-  implements IWorkspaceUserService, IAddUserToWorkspace, IUserRoleReader, ICheckIfUserInWorkspace
-
+  implements
+    IWorkspaceUserService,
+    IAddUserToWorkspace,
+    IUserRoleReader,
+    ICheckIfUserInWorkspace
 {
   constructor(
     @Inject(IWorkspaceUserRepositoryToken)
