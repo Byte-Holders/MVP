@@ -13,3 +13,8 @@ export interface IStopScanViewModel {
   stopError: Error | null
   resetStop: () => void
 }
+
+export interface IScanStatusViewModel {
+  scanStatus: string | undefined
+  isStatusLoading: boolean
+}

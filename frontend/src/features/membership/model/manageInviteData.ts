@@ -1,4 +1,4 @@
-import { apiPost } from '../../../api/apiClient'
+import { apiPatch } from '../../../api/apiClient'
 import type { IManageInviteRepository } from '../interfaces/model/IManageInviteRepository'
 import type { InviteAction } from '../types'
 
@@ -7,7 +7,7 @@ class ManageInviteRepository implements IManageInviteRepository {
     membershipId: string,
     action: InviteAction,
   ): Promise<void> {
-    return apiPost('/api/membership/manage', { membershipId, action })
+    return apiPatch(`/api/invitations/${membershipId}`, { action })
   }
 }
 

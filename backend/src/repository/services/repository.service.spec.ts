@@ -125,6 +125,7 @@ describe('RepositoryService', () => {
       expect(mockGitHubRepository.getBranches).toHaveBeenCalledWith(
         'myOwner',
         'myRepo',
+        undefined,
       );
       expect(result).toEqual(['main', 'develop']);
     });

@@ -8,7 +8,7 @@ class InviteMemberRepository implements IInviteMemberRepository {
     recipientUsername: string,
     recipientRole: WorkspaceRole,
   ): Promise<void> {
-    return apiPost('/api/membership/invite', {
+    return apiPost('/api/invitations', {
       workspaceId,
       recipientUsername,
       recipientRole,

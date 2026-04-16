@@ -27,6 +27,17 @@ vi.mock('../components/SecuritySection', () => ({
 vi.mock('../components/DocsSection', () => ({
   DocsSection: () => <div data-testid="docs-section" />,
 }))
+vi.mock('../components/UpdateTokenForm', () => ({
+  UpdateTokenForm: () => <div data-testid="update-token-form" />,
+}))
+
+vi.mock('@tanstack/react-query', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('@tanstack/react-query')>()
+  return {
+    ...actual,
+    useQueryClient: vi.fn(() => ({ invalidateQueries: vi.fn() })),
+  }
+})
 
 import { useReportPage } from '../hooks/useReportPage'
 import { useGetRepository } from '../../workspaceRepository/hooks/useGetRepository'

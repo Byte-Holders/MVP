@@ -4,7 +4,7 @@ import type { Invite } from '../types'
 
 class GetInvitesRepository implements IGetInvitesRepository {
   async getInvites(): Promise<Invite[]> {
-    return apiGet<Invite[]>('/api/membership/invites')
+    return apiGet<Invite[]>('/api/invitations')
   }
 }
 

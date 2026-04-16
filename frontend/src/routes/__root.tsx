@@ -13,9 +13,13 @@ export const Route = createRootRoute({
 function RootComponent() {
   return (
     <AuthProvider>
-      <Header />
-      <Outlet />
-      <Footer />
+      <div className="flex min-h-screen flex-col">
+        <Header />
+        <div className="flex-1">
+          <Outlet />
+        </div>
+        <Footer />
+      </div>
       <TanStackDevtools
         plugins={[
           { name: 'Tanstack Router', render: <TanStackRouterDevtoolsPanel /> },
