@@ -8,7 +8,7 @@ class AuthRepository implements IAuthRepository {
     const session = await fetchSession()
     const idToken = session.tokens?.idToken?.toString()
 
-    const response = await fetch('/api/user/register', {
+    const response = await fetch('/api/users', {
       method: 'POST',
       headers: { Authorization: `Bearer ${idToken}` },
     })
