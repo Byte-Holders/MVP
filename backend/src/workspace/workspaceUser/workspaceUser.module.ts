@@ -34,6 +34,10 @@ import { ICheckIfUserInWorkspaceToken } from './interfaces/ICheckIfUserInWorkspa
       useClass: WorkspaceUserService,
     },
   ],
-  exports: [IWorkspaceUserServiceToken, IAddUserToWorkspaceToken, ICheckIfUserInWorkspaceToken],
+  exports: [
+    IWorkspaceUserServiceToken,
+    IAddUserToWorkspaceToken,
+    ICheckIfUserInWorkspaceToken,
+  ],
 })
 export class WorkspaceUserModule {}

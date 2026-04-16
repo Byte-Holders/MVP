@@ -20,7 +20,10 @@ import { type IAddUserToWorkspace } from '../workspace/workspaceUser/interfaces/
 import { IAddUserToWorkspaceToken } from '../workspace/workspaceUser/interfaces/IAddUserToWorkspace.interface';
 import { UserOfWorkspaceInfo } from '../workspace/workspaceUser/type/userOfWorkspace.type';
 import { IMembershipRepositoryToken } from './interfaces/IMembershipRepository.interface';
-import { type ICheckIfUserInWorkspace, ICheckIfUserInWorkspaceToken } from 'src/workspace/workspaceUser/interfaces/ICheckIfUserInWorkspace';
+import {
+  type ICheckIfUserInWorkspace,
+  ICheckIfUserInWorkspaceToken,
+} from 'src/workspace/workspaceUser/interfaces/ICheckIfUserInWorkspace';
 
 @Injectable()
 export class MembershipService implements IMembershipService {
@@ -36,7 +39,6 @@ export class MembershipService implements IMembershipService {
   ) {}
 
   async inviteUser(inviteUserInfo: InviteUserInfo): Promise<void> {
-
     const user: UserInfo | null = await this.findUserByUsername.findByUsername(
       inviteUserInfo.recipientUsername,
     );
@@ -47,13 +49,13 @@ export class MembershipService implements IMembershipService {
       );
     }
 
-    if (await this.checkIfUserIsInWorkspace.checkIfUserIsInWorkspace(
-      inviteUserInfo.workspaceId,
-      user._id
-    )) {
-      throw new BadRequestException(
-        `L'utente è già un membro del workspace`,
-      );
+    if (
+      await this.checkIfUserIsInWorkspace.checkIfUserIsInWorkspace(
+        inviteUserInfo.workspaceId,
+        user._id,
+      )
+    ) {
+      throw new BadRequestException(`L'utente è già un membro del workspace`);
     }
 
     const existingPendingInvite = await this.repository.findPendingInvite(

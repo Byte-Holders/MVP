@@ -41,10 +41,11 @@ export class WorkspaceUserService
       );
     }
     if (
-      await this.workspaceUserRepository.getWorkspaceOwner(workspaceId) === userId
+      (await this.workspaceUserRepository.getWorkspaceOwner(workspaceId)) ===
+      userId
     ) {
       throw new PreconditionFailedException(
-        "L'utente che si tenta di rimuovere è il proprietario del workspace con id"
+        "L'utente che si tenta di rimuovere è il proprietario del workspace con id",
       );
     }
     await this.workspaceUserRepository.removeUserFromWorkspace(
