@@ -40,7 +40,11 @@ export class ScanStatusController {
   @ApiBearerAuth('access-token')
   @ApiOperation({ summary: 'Ottieni lo stato di una scansione' })
   @ApiParam({ name: 'scanId', description: 'ID della scansione' })
-  @ApiResponse({ status: 200, description: 'Stato corrente della scansione', schema: { enum: Object.values(ScanStatus) } })
+  @ApiResponse({
+    status: 200,
+    description: 'Stato corrente della scansione',
+    schema: { enum: Object.values(ScanStatus) },
+  })
   @ApiResponse({ status: 404, description: 'Scansione non trovata' })
   @Get('/')
   @UsePipes(new ValidationPipe())
@@ -49,7 +53,9 @@ export class ScanStatusController {
     return await this.scanStatusService.getScanStatus(dto.scanId);
   }
 
-  @ApiOperation({ summary: 'Imposta lo stato di errore (chiamato dal container)' })
+  @ApiOperation({
+    summary: 'Imposta lo stato di errore (chiamato dal container)',
+  })
   @ApiParam({ name: 'scanId', description: 'ID della scansione' })
   @ApiResponse({ status: 204, description: 'Stato aggiornato' })
   @ApiResponse({ status: 401, description: 'Token non valido' })

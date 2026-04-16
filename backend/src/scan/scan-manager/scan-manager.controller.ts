@@ -37,7 +37,11 @@ export class ScanManagerController {
   ) {}
 
   @ApiOperation({ summary: 'Avvia una nuova scansione' })
-  @ApiResponse({ status: 201, description: 'Scansione avviata', type: StartScanResponseDto })
+  @ApiResponse({
+    status: 201,
+    description: 'Scansione avviata',
+    type: StartScanResponseDto,
+  })
   @ApiResponse({ status: 400, description: 'Dati non validi' })
   @ApiResponse({ status: 404, description: 'Repository non trovato' })
   @Post()

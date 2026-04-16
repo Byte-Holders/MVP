@@ -318,7 +318,9 @@ export function SecuritySection({ vulnerabilitiesReport, depsReport }: Props) {
                             Rimedio
                           </span>
                           <div className="prose prose-sm dark:prose-invert max-w-none text-xs text-[var(--sea-ink)] opacity-80 mt-1">
-                            <ReactMarkdown remarkPlugins={[remarkGfm]}>{v.remediation}</ReactMarkdown>
+                            <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                              {v.remediation}
+                            </ReactMarkdown>
                           </div>
                         </div>
                       )}
@@ -443,7 +445,9 @@ export function SecuritySection({ vulnerabilitiesReport, depsReport }: Props) {
             Analisi
           </p>
           <div className="prose prose-sm dark:prose-invert max-w-none text-xs text-[var(--sea-ink)] opacity-80">
-            <ReactMarkdown remarkPlugins={[remarkGfm]}>{depsReport.vulnerabilityAnalysis}</ReactMarkdown>
+            <ReactMarkdown remarkPlugins={[remarkGfm]}>
+              {depsReport.vulnerabilityAnalysis}
+            </ReactMarkdown>
           </div>
         </div>
       )}
