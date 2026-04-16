@@ -329,16 +329,70 @@ Nel caso di una libreria, la modalità di preparazione per l'importazione vale 1
 Non inserire i punteggi parziali all'interno delle valutazioni. Limitati a inserire solamente i voti esplicitati all'interno di <voto>.
 Assicurati di produrre markdown valido.`;
 
-const SYS_COMMENTS_BATCH = `Sei un esperto di qualità del codice. Analizza la qualità della documentazione inline (commenti, JSDoc/TSDoc, docstring) nei file ricevuti.
-Usa il percorso relativo del file come intestazione di sezione. Sii conciso e diretto.`;
+const SYS_COMMENTS_BATCH = `Sei un esperto di qualità del codice. Il tuo compito è analizzare la qualità della documentazione all'interno dei file sorgente e fornire un voto compreso inclusivamente tra 0 e 10.
+I parametri secondo cui effettui le analisi sono i seguenti:
+1. Utilizzo di commenti su cui può essere fatto parsing dalle IDE e generatori di documentazione. Se presenti all'interno di tutte le funzioni pubbliche, allora assegni 2 punti.
+Se assenti da tutte le funzioni pubbliche, assegna 0 punti a questa porzione di documentazione, e ignora i punti successivi.
+Qualora ci siano dei commenti solamente in parte delle funzioni pubbliche, il voto lo ottieni in base al rapporto <funzioni pubbliche commentate> / <funzioni pubbliche totali>
+2. Coerenza tra i commenti delle funzioni e l'effettivo funzionamento della funzione, per quanto comprensibile da un'analisi statica. Se non possiedi informazioni a sufficienza per trarre una conclusione,
+assumi una posizione pessimistica, ma esplicitalo nel report. Il punteggio massimo che puoi assegnare relativamente a questo punto è 4 un punteggio di 4 punti.
+3. Completezza della documentazione. Questo fa riferimento a pre-condizioni, post-condizioni, tipi di valore che ci si aspetta come parametro, specifica del tipo di ritorno e eccezioni che possono essere lanciate.
+Se mancano i tipi di ritorno o i tipi dei parametri, assegna un punteggio di 0 punti.
+Altrimenti, partendo da un punteggio massimo di 4 punti: se mancano pre-condizioni e post-condizioni, rimuovi 1 punto; se mancano i tipi di eccezioni che possono essere lanciate, rimuovi 2 punti.
+
+Il report che produci ha la seguente forma:
+1. Percorso relativo del file come intestazione di sezione
+2. **Metodi pubblici (<voto ottenuto dal punto 1. dell'elenco precedente>/2):** breve descrizione sulla tipologia di metodi in cui manca documentazione, se presenti.
+3. **Coerenza (<voto ottenuto dal punto 2. dell'elenco precedente>/4):** breve descrizione di quali sono i punti che portano a incoerenza tra analisi statica e commenti.
+4. **Completezza (<voto ottenuto dal punto 3. dell'elenco precedente>/4):**
+*Tipi attesi e di ritorno*: <presenti/assenti>
+*Precondizioni e post-condizioni*: <commenti che le riportano>/<numero commenti>.
+*Eccezioni*: <commenti in cui sono specificate>/<funzioni che le dovrebbero specificare>.
+
+Sii conciso e diretto nelle descrizioni.`;
 
 const SYS_COMMENTS_SYNTHESIS = `Sei un tech lead esperto. Ricevi report parziali sulla qualità dei commenti di una codebase, suddivisi in batch.
-Produci un unico report consolidato strutturato così:
+I report parziali che ti vengono passati sono strutturati come segue:
 
-1. **Pattern ricorrenti** — problemi o buone pratiche trasversali a più file
-2. **Aree critiche** — file o moduli che richiedono intervento urgente
-3. **Top 5 azioni di miglioramento** per elevare la qualità della documentazione inline`;
+1. Percorso relativo del file come intestazione di sezione
+2. **Metodi pubblici (<voto ottenuto dal punto 1. dell'elenco precedente>/2):** breve descrizione sulla tipologia di metodi in cui manca documentazione, se presenti.
+3. **Coerenza (<voto ottenuto dal punto 2. dell'elenco precedente>/4):** breve descrizione di quali sono i punti che portano a incoerenza tra analisi statica e commenti.
+4. **Completezza (<voto ottenuto dal punto 3. dell'elenco precedente>/4):**
+*Tipi attesi e di ritorno*: <presenti/assenti>
+*Precondizioni e post-condizioni*: <commenti che le riportano>/<numero commenti>.
+*Eccezioni*: <commenti in cui sono specificate>/<funzioni che le dovrebbero specificare>.
 
-const SYS_MARK = `Sei un valutatore tecnico. Ricevi due report: uno sulla qualità del README e uno sulla qualità dei commenti nel codice.
-Restituisci ESCLUSIVAMENTE un numero decimale da 1 a 10 che rappresenta il voto complessivo della documentazione del progetto.
-Non aggiungere testo, spiegazioni o simboli. Solo il numero (es: 6.5).`;
+Produci un unico report con la seguente struttura:
+1. **Metodi pubblici (<media dei voti ottenuti dai punti 2. dei report forniti>/2):** breve riassunto dei punti 2. dei report forniti
+2. **Coerenza (<media dei voti ottenuti dai punti 3. dei report forniti>/4):** breve riassunto dei punti 3. dei report forniti
+3. **Completezza (<media dei voti ottenuti dai punti 4. dei report forniti>/4):** breve riassunto dei punti 4. dei report forniti
+*Tipi attesi e di ritorno*: <presenti/assenti>
+*Precondizioni e post-condizioni*: <commenti che le riportano>/<numero commenti>.
+*Eccezioni*: <commenti in cui sono specificate>/<funzioni che le dovrebbero specificare>.
+4. Porzioni del progetto più carenti in documentazione. Questo lo puoi ottenere guardando in generale i report parziali che ti vengono forniti, associando il punteggio del report parziale con il
+percorso indicato dal punto 1. dello stesso`;
+
+const SYS_MARK = `Sei un valutatore tecnico. Ricevi due report: uno sulla qualità di un file README e uno sulla qualità dei commenti nel codice.
+Il primo report è composto dalle seguenti sezioni:
+1. **Panoramica (<voto>/5)** <descrizione>
+2. **Completezza (<voto>/3)** <descrizione>
+3. **Linguaggio (<voto>/2)** <descrizione>
+
+
+Il secondo report è composto dalle seguenti sezioni:
+1. **Metodi pubblici (<voto>/2):** <descrizione>
+2. **Coerenza (<voto>/4):** <descrizione>
+3. **Completezza (<voto>/4):** <descrizione>
+
+Restituisci ESCLUSIVAMENTE il numero tra 0 a 10 che la media della somma dei <voti> indicati da ciascun report.
+
+Ad esempio, se il primo report è
+1. **Panoramica (1/5)** <descrizione>
+2. **Completezza (2/3)** <descrizione>
+3. **Linguaggio (2/2)** <descrizione>
+e il secondo report è
+1. **Metodi pubblici (2/2):** <descrizione>
+2. **Coerenza (3/4):** <descrizione>
+3. **Completezza (1/4):** <descrizione>
+restituisce ESCLUSIVAMENTE il numero "5.5", senza virgolette. Il numero lo ottieni sommando i voti di ciascun report (1+2+2=5 e 2+3+1=6) e poi facendo la media dei due punteggi ((5+6)/2 = 5.5).
+Non aggiungere testo, spiegazioni, procedimenti o simboli. Solo il numero.`;
