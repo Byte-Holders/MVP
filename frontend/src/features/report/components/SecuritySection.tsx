@@ -167,7 +167,7 @@ export function SecuritySection({ vulnerabilitiesReport, depsReport }: Props) {
         {/* Vulnerabilità codice */}
         {codePieData.length > 0 && (
           <div>
-            <p className="mb-3 text-xs font-medium text-[var(--sea-ink)] opacity-60">
+            <p className="mb-3 text-sm font-medium text-[var(--sea-ink)] opacity-60">
               Vulnerabilità codice per severità
             </p>
             <ResponsiveContainer width="100%" height={160}>
@@ -219,7 +219,7 @@ export function SecuritySection({ vulnerabilitiesReport, depsReport }: Props) {
         {/* Dipendenze vulnerabili */}
         {depsPieData.length > 0 && (
           <div>
-            <p className="mb-3 text-xs font-medium text-[var(--sea-ink)] opacity-60">
+            <p className="mb-3 text-sm font-medium text-[var(--sea-ink)] opacity-60">
               Dipendenze vulnerabili per severità
             </p>
             <ResponsiveContainer width="100%" height={160}>
@@ -272,7 +272,7 @@ export function SecuritySection({ vulnerabilitiesReport, depsReport }: Props) {
       {/* ── Analisi testuale ───────────────────────────────────────────────── */}
       {depsReport.vulnerabilityAnalysis && (
         <div className="rounded-xl border border-[var(--chip-line)] p-3">
-          <p className="mb-1 text-xs font-medium text-[var(--sea-ink)] opacity-60">
+          <p className="mb-1 text-sm font-medium text-[var(--sea-ink)] opacity-60">
             Analisi
           </p>
           <div className="prose prose-sm dark:prose-invert max-w-none text-sm text-[var(--sea-ink)] opacity-80">
@@ -286,7 +286,7 @@ export function SecuritySection({ vulnerabilitiesReport, depsReport }: Props) {
       {/* ── Vulnerabilità codice: lista espandibile ─────────────────────────── */}
       {vulnerabilitiesReport.vulnerabilities.length > 0 && (
         <div>
-          <p className="mb-2 text-xs font-medium text-[var(--sea-ink)] opacity-60">
+          <p className="mb-2 text-sm font-medium text-[var(--sea-ink)] opacity-60">
             Vulnerabilità nel codice (
             {vulnerabilitiesReport.vulnerabilities.length})
           </p>

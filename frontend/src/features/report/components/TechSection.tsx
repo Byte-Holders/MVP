@@ -36,7 +36,7 @@ export function TechSection({ techReport, allDeps }: Props) {
       <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
         {/* Pie chart linguaggi */}
         <div>
-          <p className="mb-3 text-xs font-medium text-[var(--sea-ink)] opacity-60">
+          <p className="mb-3 text-sm font-medium text-[var(--sea-ink)] opacity-60">
             Linguaggi
           </p>
           {langData.length > 0 ? (
@@ -77,7 +77,7 @@ export function TechSection({ techReport, allDeps }: Props) {
               </div>
             </div>
           ) : (
-            <p className="text-xs opacity-50">Nessun linguaggio rilevato</p>
+            <p className="text-sm opacity-50">Nessun linguaggio rilevato</p>
           )}
           {minorLangs.length > 0 && (
             <div className="mt-2 flex flex-wrap gap-1">
@@ -96,7 +96,7 @@ export function TechSection({ techReport, allDeps }: Props) {
         {/* Framework + Librerie */}
         <div className="flex flex-col gap-4">
           <div>
-            <p className="mb-2 text-xs font-medium text-[var(--sea-ink)] opacity-60">
+            <p className="mb-2 text-sm font-medium text-[var(--sea-ink)] opacity-60">
               Framework ({techReport.frameworks.length})
             </p>
             {techReport.frameworks.length > 0 ? (
@@ -104,24 +104,24 @@ export function TechSection({ techReport, allDeps }: Props) {
                 {techReport.frameworks.map((f) => (
                   <span
                     key={f.name}
-                    className="rounded-full border border-[var(--chip-line)] bg-[var(--lagoon)]/10 px-3 py-0.5 text-xs font-medium text-[var(--lagoon-deep)]"
+                    className="rounded-full border border-[var(--chip-line)] bg-[var(--lagoon)]/10 px-3 py-0.5 text-sm font-medium text-[var(--lagoon-deep)]"
                   >
                     {f.name} <span className="opacity-60">{f.version}</span>
                   </span>
                 ))}
               </div>
             ) : (
-              <p className="text-xs opacity-50">Nessuno rilevato</p>
+              <p className="text-sm opacity-50">Nessuno rilevato</p>
             )}
           </div>
 
           <div>
-            <p className="mb-2 text-xs font-medium text-[var(--sea-ink)] opacity-60">
+            <p className="mb-2 text-sm font-medium text-[var(--sea-ink)] opacity-60">
               Librerie ({techReport.libraries.length})
             </p>
             {techReport.libraries.length > 0 ? (
               <div className="max-h-40 overflow-y-auto pr-1">
-                <table className="w-full text-xs">
+                <table className="w-full text-sm">
                   <tbody>
                     {techReport.libraries.map((lib) => (
                       <tr
@@ -140,7 +140,7 @@ export function TechSection({ techReport, allDeps }: Props) {
                 </table>
               </div>
             ) : (
-              <p className="text-xs opacity-50">Nessuna rilevata</p>
+              <p className="text-sm opacity-50">Nessuna rilevata</p>
             )}
           </div>
         </div>
@@ -148,11 +148,11 @@ export function TechSection({ techReport, allDeps }: Props) {
 
       {allDeps && allDeps.length > 0 && (
         <div>
-          <p className="mb-2 text-xs font-medium text-[var(--sea-ink)] opacity-60">
+          <p className="mb-2 text-sm font-medium text-[var(--sea-ink)] opacity-60">
             Tutte le dipendenze rilevate ({allDeps.length})
           </p>
           <div className="max-h-48 overflow-y-auto rounded-xl border border-[var(--chip-line)]">
-            <table className="w-full text-xs">
+            <table className="w-full text-sm">
               <tbody>
                 {allDeps.map((dep, i) => (
                   <tr

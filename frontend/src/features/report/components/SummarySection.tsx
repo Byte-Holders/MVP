@@ -100,7 +100,7 @@ export function SummarySection({ summary, metadata }: Props) {
                   <span className="text-[10px] text-[var(--sea-ink)] opacity-40">
                     Inizio scansione
                   </span>
-                  <span className="text-xs text-[var(--sea-ink)] opacity-70">
+                  <span className="text-sm text-[var(--sea-ink)] opacity-70">
                     {formatDate(metadata.startScanTime)}
                   </span>
                 </div>
@@ -110,7 +110,7 @@ export function SummarySection({ summary, metadata }: Props) {
                   <span className="text-[10px] text-[var(--sea-ink)] opacity-40">
                     Fine scansione
                   </span>
-                  <span className="text-xs text-[var(--sea-ink)] opacity-70">
+                  <span className="text-sm text-[var(--sea-ink)] opacity-70">
                     {formatDate(metadata.endScanTime)}
                   </span>
                 </div>
@@ -120,7 +120,7 @@ export function SummarySection({ summary, metadata }: Props) {
                   <span className="text-[10px] text-[var(--sea-ink)] opacity-40">
                     Durata
                   </span>
-                  <span className="text-xs font-semibold text-[var(--lagoon-deep)]">
+                  <span className="text-sm font-semibold text-[var(--lagoon-deep)]">
                     {duration}
                   </span>
                 </div>
