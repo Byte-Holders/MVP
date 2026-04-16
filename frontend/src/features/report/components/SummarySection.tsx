@@ -1,3 +1,5 @@
+import ReactMarkdown from 'react-markdown'
+import remarkGfm from 'remark-gfm'
 import type { ReportInfo } from '../types/report'
 
 type Props = {
@@ -85,9 +87,9 @@ export function SummarySection({ summary, metadata }: Props) {
 
         {/* Summary text + metadata */}
         <div className="flex flex-col gap-3 flex-1 min-w-0">
-          <p className="text-sm leading-relaxed text-[var(--sea-ink)] opacity-80">
-            {summary.summary}
-          </p>
+          <div className="prose prose-sm dark:prose-invert max-w-none text-sm leading-relaxed text-[var(--sea-ink)] opacity-80">
+            <ReactMarkdown remarkPlugins={[remarkGfm]}>{summary.summary}</ReactMarkdown>
+          </div>
 
           {metadata && (
             <div className="flex flex-wrap gap-4 border-t border-[var(--chip-line)] pt-3">

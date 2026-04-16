@@ -1,4 +1,6 @@
 import { useState } from 'react'
+import ReactMarkdown from 'react-markdown'
+import remarkGfm from 'remark-gfm'
 import {
   Bar,
   BarChart,
@@ -313,11 +315,11 @@ export function SecuritySection({ vulnerabilitiesReport, depsReport }: Props) {
                       {v.remediation && (
                         <div>
                           <span className="font-medium text-[var(--sea-ink)] opacity-60">
-                            Rimedio:{' '}
+                            Rimedio
                           </span>
-                          <span className="text-[var(--sea-ink)] opacity-80">
-                            {v.remediation}
-                          </span>
+                          <div className="prose prose-sm dark:prose-invert max-w-none text-xs text-[var(--sea-ink)] opacity-80 mt-1">
+                            <ReactMarkdown remarkPlugins={[remarkGfm]}>{v.remediation}</ReactMarkdown>
+                          </div>
                         </div>
                       )}
                       {/* eslint-disable-next-line @typescript-eslint/no-unnecessary-condition */}
@@ -440,9 +442,9 @@ export function SecuritySection({ vulnerabilitiesReport, depsReport }: Props) {
           <p className="mb-1 text-xs font-medium text-[var(--sea-ink)] opacity-60">
             Analisi
           </p>
-          <p className="text-xs leading-relaxed text-[var(--sea-ink)] opacity-80">
-            {depsReport.vulnerabilityAnalysis}
-          </p>
+          <div className="prose prose-sm dark:prose-invert max-w-none text-xs text-[var(--sea-ink)] opacity-80">
+            <ReactMarkdown remarkPlugins={[remarkGfm]}>{depsReport.vulnerabilityAnalysis}</ReactMarkdown>
+          </div>
         </div>
       )}
 
