@@ -178,16 +178,16 @@ describe('ReportService', () => {
       });
     });
 
-    it('does not save the new report if the scan status rejects', async () => {
+    it('still saves the report even if the scan status update rejects', async () => {
       mockScanStatusService.setScanStatusFromToken.mockRejectedValue(
         new Error(),
       );
 
       await expect(
         service.saveReport(makeReport(), MOCK_TOKEN),
-      ).rejects.toThrow();
+      ).resolves.not.toThrow();
 
-      expect(mockRepository.saveReport).not.toHaveBeenCalled();
+      expect(mockRepository.saveReport).toHaveBeenCalled();
     });
   });
 
