@@ -216,6 +216,20 @@ export function SecuritySection({ vulnerabilitiesReport, depsReport }: Props) {
           </div>
         )}
 
+        {/* ── Analisi testuale ───────────────────────────────────────────────── */}
+        {depsReport.vulnerabilityAnalysis && (
+          <div className="rounded-xl border border-[var(--chip-line)] p-3">
+            <p className="mb-1 text-xs font-medium text-[var(--sea-ink)] opacity-60">
+              Analisi
+            </p>
+            <div className="prose prose-sm dark:prose-invert max-w-none text-xs text-[var(--sea-ink)] opacity-80">
+              <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                {depsReport.vulnerabilityAnalysis}
+              </ReactMarkdown>
+            </div>
+          </div>
+        )}
+
         {/* Dipendenze vulnerabili */}
         {depsPieData.length > 0 && (
           <div>
@@ -437,20 +451,6 @@ export function SecuritySection({ vulnerabilitiesReport, depsReport }: Props) {
             </div>
           )
         })()}
-
-      {/* ── Analisi testuale ───────────────────────────────────────────────── */}
-      {depsReport.vulnerabilityAnalysis && (
-        <div className="rounded-xl border border-[var(--chip-line)] p-3">
-          <p className="mb-1 text-xs font-medium text-[var(--sea-ink)] opacity-60">
-            Analisi
-          </p>
-          <div className="prose prose-sm dark:prose-invert max-w-none text-xs text-[var(--sea-ink)] opacity-80">
-            <ReactMarkdown remarkPlugins={[remarkGfm]}>
-              {depsReport.vulnerabilityAnalysis}
-            </ReactMarkdown>
-          </div>
-        </div>
-      )}
 
       {totalCodeVulns === 0 && totalDepsVulns === 0 && (
         <p className="text-xs text-green-600 dark:text-green-400">
