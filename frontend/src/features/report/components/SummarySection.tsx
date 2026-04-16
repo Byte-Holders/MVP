@@ -80,7 +80,7 @@ export function SummarySection({ summary, metadata }: Props) {
         {/* Score ring */}
         <div className="flex flex-col items-center gap-1 flex-shrink-0">
           <ScoreRing mark={summary.mark} />
-          <span className="text-[10px] text-[var(--sea-ink)] opacity-50">
+          <span className="text-sm text-[var(--sea-ink)] opacity-50">
             Voto globale
           </span>
         </div>
@@ -97,7 +97,7 @@ export function SummarySection({ summary, metadata }: Props) {
             <div className="flex flex-wrap gap-4 border-t border-[var(--chip-line)] pt-3">
               {metadata.startScanTime && (
                 <div className="flex flex-col gap-0.5">
-                  <span className="text-[10px] text-[var(--sea-ink)] opacity-40">
+                  <span className="text-sm text-[var(--sea-ink)] opacity-40">
                     Inizio scansione
                   </span>
                   <span className="text-sm text-[var(--sea-ink)] opacity-70">
@@ -107,7 +107,7 @@ export function SummarySection({ summary, metadata }: Props) {
               )}
               {metadata.endScanTime && (
                 <div className="flex flex-col gap-0.5">
-                  <span className="text-[10px] text-[var(--sea-ink)] opacity-40">
+                  <span className="text-sm text-[var(--sea-ink)] opacity-40">
                     Fine scansione
                   </span>
                   <span className="text-sm text-[var(--sea-ink)] opacity-70">
@@ -117,7 +117,7 @@ export function SummarySection({ summary, metadata }: Props) {
               )}
               {duration && (
                 <div className="flex flex-col gap-0.5">
-                  <span className="text-[10px] text-[var(--sea-ink)] opacity-40">
+                  <span className="text-sm text-[var(--sea-ink)] opacity-40">
                     Durata
                   </span>
                   <span className="text-sm font-semibold text-[var(--lagoon-deep)]">

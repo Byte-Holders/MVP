@@ -84,7 +84,7 @@ export function TechSection({ techReport, allDeps }: Props) {
               {minorLangs.map((l) => (
                 <span
                   key={l.name}
-                  className="rounded-full border border-[var(--chip-line)] px-2 py-0.5 text-[10px] text-[var(--sea-ink)] opacity-50"
+                  className="rounded-full border border-[var(--chip-line)] px-2 py-0.5 text-sm text-[var(--sea-ink)] opacity-50"
                 >
                   {l.name} &lt;1%
                 </span>

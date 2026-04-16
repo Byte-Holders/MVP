@@ -155,9 +155,7 @@ export function SecuritySection({ vulnerabilitiesReport, depsReport }: Props) {
             <span className="text-xl font-bold text-[var(--sea-ink)]">
               {count}
             </span>
-            <span className="text-[10px] leading-tight opacity-50">
-              {label}
-            </span>
+            <span className="text-sm leading-tight opacity-50">{label}</span>
           </div>
         ))}
       </div>
@@ -308,7 +306,7 @@ export function SecuritySection({ vulnerabilitiesReport, depsReport }: Props) {
                   >
                     <div className="flex items-center gap-2 min-w-0">
                       <span
-                        className={`flex-shrink-0 rounded-full px-2 py-0.5 text-[10px] font-semibold ${cfg.bg} ${cfg.text}`}
+                        className={`flex-shrink-0 rounded-full px-2 py-0.5 text-sm font-semibold ${cfg.bg} ${cfg.text}`}
                       >
                         {label}
                       </span>
@@ -323,7 +321,7 @@ export function SecuritySection({ vulnerabilitiesReport, depsReport }: Props) {
 
                   {isOpen && (
                     <div className="border-t border-[var(--chip-line)] p-3 flex flex-col gap-2">
-                      <p className="font-mono text-[10px] text-[var(--sea-ink)] opacity-50">
+                      <p className="font-mono text-sm text-[var(--sea-ink)] opacity-50">
                         {v.path}
                       </p>
                       {v.remediation && (
@@ -340,7 +338,7 @@ export function SecuritySection({ vulnerabilitiesReport, depsReport }: Props) {
                       )}
                       {/* eslint-disable-next-line @typescript-eslint/no-unnecessary-condition */}
                       {v.cwe && (
-                        <span className="rounded bg-[var(--chip-line)] px-1.5 py-0.5 text-[10px] text-[var(--sea-ink)] opacity-70 w-fit">
+                        <span className="rounded bg-[var(--chip-line)] px-1.5 py-0.5 text-sm text-[var(--sea-ink)] opacity-70 w-fit">
                           {v.cwe}
                         </span>
                       )}
@@ -350,7 +348,7 @@ export function SecuritySection({ vulnerabilitiesReport, depsReport }: Props) {
                           {v.owasp.map((o) => (
                             <span
                               key={o}
-                              className="rounded bg-[var(--lagoon)]/10 px-1.5 py-0.5 text-[10px] text-[var(--lagoon-deep)]"
+                              className="rounded bg-[var(--lagoon)]/10 px-1.5 py-0.5 text-sm text-[var(--lagoon-deep)]"
                             >
                               {o}
                             </span>
@@ -425,11 +423,11 @@ export function SecuritySection({ vulnerabilitiesReport, depsReport }: Props) {
                                     className="flex items-center gap-1.5 min-w-0"
                                   >
                                     <span
-                                      className={`flex-shrink-0 rounded-full px-2 py-0.5 text-[10px] font-semibold ${cfg.bg} ${cfg.text}`}
+                                      className={`flex-shrink-0 rounded-full px-2 py-0.5 text-sm font-semibold ${cfg.bg} ${cfg.text}`}
                                     >
                                       {v.severity}
                                     </span>
-                                    <span className="text-[10px] text-[var(--sea-ink)] opacity-70 truncate">
+                                    <span className="text-sm text-[var(--sea-ink)] opacity-70 truncate">
                                       {v.description ?? v.id}
                                     </span>
                                   </div>

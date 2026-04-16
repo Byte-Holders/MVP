@@ -74,7 +74,7 @@ export function TestSection({ testReport }: Props) {
               >
                 {c.value}%
               </span>
-              <span className="text-[10px] opacity-50">{c.label}</span>
+              <span className="text-sm opacity-50">{c.label}</span>
             </div>
           ))}
         </div>
@@ -129,7 +129,7 @@ export function TestSection({ testReport }: Props) {
                 className="rounded-lg border border-red-200 bg-red-50 p-3 text-sm"
               >
                 <p className="font-medium text-red-700">{t.name}</p>
-                <p className="mt-0.5 font-mono text-[10px] text-red-400">
+                <p className="mt-0.5 font-mono text-sm text-red-400">
                   {t.path}
                 </p>
                 <p className="mt-1 text-red-600">{t.messageSummary}</p>
