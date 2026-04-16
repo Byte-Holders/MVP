@@ -8,7 +8,7 @@ import {
 import { CreateUserResponseDto } from './dto/createuser.responseDto';
 import { ApiOperation, ApiResponse } from '@nestjs/swagger';
 
-@Controller('user')
+@Controller('users')
 export class UserController {
   constructor(@Inject(CreateUserToken) private userService: ICreateUser) {}
 
@@ -23,7 +23,7 @@ export class UserController {
     description: 'Token di registrazione non valido o utente già registrato',
   })
   @UseGuards(JwtRegistrationGuard)
-  @Post('/register')
+  @Post()
   async register(@Request() req) {
     const responseDto: CreateUserResponseDto = await this.userService.create(
       req.user.sub,

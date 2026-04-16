@@ -3,7 +3,7 @@ import type { IRemoveMemberRepository } from '../interfaces/model/IRemoveMemberR
 
 class RemoveMemberRepository implements IRemoveMemberRepository {
   async removeMember(workspaceId: string, userId: string): Promise<void> {
-    return apiDelete(`/api/workspace/${workspaceId}/users/${userId}`)
+    return apiDelete(`/api/workspaces/${workspaceId}/users/${userId}`)
   }
 }
 

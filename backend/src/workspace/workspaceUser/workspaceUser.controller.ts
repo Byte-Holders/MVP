@@ -16,7 +16,7 @@ import { JwtAuthGuard } from '../../auth/jwt-auth.guard';
 import { ApiOperation, ApiParam, ApiResponse } from '@nestjs/swagger';
 
 @UseGuards(JwtAuthGuard)
-@Controller('workspace')
+@Controller('workspaces')
 export class WorkspaceUserController {
   constructor(
     @Inject(IWorkspaceUserServiceToken)
