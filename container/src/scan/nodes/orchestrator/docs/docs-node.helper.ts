@@ -302,15 +302,32 @@ const IGNORED_DIRS = new Set([
 
 // Prompts
 
-const SYS_README = `Sei un technical writer esperto. Analizza il README di una repository e produci un report strutturato con le seguenti sezioni:
+const SYS_README = `Sei un technical writer esperto. Il tuo compito è analizzare il README di un repository e controllare che siano presenti le seguenti informazioni, ed eventualmente commentarne la completezza:
+1. lo scopo del progetto in repository
+2. come sono strutturate le cartelle
+3. come effettuare la build del progetto, se un'applicazione, o predisporre la libreria all'importazione, se una libreria
+4. un esempio di utilizzo del progetto in repository: se si tratta di una libreria, allora devono essere presenti dei pezzi di codice che ne descrivano l'implementazione;
+se si tratta di un software, come lanciarlo, e quindi tutta la fase di preparazione oltre a quella di build.
 
-1. **Panoramica** — Il README descrive chiaramente lo scopo del progetto?
-2. **Completezza** — Sono presenti: installazione, utilizzo, configurazione, esempi, contribuzione, licenza?
-3. **Chiarezza** — Il linguaggio è chiaro e accessibile? La struttura è logica e navigabile?
-4. **Esempi di codice** — Sono presenti, aggiornati e funzionanti?
-5. **Punti di miglioramento** — Elenca i 3 interventi prioritari con motivazione.
+Dovrai anche valutare il linguaggio utilizzato, per il quale devi tenere a mente quanto segue:
+- Se la lingua utilizzata è l'italiano, l'indice di Gulpease deve essere maggiore di 40. L'indice di Gulpease è calcolato come segue: 89 + ((300 * <numero delle frasi>) - (10 * <numero delle lettere>)) / <numero delle parole>. Nel calcolare questi valori escludi i termini specialistici.
+- Se la lingua utilizzata è l'inglese, la formula di Flesch deve restituire un risultato maggiore di 40. La formula di Flesch è la seguente: 206,385 - (84,6 * <numero medio di sillabe per parola>) - (1,015 * <numero medio di parole per frase). Nel calcolare questi valori escludi i termini specialistici.
 
-Sii diretto e costruttivo. Valuta come se dovessi onboardare un nuovo sviluppatore con solo questo README.`;
+La tua valutazione deve essere strutturata come segue:
+1. **Panoramica (<voto>/5)**, in cui rispondi ai punti 1. e 2. dell'elenco precedente, ovvero allo dello scopo del progetto e la struttura delle cartelle
+2. **Completezza (<voto>/3)**, in cui rispondi ai punti 3. e 4. dell'elenco precedente.
+3. **Linguaggio (<voto>/2)**, in cui riporti una breve descrizione discorsiva sul linguaggio utilizzato, in base alla lingua, facendo riferimento all'indice di Gulpease o alla formula di Flesch.
+Aggiungi il valore calcolato in fondo tra parentesi quadre. Ad esempio: "[Indice di Gulpease: 56]", senza virgolette.
+
+I campi <voto> che trovi all'interno dell'ultimo elenco, per ciascun punto dell'elenco, sono valutati come segue:
+1. Il punteggio massimo parziale che fa riferimento allo scopo del progetto in repository è 3. Il punteggio massimo parziale che fa riferimento alla struttura delle cartelle é 1.
+Per ciascuno, lo scenario peggiore è se non è presente, in qual caso il punteggio parziale è 0. Se nella struttura delle cartelle occupa tra le 20 e le 30 righe, il punteggio è 0,5. Se ne occupa più di 30, il punteggio è 0.
+2. Nel caso di un'applicazione, la modalità di build vale massimo 2 punti e quella di esempio di utilizzo massimo 1 punto. L'assenza di sezioni (o comunque del contenuto) apposito porta la relativa porzione di punteggio a 0 punti.
+Nel caso di una libreria, la modalità di preparazione per l'importazione vale 1 punto, quella di utilizzo 2 punti. Qualora si possa evincere dal README che l'importazione è banale, anche se tale descrizione è assente viene comunque assegnato un punto. L'assenza di sezioni (o comunque del contenuto) apposito porta la relativa porzione di punteggio a 0 punti.
+3. Un valore calcolato compreso inclusivamente tra 40 e 50 vale 1 punto. Un valore calcolato maggiore di 50 vale 2 punti.
+
+Non inserire i punteggi parziali all'interno delle valutazioni. Limitati a inserire solamente i voti esplicitati all'interno di <voto>.
+Assicurati di produrre markdown valido.`;
 
 const SYS_COMMENTS_BATCH = `Sei un esperto di qualità del codice. Analizza la qualità della documentazione inline (commenti, JSDoc/TSDoc, docstring) nei file ricevuti.
 Usa il percorso relativo del file come intestazione di sezione. Sii conciso e diretto.`;
