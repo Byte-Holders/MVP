@@ -7,25 +7,25 @@
 @custom-variant dark (&:is(.dark *));
 
 :root {
-  --sea-ink: #173a40;
-  --sea-ink-soft: #416166;
-  --lagoon: #4fb8b2;
-  --lagoon-deep: #328f97;
-  --palm: #2f6a4a;
-  --sand: #e7f0e8;
-  --foam: #f3faf5;
+  --sea-ink: #2d1f6e;
+  --sea-ink-soft: #5e4fa3;
+  --lagoon: #7c5ce7;
+  --lagoon-deep: #6c4de0;
+  --palm: #5a3dbf;
+  --sand: #ede8fb;
+  --foam: #f5f2ff;
   --surface: rgba(255, 255, 255, 0.74);
   --surface-strong: rgba(255, 255, 255, 0.9);
-  --line: rgba(23, 58, 64, 0.14);
+  --line: rgba(108, 77, 224, 0.14);
   --inset-glint: rgba(255, 255, 255, 0.82);
-  --kicker: rgba(47, 106, 74, 0.9);
-  --bg-base: #e7f3ec;
-  --header-bg: rgba(251, 255, 248, 0.84);
-  --chip-bg: rgba(255, 255, 255, 0.8);
-  --chip-line: rgba(47, 106, 74, 0.18);
+  --kicker: rgba(90, 61, 191, 0.9);
+  --bg-base: #ede8fb;
+  --header-bg: rgba(250, 248, 255, 0.86);
+  --chip-bg: rgba(255, 255, 255, 0.82);
+  --chip-line: rgba(108, 77, 224, 0.18);
   --link-bg-hover: rgba(255, 255, 255, 0.9);
-  --hero-a: rgba(79, 184, 178, 0.36);
-  --hero-b: rgba(47, 106, 74, 0.2);
+  --hero-a: rgba(124, 92, 231, 0.28);
+  --hero-b: rgba(90, 61, 191, 0.16);
 
   --background: oklch(1 0 0);
   --foreground: oklch(0.141 0.005 285.823);
@@ -63,25 +63,25 @@
 }
 
 .dark {
-  --sea-ink: #d7ece8;
-  --sea-ink-soft: #afcdc8;
-  --lagoon: #60d7cf;
-  --lagoon-deep: #8de5db;
-  --palm: #6ec89a;
-  --sand: #0f1a1e;
-  --foam: #101d22;
-  --surface: rgba(16, 30, 34, 0.8);
-  --surface-strong: rgba(15, 27, 31, 0.92);
-  --line: rgba(141, 229, 219, 0.18);
-  --inset-glint: rgba(194, 247, 238, 0.14);
-  --kicker: #b8efe5;
-  --bg-base: #0a1418;
-  --header-bg: rgba(10, 20, 24, 0.8);
-  --chip-bg: rgba(13, 28, 32, 0.9);
-  --chip-line: rgba(141, 229, 219, 0.24);
-  --link-bg-hover: rgba(24, 44, 49, 0.8);
-  --hero-a: rgba(96, 215, 207, 0.18);
-  --hero-b: rgba(110, 200, 154, 0.12);
+  --sea-ink: #d4cef0;
+  --sea-ink-soft: #9b93c0;
+  --lagoon: #a48cf4;
+  --lagoon-deep: #8b6ef5;
+  --palm: #7c5ce7;
+  --sand: #0d0b14;
+  --foam: #100d1c;
+  --surface: rgba(20, 15, 38, 0.8);
+  --surface-strong: rgba(16, 12, 30, 0.93);
+  --line: rgba(160, 140, 244, 0.18);
+  --inset-glint: rgba(200, 180, 255, 0.1);
+  --kicker: #c4b0ff;
+  --bg-base: #080611;
+  --header-bg: rgba(10, 8, 20, 0.85);
+  --chip-bg: rgba(18, 13, 32, 0.92);
+  --chip-line: rgba(160, 140, 244, 0.22);
+  --link-bg-hover: rgba(32, 22, 58, 0.8);
+  --hero-a: rgba(108, 92, 231, 0.24);
+  --hero-b: rgba(150, 100, 220, 0.14);
 
   --background: oklch(0.141 0.005 285.823);
   --foreground: oklch(0.985 0 0);
@@ -173,7 +173,7 @@ body {
     radial-gradient(1050px 620px at 112% -12%, var(--hero-b), transparent 62%),
     radial-gradient(
       720px 380px at 50% 115%,
-      rgba(79, 184, 178, 0.1),
+      rgba(124, 92, 231, 0.08),
       transparent 68%
     ),
     linear-gradient(
@@ -202,10 +202,10 @@ body::before {
     ),
     radial-gradient(
       circle at 78% 26%,
-      rgba(79, 184, 178, 0.2),
+      rgba(124, 92, 231, 0.18),
       transparent 42%
     ),
-    radial-gradient(circle at 42% 82%, rgba(47, 106, 74, 0.14), transparent 36%);
+    radial-gradient(circle at 42% 82%, rgba(90, 61, 191, 0.12), transparent 36%);
 }
 
 body::after {
@@ -224,13 +224,13 @@ body::after {
 
 a {
   color: var(--lagoon-deep);
-  text-decoration-color: rgba(50, 143, 151, 0.4);
+  text-decoration-color: rgba(108, 77, 224, 0.35);
   text-decoration-thickness: 1px;
   text-underline-offset: 2px;
 }
 
 a:hover {
-  color: #246f76;
+  color: var(--palm);
 }
 
 code {
@@ -271,8 +271,8 @@ pre code {
   background: linear-gradient(165deg, var(--surface-strong), var(--surface));
   box-shadow:
     0 1px 0 var(--inset-glint) inset,
-    0 22px 44px rgba(30, 90, 72, 0.1),
-    0 6px 18px rgba(23, 58, 64, 0.08);
+    0 22px 44px rgba(90, 61, 191, 0.1),
+    0 6px 18px rgba(45, 31, 110, 0.07);
   backdrop-filter: blur(4px);
 }
 
@@ -284,8 +284,8 @@ pre code {
   );
   box-shadow:
     0 1px 0 var(--inset-glint) inset,
-    0 18px 34px rgba(30, 90, 72, 0.1),
-    0 4px 14px rgba(23, 58, 64, 0.06);
+    0 18px 34px rgba(90, 61, 191, 0.1),
+    0 4px 14px rgba(45, 31, 110, 0.06);
 }
 
 .feature-card:hover {
@@ -326,7 +326,7 @@ a {
   height: 2px;
   transform: scaleX(0);
   transform-origin: left;
-  background: linear-gradient(90deg, var(--lagoon), #7ed3bf);
+  background: linear-gradient(90deg, var(--lagoon), #b8a0ff);
   transition: transform 170ms ease;
 }
 
