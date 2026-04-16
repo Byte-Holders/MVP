@@ -36,7 +36,7 @@ export function RepositoryList({ workspaceId }: Props) {
         placeholder="Cerca per nome..."
         value={search}
         onChange={(e) => setSearch(e.target.value)}
-        className="w-full rounded-lg border border-[var(--border)] bg-[var(--background)] px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-[var(--primary)]"
+        className="w-full rounded-lg border border-[var(--chip-line)] bg-[var(--surface-strong)] px-3 py-2 text-sm text-[var(--sea-ink)] placeholder:text-[var(--sea-ink-soft)] placeholder:opacity-60 outline-none focus:ring-2 focus:ring-[var(--lagoon)]"
       />
 
       {isLoading && (
