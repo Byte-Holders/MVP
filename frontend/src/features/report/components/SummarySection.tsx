@@ -88,7 +88,9 @@ export function SummarySection({ summary, metadata }: Props) {
         {/* Summary text + metadata */}
         <div className="flex flex-col gap-3 flex-1 min-w-0">
           <div className="prose prose-sm dark:prose-invert max-w-none text-sm leading-relaxed text-[var(--sea-ink)] opacity-80">
-            <ReactMarkdown remarkPlugins={[remarkGfm]}>{summary.summary}</ReactMarkdown>
+            <ReactMarkdown remarkPlugins={[remarkGfm]}>
+              {summary.summary}
+            </ReactMarkdown>
           </div>
 
           {metadata && (
