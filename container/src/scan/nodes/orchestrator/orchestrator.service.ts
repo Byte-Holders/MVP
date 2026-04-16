@@ -13,7 +13,6 @@ import { WorkflowAnnotation, WorkflowState } from './workflow-state.type';
 import { Report } from './synthesizer/synthesizer.types';
 import type { INodeScanService } from './inode-scan-service.interface';
 
-// Service
 @Injectable()
 export class OrchestratorService {
   constructor(

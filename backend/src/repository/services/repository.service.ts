@@ -35,6 +35,10 @@ export class RepositoryService implements IRepositoryService {
 
   async getBranches(repositoryId: string): Promise<string[]> {
     const entity = await this.repositoryRepository.getRepository(repositoryId);
-    return this.gitHubRepository.getBranches(entity.ownerName, entity.name);
+    return this.gitHubRepository.getBranches(
+      entity.ownerName,
+      entity.name,
+      entity.accessToken,
+    );
   }
 }

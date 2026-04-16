@@ -17,6 +17,7 @@ interface ReportCallbackToken {
   TARGET_BRANCH: string;
   RECEIVER_URL_SUCCESS: string;
   RECEIVER_URL_FAILURE: string;
+  TARGET_ACCESS_TOKEN: string;
 }
 
 @Injectable()
@@ -49,35 +50,34 @@ export class AppService {
       TARGET_OWNER,
       TARGET_REPOSITORY,
       TARGET_BRANCH,
+      TARGET_ACCESS_TOKEN,
       RECEIVER_URL_SUCCESS,
       RECEIVER_URL_FAILURE,
     } = decoded;
 
     if (!RECEIVER_URL_FAILURE || !RECEIVER_URL_SUCCESS) {
-      throw new Error(`Mancano informazioni per riportare l'esito`);
+      const errorString = `Mancano informazioni per riportare l'esito`;
+      logger.error(errorString);
+      throw new Error(errorString);
     }
 
     try {
-      if (!TARGET_OWNER || !TARGET_REPOSITORY || !TARGET_BRANCH) {
-        throw new Error(
-          `Mancano informazioni sul bersaglio delle scansioni scansioni.
-          Owner: ${TARGET_OWNER}
-          Repository: ${TARGET_REPOSITORY}
-          Branch: ${TARGET_BRANCH}`,
-        );
-      }
+      await this.scanService.validateGithubAccess({
+        owner: TARGET_OWNER,
+        repository: TARGET_REPOSITORY,
+        branch: TARGET_BRANCH,
+        accessToken: TARGET_ACCESS_TOKEN,
+      });
 
       await this.scanService.validateBedrockAccess(
         this.configService.get<string>('AWS_BEARER_TOKEN_BEDROCK'),
       );
 
-      this.configService.set('RECEIVER_URL_SUCCESS', RECEIVER_URL_SUCCESS);
-      this.configService.set('RECEIVER_URL_FAILURE', RECEIVER_URL_FAILURE);
-
       const target: Target = {
         owner: TARGET_OWNER,
         repository: TARGET_REPOSITORY,
         branch: TARGET_BRANCH,
+        accessToken: TARGET_ACCESS_TOKEN,
       };
 
       const report = await this.scanService.scan(target);

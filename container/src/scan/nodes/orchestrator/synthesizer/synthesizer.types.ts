@@ -27,7 +27,7 @@ export type DataReport = {
 export type ReportMetadata = {
   startScanTime: Date;
   endScanTime: Date | null;
-  target: Target;
+  target: Omit<Target, 'accessToken'>;
 };
 
 export type Report = {

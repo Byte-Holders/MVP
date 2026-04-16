@@ -34,6 +34,10 @@ export class OrchestratorHelper {
       singleBranch: true,
       depth: 1,
       ref: target.branch,
+      onAuth: () => ({
+        username: 'token',
+        password: target.accessToken,
+      }),
     });
 
     this.logger.debug(`Repo clonata con successo in ${clonePath}`);
