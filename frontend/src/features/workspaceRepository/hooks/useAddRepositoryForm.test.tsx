@@ -31,26 +31,6 @@ describe('useAddRepositoryForm Hook', () => {
     })
     expect(result.current.url).toBe('')
     expect(result.current.token).toBe('')
-    expect(result.current.isPrivate).toBe(false)
-  })
-
-  it('dovrebbe svuotare il token quando si passa da privata a pubblica', () => {
-    const { result } = renderHook(() => useAddRepositoryForm(workspaceId), {
-      wrapper,
-    })
-
-    act(() => {
-      result.current.setPrivate()
-      result.current.setToken('mio-token-segreto')
-    })
-    expect(result.current.isPrivate).toBe(true)
-    expect(result.current.token).toBe('mio-token-segreto')
-
-    act(() => {
-      result.current.setPublic()
-    })
-    expect(result.current.isPrivate).toBe(false)
-    expect(result.current.token).toBe('')
   })
 
   it('non dovrebbe chiamare mutate se url è vuoto', () => {

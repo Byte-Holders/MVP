@@ -7,6 +7,7 @@ import { SecuritySection } from '../components/SecuritySection'
 import { DocsSection } from '../components/DocsSection'
 import { ScanButton } from '#/features/scan/components/ScanButton'
 import { useGetRepository } from '../../workspaceRepository/hooks/useGetRepository'
+import { UpdateTokenForm } from '../components/UpdateTokenForm'
 
 type Props = {
   workspaceId: string
@@ -46,13 +47,19 @@ export function ReportPage({ workspaceId, repositoryId }: Props) {
     <div className="flex flex-col gap-6 p-6">
       {/* Header */}
       <div className="sticky top-[72px] z-30 -mx-6 flex items-center justify-between border-b border-[var(--chip-line)] bg-[var(--header-bg)] px-6 py-3 backdrop-blur-md">
-        <div>
-          <p className="text-xs text-[var(--sea-ink)] opacity-60">
-            {ownerName}
-          </p>
-          <h1 className="text-xl font-semibold text-[var(--sea-ink)]">
-            {name}
-          </h1>
+        <div className="flex items-center gap-4">
+          <div>
+            <p className="text-xs text-[var(--sea-ink)] opacity-60">
+              {ownerName}
+            </p>
+            <h1 className="text-xl font-semibold text-[var(--sea-ink)]">
+              {name}
+            </h1>
+          </div>
+          <UpdateTokenForm
+            workspaceId={workspaceId}
+            repositoryId={repositoryId}
+          />
         </div>
         <div className="flex items-center gap-3">
           <label

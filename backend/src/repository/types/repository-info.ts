@@ -6,4 +6,5 @@ export type RepositoryInfo = {
   documentationScore?: number;
   codeCoverage?: number;
   cvss?: number;
+  accessToken?: string;
 };

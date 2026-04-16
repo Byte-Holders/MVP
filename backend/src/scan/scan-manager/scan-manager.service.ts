@@ -60,6 +60,7 @@ export class ScanManagerService implements IScanManagerService {
       TARGET_OWNER: repository.ownerName,
       TARGET_REPOSITORY: repository.name,
       TARGET_BRANCH: info.branch,
+      TARGET_ACCESS_TOKEN: repository.accessToken,
       RECEIVER_URL_SUCCESS: this.configService.get<string>(
         'SCAN_RECEIVER_URL_SUCCESS',
       )!,

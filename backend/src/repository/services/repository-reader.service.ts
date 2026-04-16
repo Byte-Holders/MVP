@@ -28,6 +28,7 @@ export class RepositoryReaderService implements IRepositoryReader {
         documentationScore: entity.documentationScore,
         codeCoverage: entity.codeCoverage,
         cvss: entity.cvss,
+        accessToken: entity.accessToken,
       }),
     );
   }
