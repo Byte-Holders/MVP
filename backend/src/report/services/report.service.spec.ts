@@ -3,7 +3,7 @@ import { NotFoundException } from '@nestjs/common';
 import { ReportService } from './report.service';
 import { ReportRepositoryToken } from '../interfaces/ireport.repository.interface';
 import { RepositoryScoreWriterToken } from '../../repository/interfaces/repository.score-writer.interface';
-import { IWorkspaceUserServiceToken } from '../../workspace/workspaceUser/interfaces/IWorkspaceUserService';
+import { IUserRoleReaderToken } from '../../workspace/workspaceUser/interfaces/IUserRoleReader';
 import { WorkspaceRole } from '../../workspace/roles.enum';
 import type { ReportInfo } from '../types/report.type';
 import {
@@ -141,7 +141,7 @@ describe('ReportService', () => {
           useValue: { updateScores: jest.fn() },
         },
         {
-          provide: IWorkspaceUserServiceToken,
+          provide: IUserRoleReaderToken,
           useValue: mockWorkspaceUserService,
         },
         {

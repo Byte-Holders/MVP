@@ -18,6 +18,7 @@ const mockTarget = (): Target => ({
   owner: 'myOwner',
   repository: 'myRepo',
   branch: 'myBranch',
+  accessToken: 'myAccessToken',
 });
 
 const mockReport = (): Report => ({
