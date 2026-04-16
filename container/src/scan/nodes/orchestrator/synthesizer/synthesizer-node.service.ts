@@ -32,9 +32,12 @@ export class SynthesizerNodeService {
           `Sei un tech lead esperto. Ricevi i risultati aggregati dell'analisi di una repository (sicurezza, coverage, dipendenze, documentazione).
 Restituisci SOLO un JSON con questa struttura, senza markdown:
 {
-  "summary": "<testo discorsivo max 300 parole che mette in relazione tutti gli aspetti>",
+  "summary": "<riassunto discorsivo>",
   "mark": <voto intero da 1 a 10>
-}`,
+}
+Il riassunto discorsivo deve essere markdown VALIDO, dunque deve avere tipo string, e fornire una panoramica dei risultati ricevuti, senza andare nel tecnico o fare riferimento alla logica interna del
+prodotto analizzato.
+Assicurati di restituire un JSON valido, e solo un JSON valido.`,
         ),
         new HumanMessage(`Dati analisi:\n${context}`),
       ]);

@@ -45,11 +45,11 @@ export function TestSection({ testReport }: Props) {
         </h2>
         <div className="flex items-center gap-3">
           {failedTests.length > 0 && (
-            <span className="rounded-full bg-red-100 px-2.5 py-0.5 text-xs font-semibold text-red-700">
+            <span className="rounded-full bg-red-100 px-2.5 py-0.5 text-sm font-semibold text-red-700">
               {failedTests.length} falliti
             </span>
           )}
-          <span className="text-xs text-[var(--sea-ink)] opacity-60">
+          <span className="text-sm text-[var(--sea-ink)] opacity-60">
             {testsRun} test eseguiti
           </span>
         </div>
@@ -62,7 +62,7 @@ export function TestSection({ testReport }: Props) {
             {avgCoverage.toFixed(0)}
             <span className="text-sm font-normal opacity-50">%</span>
           </span>
-          <span className="text-xs opacity-50">Coverage media</span>
+          <span className="text-sm opacity-50">Coverage media</span>
         </div>
         <div className="h-10 w-px bg-[var(--chip-line)]" />
         <div className="flex flex-1 gap-4">
@@ -74,7 +74,7 @@ export function TestSection({ testReport }: Props) {
               >
                 {c.value}%
               </span>
-              <span className="text-[10px] opacity-50">{c.label}</span>
+              <span className="text-sm opacity-50">{c.label}</span>
             </div>
           ))}
         </div>
@@ -121,15 +121,15 @@ export function TestSection({ testReport }: Props) {
       {/* Test falliti */}
       {failedTests.length > 0 && (
         <div>
-          <p className="mb-2 text-xs font-medium text-red-500">Test falliti</p>
+          <p className="mb-2 text-sm font-medium text-red-500">Test falliti</p>
           <div className="flex flex-col gap-2">
             {failedTests.map((t) => (
               <div
                 key={t.name}
-                className="rounded-lg border border-red-200 bg-red-50 p-3 text-xs"
+                className="rounded-lg border border-red-200 bg-red-50 p-3 text-sm"
               >
                 <p className="font-medium text-red-700">{t.name}</p>
-                <p className="mt-0.5 font-mono text-[10px] text-red-400">
+                <p className="mt-0.5 font-mono text-sm text-red-400">
                   {t.path}
                 </p>
                 <p className="mt-1 text-red-600">{t.messageSummary}</p>
@@ -140,7 +140,7 @@ export function TestSection({ testReport }: Props) {
       )}
 
       {testsRun === 0 && (
-        <p className="text-xs text-[var(--sea-ink)] opacity-50">
+        <p className="text-sm text-[var(--sea-ink)] opacity-50">
           Nessun test rilevato nel progetto.
         </p>
       )}

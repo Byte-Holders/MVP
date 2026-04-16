@@ -50,7 +50,15 @@ export function ScanButton({
     }
     queryClient.removeQueries({ queryKey: ['scanStatus', scanId] })
     reset()
-  }
+  }, [
+    scanStatus,
+    onCompleted,
+    reset,
+    queryClient,
+    scanId,
+    repositoryId,
+    branch,
+  ])
 
   useEffect(() => {
     onScanActiveChange?.(scanRunning)

@@ -1,3 +1,5 @@
+import ReactMarkdown from 'react-markdown'
+import remarkGfm from 'remark-gfm'
 import type { ReportInfo } from '../types/report'
 
 type Props = {
@@ -78,45 +80,47 @@ export function SummarySection({ summary, metadata }: Props) {
         {/* Score ring */}
         <div className="flex flex-col items-center gap-1 flex-shrink-0">
           <ScoreRing mark={summary.mark} />
-          <span className="text-[10px] text-[var(--sea-ink)] opacity-50">
+          <span className="text-sm text-[var(--sea-ink)] opacity-50">
             Voto globale
           </span>
         </div>
 
         {/* Summary text + metadata */}
         <div className="flex flex-col gap-3 flex-1 min-w-0">
-          <p className="text-sm leading-relaxed text-[var(--sea-ink)] opacity-80">
-            {summary.summary}
-          </p>
+          <div className="prose prose-sm dark:prose-invert max-w-none text-sm leading-relaxed text-[var(--sea-ink)] opacity-80">
+            <ReactMarkdown remarkPlugins={[remarkGfm]}>
+              {summary.summary}
+            </ReactMarkdown>
+          </div>
 
           {metadata && (
             <div className="flex flex-wrap gap-4 border-t border-[var(--chip-line)] pt-3">
               {metadata.startScanTime && (
                 <div className="flex flex-col gap-0.5">
-                  <span className="text-[10px] text-[var(--sea-ink)] opacity-40">
+                  <span className="text-sm text-[var(--sea-ink)] opacity-40">
                     Inizio scansione
                   </span>
-                  <span className="text-xs text-[var(--sea-ink)] opacity-70">
+                  <span className="text-sm text-[var(--sea-ink)] opacity-70">
                     {formatDate(metadata.startScanTime)}
                   </span>
                 </div>
               )}
               {metadata.endScanTime && (
                 <div className="flex flex-col gap-0.5">
-                  <span className="text-[10px] text-[var(--sea-ink)] opacity-40">
+                  <span className="text-sm text-[var(--sea-ink)] opacity-40">
                     Fine scansione
                   </span>
-                  <span className="text-xs text-[var(--sea-ink)] opacity-70">
+                  <span className="text-sm text-[var(--sea-ink)] opacity-70">
                     {formatDate(metadata.endScanTime)}
                   </span>
                 </div>
               )}
               {duration && (
                 <div className="flex flex-col gap-0.5">
-                  <span className="text-[10px] text-[var(--sea-ink)] opacity-40">
+                  <span className="text-sm text-[var(--sea-ink)] opacity-40">
                     Durata
                   </span>
-                  <span className="text-xs font-semibold text-[var(--lagoon-deep)]">
+                  <span className="text-sm font-semibold text-[var(--lagoon-deep)]">
                     {duration}
                   </span>
                 </div>

@@ -89,8 +89,6 @@ export class DocsNodeHelper {
     reports: string[],
     systemPrompt: string,
   ): Promise<string> {
-    if (reports.length === 1) return reports[0];
-
     this.logger.debug(`Avvio sintesi di ${reports.length} batch...`);
     const payload = reports
       .map((r, i) => `=== Batch ${i + 1} ===\n${r}`)
@@ -327,6 +325,11 @@ Nel caso di una libreria, la modalità di preparazione per l'importazione vale 1
 3. Un valore calcolato compreso inclusivamente tra 40 e 50 vale 1 punto. Un valore calcolato maggiore di 50 vale 2 punti.
 
 Non inserire i punteggi parziali all'interno delle valutazioni. Limitati a inserire solamente i voti esplicitati all'interno di <voto>.
+Assicurati che ciascun punto sia ben commentato ed argomentato. Evita di essere sintetico, a favore dell'essere esaustivo.
+Non fare riferimento alle formule utilizzate, e nell'esaustività sii discorsivo pur mantenendo la struttura richiesta.
+Non fare riferimento ai punteggi parziali che hai calcolato.
+Non fare riferimento alla logica del software o alla modalità in cui ricevi gli input.
+Non fare riferimento alla modalità in cui produci risultati.
 Assicurati di produrre markdown valido.`;
 
 const SYS_COMMENTS_BATCH = `Sei un esperto di qualità del codice. Il tuo compito è analizzare la qualità della documentazione all'interno dei file sorgente e fornire un voto compreso inclusivamente tra 0 e 10.
@@ -335,8 +338,11 @@ I parametri secondo cui effettui le analisi sono i seguenti:
 Se assenti da tutte le funzioni pubbliche, assegna 0 punti a questa porzione di documentazione, e ignora i punti successivi.
 Qualora ci siano dei commenti solamente in parte delle funzioni pubbliche, il voto lo ottieni in base al rapporto <funzioni pubbliche commentate> / <funzioni pubbliche totali>
 2. Coerenza tra i commenti delle funzioni e l'effettivo funzionamento della funzione, per quanto comprensibile da un'analisi statica. Se non possiedi informazioni a sufficienza per trarre una conclusione,
-assumi una posizione pessimistica, ma esplicitalo nel report. Il punteggio massimo che puoi assegnare relativamente a questo punto è 4 un punteggio di 4 punti.
-3. Completezza della documentazione. Questo fa riferimento a pre-condizioni, post-condizioni, tipi di valore che ci si aspetta come parametro, specifica del tipo di ritorno e eccezioni che possono essere lanciate.
+assumi una posizione pessimistica, ma esplicitalo nel report. Il punteggio massimo che puoi assegnare relativamente a questo punto è 4 un punteggio di 4 punti. Il punteggio minimo,
+che corrisponde al caso peggiore, ovvero un caso in cui i commenti siano totalmente incoerenti con le definizioni delle funzioni, oppure che non ci sia alcun commento da analizzare,
+corrisponde a un punteggio di 0 punti.
+3. Completezza della documentazione. Questo fa riferimento a pre-condizioni, post-condizioni, tipi di valore che ci si aspetta come parametro, specifica del tipo di ritorno e eccezioni che possono essere lanciate dalla keyword 'throw'
+o da altre funzioni chiamate all'interno della funzione analizzata.
 Se mancano i tipi di ritorno o i tipi dei parametri, assegna un punteggio di 0 punti.
 Altrimenti, partendo da un punteggio massimo di 4 punti: se mancano pre-condizioni e post-condizioni, rimuovi 1 punto; se mancano i tipi di eccezioni che possono essere lanciate, rimuovi 2 punti.
 
@@ -347,9 +353,10 @@ Il report che produci ha la seguente forma:
 4. **Completezza (<voto ottenuto dal punto 3. dell'elenco precedente>/4):**
 *Tipi attesi e di ritorno*: <presenti/assenti>
 *Precondizioni e post-condizioni*: <commenti che le riportano>/<numero commenti>.
-*Eccezioni*: <commenti in cui sono specificate>/<funzioni che le dovrebbero specificare>.
+*Eccezioni*: <commenti in cui sono specificate quelle lanciate da un throw>/<funzioni che le dovrebbero specificare>.
 
-Sii conciso e diretto nelle descrizioni.`;
+Sii conciso e diretto nelle descrizioni.
+Assicurati di produrre markdown valido.`;
 
 const SYS_COMMENTS_SYNTHESIS = `Sei un tech lead esperto. Ricevi report parziali sulla qualità dei commenti di una codebase, suddivisi in batch.
 I report parziali che ti vengono passati sono strutturati come segue:
@@ -360,9 +367,9 @@ I report parziali che ti vengono passati sono strutturati come segue:
 4. **Completezza (<voto ottenuto dal punto 3. dell'elenco precedente>/4):**
 *Tipi attesi e di ritorno*: <presenti/assenti>
 *Precondizioni e post-condizioni*: <commenti che le riportano>/<numero commenti>.
-*Eccezioni*: <commenti in cui sono specificate>/<funzioni che le dovrebbero specificare>.
+*Eccezioni*: <commenti in cui sono specificate quelle lanciate da un throw>/<funzioni che le dovrebbero specificare>.
 
-Produci un unico report con la seguente struttura:
+Partendo da tutti i report che hai ricevuto, riassumili producendo un unico report con la seguente struttura:
 1. **Metodi pubblici (<media dei voti ottenuti dai punti 2. dei report forniti>/2):** breve riassunto dei punti 2. dei report forniti
 2. **Coerenza (<media dei voti ottenuti dai punti 3. dei report forniti>/4):** breve riassunto dei punti 3. dei report forniti
 3. **Completezza (<media dei voti ottenuti dai punti 4. dei report forniti>/4):** breve riassunto dei punti 4. dei report forniti
@@ -370,7 +377,19 @@ Produci un unico report con la seguente struttura:
 *Precondizioni e post-condizioni*: <commenti che le riportano>/<numero commenti>.
 *Eccezioni*: <commenti in cui sono specificate>/<funzioni che le dovrebbero specificare>.
 4. Porzioni del progetto più carenti in documentazione. Questo lo puoi ottenere guardando in generale i report parziali che ti vengono forniti, associando il punteggio del report parziale con il
-percorso indicato dal punto 1. dello stesso`;
+percorso indicato dal punto 1. dello stesso
+
+L'unica situazione in cui ti è permesso trasgredire la struttura sovrastante è quando il punteggio assegnato al punto 1. è 0/2. In tal caso, riporta semplicemente all'interno di una
+<descrizione> che non è possibile effettuare un'analisi sui commenti perché non ci sono funzioni pubbliche sono commentate, e utilizza il seguente formato:
+1. **Errore (0/10):** <descrizione>
+
+Assicurati che ciascun punto sia ben commentato ed argomentato.
+Evita di essere sintetico, a favore dell'essere esaustivo.
+Non fare riferimento alle formule utilizzate, e nell'esaustività sii discorsivo, quindi non utilizzare elenchi puntati o liste di file, pur mantenendo la struttura richiesta.
+Non fare riferimento alla logica del software o alla modalità in cui ricevi gli input.
+Non fare riferimento ai punteggi intermedi ottenuti dai vari batch.
+Non fare riferimento alla modalità in cui produci risultati.
+Assicurati di produrre markdown valido.`;
 
 const SYS_MARK = `Sei un valutatore tecnico. Ricevi due report: uno sulla qualità di un file README e uno sulla qualità dei commenti nel codice.
 Il primo report è composto dalle seguenti sezioni:
@@ -383,6 +402,8 @@ Il secondo report è composto dalle seguenti sezioni:
 1. **Metodi pubblici (<voto>/2):** <descrizione>
 2. **Coerenza (<voto>/4):** <descrizione>
 3. **Completezza (<voto>/4):** <descrizione>
+oppure
+1. **Errore (0/10):** <descrizione>
 
 Restituisci ESCLUSIVAMENTE il numero tra 0 a 10 che la media della somma dei <voti> indicati da ciascun report.
 
@@ -395,4 +416,12 @@ e il secondo report è
 2. **Coerenza (3/4):** <descrizione>
 3. **Completezza (1/4):** <descrizione>
 restituisce ESCLUSIVAMENTE il numero "5.5", senza virgolette. Il numero lo ottieni sommando i voti di ciascun report (1+2+2=5 e 2+3+1=6) e poi facendo la media dei due punteggi ((5+6)/2 = 5.5).
+
+Analogamente, se il primo report è
+1. **Panoramica (4/5)** <descrizione>
+2. **Completezza (0/3)** <descrizione>
+3. **Linguaggio (1/2)** <descrizione>
+e il secondo report è
+1. **Errore (0/10):** <descrizione>
+allora restituisci ESCLUSIVAMENTE il numero "2.5", senza virgolette. Il numero lo ottieni sommando i voti di ciascun report (4+0+1=5 e 0=0) e poi facendo la media dei due punteggi ((5+0)/2 = 2.5).
 Non aggiungere testo, spiegazioni, procedimenti o simboli. Solo il numero.`;
