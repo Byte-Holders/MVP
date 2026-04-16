@@ -70,9 +70,15 @@ export function ScanButton({
     let interval: ReturnType<typeof setInterval>
 
     const timeout = setTimeout(() => {
-      void queryClient.refetchQueries({ queryKey: ['report', repositoryId, branch], type: 'active' })
+      void queryClient.refetchQueries({
+        queryKey: ['report', repositoryId, branch],
+        type: 'active',
+      })
       interval = setInterval(() => {
-        void queryClient.refetchQueries({ queryKey: ['report', repositoryId, branch], type: 'active' })
+        void queryClient.refetchQueries({
+          queryKey: ['report', repositoryId, branch],
+          type: 'active',
+        })
       }, 8_000)
     }, 90_000)
 
