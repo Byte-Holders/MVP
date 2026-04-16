@@ -52,7 +52,7 @@ export function ReportPage({ workspaceId, repositoryId }: Props) {
   }
 
   return (
-    <div className="flex flex-col gap-6 p-6">
+    <div className="page-wrap flex flex-col gap-6 p-6">
       {/* Header */}
       <div className="sticky top-[72px] z-30 -mx-6 flex items-center justify-between border-b border-[var(--chip-line)] bg-[var(--header-bg)] px-6 py-3 backdrop-blur-md">
         <div className="flex items-center gap-4">
