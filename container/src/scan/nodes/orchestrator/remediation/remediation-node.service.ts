@@ -91,8 +91,12 @@ export class RemediationNodeService implements INodeScanService {
           const response = await model.invoke([
             new SystemMessage(
               `Sei un esperto di sicurezza del software. Analizza le vulnerabilità Semgrep fornite e restituisci un JSON array di oggetti, uno per ogni vulnerabilità:
-                        [{ "id": "<check_id>", "remediation": "<spiegazione max 100 parole che prevede un prima e dopo correzione>" }]
-                        Rispondi SOLO con il JSON array, senza markdown.`,
+                [{ "id": "<check_id>", "remediation": "<remediation>" }]
+                Il campo remediation è strutturato come segue:
+                - **Esempio:** esempio che può portare alla vulnerabilità rilevata. Dedica massimo 300 caratteri per questo punto.
+                - **Remediation:** le azioni da intraprendere per risolvere la vulnerabilità, se possibile. In caso contrario, come tale vulnerabilità può essere alleviata. Dedica massimo 100 parole per questo punto.
+                - **Conseguenze:** un esempio pratico, di massimo 100 parole, di cosa può succedere in caso di mancata risoluzione della vulnerabilità. Dedica massimo 50 parole per questo punto.
+                Rispondi SOLO con il JSON array, senza markdown.`,
             ),
             new HumanMessage(
               `Vulnerabilità trovate in ${filePath}:\n${JSON.stringify(results, null, 2)}\n\nContenuto del file:\n${fileContent}`,
