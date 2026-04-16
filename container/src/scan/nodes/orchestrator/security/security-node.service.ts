@@ -36,7 +36,7 @@ export class SecurityNodeService implements INodeScanService {
       const mark = this.helper.getMark(translated_units);
       this.logger.log(`Analisi della sicurezza terminato. Voto: ${mark}`);
       return {
-        vulnerabilitiesReport: { vulnerabilities: units, mark },
+        vulnerabilitiesReport: { vulnerabilities: translated_units, mark },
         vulnerabilitiesReportPath: reportPath,
       };
     } catch (error) {
