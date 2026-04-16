@@ -34,6 +34,10 @@ import { IUserRoleReaderToken } from './interfaces/IUserRoleReader';
       useClass: WorkspaceUserService,
     },
   ],
-  exports: [IWorkspaceUserServiceToken, IAddUserToWorkspaceToken, IUserRoleReaderToken],
+  exports: [
+    IWorkspaceUserServiceToken,
+    IAddUserToWorkspaceToken,
+    IUserRoleReaderToken,
+  ],
 })
 export class WorkspaceUserModule {}
