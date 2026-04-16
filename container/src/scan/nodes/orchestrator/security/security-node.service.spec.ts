@@ -18,6 +18,7 @@ describe('SecurityNodeService', () => {
       isSemgrepInstalled: jest.fn(),
       executeSemgrep: jest.fn(),
       parseResults: jest.fn(),
+      translateDescriptions: jest.fn(),
       getMark: jest.fn(),
     };
 

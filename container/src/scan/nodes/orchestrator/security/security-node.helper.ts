@@ -5,6 +5,8 @@ import path from 'path';
 import { readFile } from 'fs/promises';
 import { VulnerabilityUnit } from './security-report.type';
 import { executeCli, type CliCommand } from '../../../exec.cli';
+import { SystemMessage, HumanMessage } from '@langchain/core/messages';
+import { ChatBedrockConverse } from '@langchain/aws';
 
 type SemgrepResult = {
   results: {
@@ -28,6 +30,15 @@ type SemgrepMetadata = {
 @Injectable()
 export class SecurityNodeHelper {
   private readonly logger = new Logger(SecurityNodeHelper.name);
+
+  createModel() {
+    return new ChatBedrockConverse({
+      model: process.env.BEDROCK_MODEL_ID ?? 'deepseek.v3.2',
+      region: process.env.BEDROCK_AWS_REGION ?? 'eu-north-1',
+      temperature: 0,
+      maxTokens: 5000,
+    });
+  }
 
   buildReportPath(repoName: string): string {
     const dateStr = new Date().toISOString().replace(/[:.]/g, '-');
@@ -87,6 +98,52 @@ export class SecurityNodeHelper {
           : r.extra?.metadata?.cwe[0],
       owasp: r.extra?.metadata?.owasp ?? [],
     }));
+  }
+
+  async translateDescriptions(
+    units: VulnerabilityUnit[],
+  ): Promise<VulnerabilityUnit[]> {
+    if (units.length === 0) return units;
+
+    this.logger.log(`Traduzione di ${units.length} descrizioni in corso...`);
+
+    const descriptionsMap = units.reduce(
+      (acc, unit, index) => {
+        if (unit.description) acc[index] = unit.description;
+        return acc;
+      },
+      {} as Record<number, string>,
+    );
+
+    const model = this.createModel();
+
+    try {
+      const response = await model.invoke([
+        new SystemMessage(
+          `Sei un esperto di sicurezza. Traduci in italiano le descrizioni delle vulnerabilità fornite nel JSON. 
+           Mantieni le chiavi numeriche originali. Rispondi SOLO con il JSON del dizionario tradotto, senza markdown.`,
+        ),
+        new HumanMessage(JSON.stringify(descriptionsMap)),
+      ]);
+
+      const content = (response.content as string)
+        .replace(/```json|```/g, '')
+        .trim();
+
+      const translatedMap = JSON.parse(content) as Record<string, string>;
+
+      // Rimappatura delle traduzioni nell'array originale
+      return units.map((unit, index) => ({
+        ...unit,
+        description: translatedMap[index.toString()] ?? unit.description,
+      }));
+    } catch (error) {
+      this.logger.error(
+        'Errore durante la traduzione LLM, mantengo i testi originali',
+        error,
+      );
+      return units;
+    }
   }
 
   parseSeverity(raw?: string): number {
