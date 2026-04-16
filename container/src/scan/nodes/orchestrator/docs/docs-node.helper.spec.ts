@@ -232,11 +232,13 @@ describe('DocsNodeHelper', () => {
   });
 
   describe('synthesizeReports', () => {
-    it('should return the single report directly without calling the model', async () => {
-      const result = await helper.synthesizeReports(['solo report'], 'prompt');
+    it('should call the model even when there is only one report', async () => {
+      mockInvoke.mockResolvedValueOnce({ content: 'synthesized single' });
 
-      expect(result).toBe('solo report');
-      expect(mockInvoke).not.toHaveBeenCalled();
+      const result = await helper.synthesizeReports(['solo report'], 'synthesis prompt');
+
+      expect(result).toBe('synthesized single');
+      expect(mockInvoke).toHaveBeenCalledTimes(1);
     });
 
     it('should call the model when there are multiple reports', async () => {

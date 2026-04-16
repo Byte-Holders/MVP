@@ -89,8 +89,6 @@ export class DocsNodeHelper {
     reports: string[],
     systemPrompt: string,
   ): Promise<string> {
-    if (reports.length === 1) return reports[0];
-
     this.logger.debug(`Avvio sintesi di ${reports.length} batch...`);
     const payload = reports
       .map((r, i) => `=== Batch ${i + 1} ===\n${r}`)
@@ -371,7 +369,7 @@ I report parziali che ti vengono passati sono strutturati come segue:
 *Precondizioni e post-condizioni*: <commenti che le riportano>/<numero commenti>.
 *Eccezioni*: <commenti in cui sono specificate quelle lanciate da un throw>/<funzioni che le dovrebbero specificare>.
 
-Produci un unico report con la seguente struttura:
+Partendo da tutti i report che hai ricevuto, riassumili producendo un unico report con la seguente struttura:
 1. **Metodi pubblici (<media dei voti ottenuti dai punti 2. dei report forniti>/2):** breve riassunto dei punti 2. dei report forniti
 2. **Coerenza (<media dei voti ottenuti dai punti 3. dei report forniti>/4):** breve riassunto dei punti 3. dei report forniti
 3. **Completezza (<media dei voti ottenuti dai punti 4. dei report forniti>/4):** breve riassunto dei punti 4. dei report forniti
@@ -387,7 +385,7 @@ L'unica situazione in cui ti è permesso trasgredire la struttura sovrastante è
 
 Assicurati che ciascun punto sia ben commentato ed argomentato.
 Evita di essere sintetico, a favore dell'essere esaustivo.
-Non fare riferimento alle formule utilizzate, e nell'esaustività sii discorsivo pur mantenendo la struttura richiesta.
+Non fare riferimento alle formule utilizzate, e nell'esaustività sii discorsivo, quindi non utilizzare elenchi puntati o liste di file, pur mantenendo la struttura richiesta.
 Non fare riferimento alla logica del software o alla modalità in cui ricevi gli input.
 Non fare riferimento ai punteggi intermedi ottenuti dai vari batch.
 Non fare riferimento alla modalità in cui produci risultati.
