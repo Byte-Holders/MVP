@@ -14,8 +14,14 @@ Amplify.configure({
         oauth: {
           domain: cognitoConfig.domain,
           scopes: ['openid', 'email', 'phone'],
-          redirectSignIn: ['http://localhost:3000/callback'],
-          redirectSignOut: ['http://localhost:3000/'],
+          redirectSignIn: [
+            'https://develop.dfk7n70x1c1hn.amplifyapp.com/callback',
+            'http://localhost:3000/callback',
+          ],
+          redirectSignOut: [
+            'https://develop.dfk7n70x1c1hn.amplifyapp.com/',
+            'http://localhost:3000/',
+          ],
           responseType: 'code',
         },
       },
