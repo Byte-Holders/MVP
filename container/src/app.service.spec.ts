@@ -131,6 +131,7 @@ const mockDecodedToken = () => ({
   TARGET_OWNER: 'myOwner',
   TARGET_REPOSITORY: 'myRepo',
   TARGET_BRANCH: 'myBranch',
+  TARGET_ACCESS_TOKEN: 'myAccessToken',
   RECEIVER_URL_SUCCESS: 'http://success.url',
   RECEIVER_URL_FAILURE: 'http://failure.url',
   AWS_ACCESS_KEY_ID: 'myKeyId',
@@ -155,6 +156,7 @@ describe('AppService', () => {
     scanner = {
       scan: jest.fn(),
       validateBedrockAccess: jest.fn(),
+      validateGithubAccess: jest.fn(),
     };
 
     configService = {
@@ -266,6 +268,7 @@ describe('AppService', () => {
         owner: mockDecodedToken().TARGET_OWNER,
         repository: mockDecodedToken().TARGET_REPOSITORY,
         branch: mockDecodedToken().TARGET_BRANCH,
+        accessToken: mockDecodedToken().TARGET_ACCESS_TOKEN,
       };
 
       await appService.run();
