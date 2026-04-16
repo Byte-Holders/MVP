@@ -7,8 +7,7 @@ export function useAddRepositoryForm(
   workspaceId: string,
 ): IAddRepositoryFormViewModel {
   const [url, setUrl] = useState('')
-  const [token, setToken] = useState('')
-  const [isPrivate, setIsPrivate] = useState(false)
+  const [token, setToken] = useState<string>('')
   const queryClient = useQueryClient()
 
   const { mutate, isPending, error } = useMutation({
@@ -29,21 +28,15 @@ export function useAddRepositoryForm(
       })
       setUrl('')
       setToken('')
-      setIsPrivate(false)
     },
   })
-
-  function setPublic() {
-    setIsPrivate(false)
-    setToken('')
-  }
 
   function handleSubmit(e: React.SyntheticEvent<HTMLFormElement>) {
     e.preventDefault()
     if (!url.trim()) return
     mutate({
       repositoryUrl: url,
-      accessToken: isPrivate ? token.trim() || undefined : undefined,
+      accessToken: token.trim() || undefined,
     })
   }
 
@@ -52,9 +45,6 @@ export function useAddRepositoryForm(
     setUrl,
     token,
     setToken,
-    isPrivate,
-    setPublic,
-    setPrivate: () => setIsPrivate(true),
     isPending,
     error,
     handleSubmit,

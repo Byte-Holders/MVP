@@ -28,19 +28,6 @@ describe('AddRepositoryForm Component', () => {
     vi.clearAllMocks()
   })
 
-  it('dovrebbe mostrare il campo token solo se si seleziona "Privata"', async () => {
-    const user = userEvent.setup()
-    renderWithClient(<AddRepositoryForm workspaceId={workspaceId} />)
-
-    expect(
-      screen.queryByPlaceholderText('GitHub token'),
-    ).not.toBeInTheDocument()
-
-    await user.click(screen.getByLabelText('Privata'))
-
-    expect(screen.getByPlaceholderText('GitHub token')).toBeInTheDocument()
-  })
-
   it('dovrebbe inviare i dati corretti per una repository pubblica', async () => {
     const user = userEvent.setup()
     vi.mocked(addRepositoryRepository.addRepository).mockResolvedValue(

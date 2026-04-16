@@ -5,18 +5,8 @@ interface Props {
 }
 
 export function AddRepositoryForm({ workspaceId }: Props) {
-  const {
-    url,
-    setUrl,
-    token,
-    setToken,
-    isPrivate,
-    setPublic,
-    setPrivate,
-    isPending,
-    error,
-    handleSubmit,
-  } = useAddRepositoryForm(workspaceId)
+  const { url, setUrl, token, setToken, isPending, error, handleSubmit } =
+    useAddRepositoryForm(workspaceId)
 
   return (
     <form
@@ -27,27 +17,6 @@ export function AddRepositoryForm({ workspaceId }: Props) {
         Aggiungi repository
       </h3>
 
-      <div className="flex gap-4 text-sm text-[var(--sea-ink)]">
-        <label className="flex items-center gap-2 cursor-pointer">
-          <input
-            type="radio"
-            name="repoType"
-            checked={!isPrivate}
-            onChange={setPublic}
-          />
-          Pubblica
-        </label>
-        <label className="flex items-center gap-2 cursor-pointer">
-          <input
-            type="radio"
-            name="repoType"
-            checked={isPrivate}
-            onChange={setPrivate}
-          />
-          Privata
-        </label>
-      </div>
-
       <input
         type="url"
         placeholder="URL repository (es. https://github.com/owner/repo)"
@@ -57,15 +26,13 @@ export function AddRepositoryForm({ workspaceId }: Props) {
         className="w-full rounded-lg border border-[var(--border)] bg-[var(--background)] px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-[var(--primary)]"
       />
 
-      {isPrivate && (
-        <input
-          type="text"
-          placeholder="GitHub token"
-          value={token}
-          onChange={(e) => setToken(e.target.value)}
-          className="w-full rounded-lg border border-[var(--border)] bg-[var(--background)] px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-[var(--primary)]"
-        />
-      )}
+      <input
+        type="text"
+        placeholder="GitHub token"
+        value={token}
+        onChange={(e) => setToken(e.target.value)}
+        className="w-full rounded-lg border border-[var(--border)] bg-[var(--background)] px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-[var(--primary)]"
+      />
 
       {error && (
         <p className="text-sm text-[var(--destructive)]">{error.message}</p>
