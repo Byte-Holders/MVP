@@ -130,7 +130,7 @@ export class DependencyNodeHelper {
     try {
       const response = await model.invoke([
         new SystemMessage(
-          `Sei un esperto di sicurezza software. Traduci in lingua italiana le descrizioni delle vulnerabilità delle dipendenze fornite nel seguente JSON. 
+          `Sei un esperto di sicurezza software. Traduci in lingua italiana le descrizioni delle vulnerabilità delle dipendenze fornite nel seguente JSON. Rendile leggermente piu discorsive rispetto all'originale.
            Mantieni le chiavi numeriche originali. Rispondi SOLO ed esclusivamente con il JSON del dizionario tradotto, senza alcun markdown o testo introduttivo.`,
         ),
         new HumanMessage(JSON.stringify(descriptionsMap)),
