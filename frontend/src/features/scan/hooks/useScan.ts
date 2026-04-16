@@ -25,13 +25,17 @@ export function useScan(payload: StartScanInfo): IScanViewModel {
   }
 }
 
-export function useScanStatus(scanId: string | undefined): IScanStatusViewModel {
+export function useScanStatus(
+  scanId: string | undefined,
+): IScanStatusViewModel {
   const { data: scanStatus, isLoading: isStatusLoading } = useQuery({
     queryKey: ['scanStatus', scanId],
     queryFn: () => scanRepository.getScanStatus(scanId!),
     enabled: !!scanId,
     refetchInterval: (query) =>
-      TERMINAL_STATES.includes(query.state.data ?? '') ? false : POLL_INTERVAL_MS,
+      TERMINAL_STATES.includes(query.state.data ?? '')
+        ? false
+        : POLL_INTERVAL_MS,
   })
 
   return { scanStatus, isStatusLoading }

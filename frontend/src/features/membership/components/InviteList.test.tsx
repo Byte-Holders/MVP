@@ -24,21 +24,35 @@ describe('InviteList', () => {
       makeInvite({ _id: 'inv-1', workspaceName: 'WorkspaceA' }),
       makeInvite({ _id: 'inv-2', workspaceName: 'WorkspaceB' }),
     ]
-    render(<InviteList invites={invites} isPending={false} onAction={vi.fn()} />)
+    render(
+      <InviteList invites={invites} isPending={false} onAction={vi.fn()} />,
+    )
     expect(screen.getByText('WorkspaceA')).toBeInTheDocument()
     expect(screen.getByText('WorkspaceB')).toBeInTheDocument()
   })
 
   it('chiama onAction con Accept quando si clicca Accetta', () => {
     const onAction = vi.fn()
-    render(<InviteList invites={[makeInvite()]} isPending={false} onAction={onAction} />)
+    render(
+      <InviteList
+        invites={[makeInvite()]}
+        isPending={false}
+        onAction={onAction}
+      />,
+    )
     fireEvent.click(screen.getByRole('button', { name: 'Accetta' }))
     expect(onAction).toHaveBeenCalledWith('inv-1', 'Accept')
   })
 
   it('chiama onAction con Reject quando si clicca Rifiuta', () => {
     const onAction = vi.fn()
-    render(<InviteList invites={[makeInvite()]} isPending={false} onAction={onAction} />)
+    render(
+      <InviteList
+        invites={[makeInvite()]}
+        isPending={false}
+        onAction={onAction}
+      />,
+    )
     fireEvent.click(screen.getByRole('button', { name: 'Rifiuta' }))
     expect(onAction).toHaveBeenCalledWith('inv-1', 'Reject')
   })

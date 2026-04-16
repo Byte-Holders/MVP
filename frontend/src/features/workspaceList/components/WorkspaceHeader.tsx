@@ -7,24 +7,26 @@ type Props = {
   workspaceId: string
 }
 
-const ROLE_CONFIG: Record<string, { bg: string; text: string; border: string }> =
-  {
-    'project manager': {
-      bg: 'bg-fuchsia-500/10 dark:bg-fuchsia-500/20',
-      text: 'text-fuchsia-600 dark:text-fuchsia-300',
-      border: 'border-fuchsia-500/40',
-    },
-    'tech lead': {
-      bg: 'bg-purple-500/10 dark:bg-purple-500/20',
-      text: 'text-purple-600 dark:text-purple-300',
-      border: 'border-purple-500/40',
-    },
-    developer: {
-      bg: 'bg-violet-500/10 dark:bg-violet-500/20',
-      text: 'text-violet-600 dark:text-violet-300',
-      border: 'border-violet-500/40',
-    },
-  }
+const ROLE_CONFIG: Record<
+  string,
+  { bg: string; text: string; border: string }
+> = {
+  'project manager': {
+    bg: 'bg-fuchsia-500/10 dark:bg-fuchsia-500/20',
+    text: 'text-fuchsia-600 dark:text-fuchsia-300',
+    border: 'border-fuchsia-500/40',
+  },
+  'tech lead': {
+    bg: 'bg-purple-500/10 dark:bg-purple-500/20',
+    text: 'text-purple-600 dark:text-purple-300',
+    border: 'border-purple-500/40',
+  },
+  developer: {
+    bg: 'bg-violet-500/10 dark:bg-violet-500/20',
+    text: 'text-violet-600 dark:text-violet-300',
+    border: 'border-violet-500/40',
+  },
+}
 
 const DEFAULT_ROLE_CONFIG = ROLE_CONFIG['developer']
 

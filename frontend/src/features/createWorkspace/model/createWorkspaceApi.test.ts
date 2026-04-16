@@ -12,14 +12,20 @@ describe('createWorkspaceRepository', () => {
     const response = { id: 'ws-1', name: 'My Workspace' }
     vi.mocked(apiPost).mockResolvedValue(response)
 
-    const result = await createWorkspaceRepository.createWorkspace({ name: 'My Workspace' })
+    const result = await createWorkspaceRepository.createWorkspace({
+      name: 'My Workspace',
+    })
 
-    expect(apiPost).toHaveBeenCalledWith('/api/workspaces/', { name: 'My Workspace' })
+    expect(apiPost).toHaveBeenCalledWith('/api/workspaces/', {
+      name: 'My Workspace',
+    })
     expect(result).toEqual(response)
   })
 
-  it('propaga l\'errore se apiPost fallisce', async () => {
+  it("propaga l'errore se apiPost fallisce", async () => {
     vi.mocked(apiPost).mockRejectedValue(new Error('Conflict'))
-    await expect(createWorkspaceRepository.createWorkspace({ name: 'Test' })).rejects.toThrow('Conflict')
+    await expect(
+      createWorkspaceRepository.createWorkspace({ name: 'Test' }),
+    ).rejects.toThrow('Conflict')
   })
 })

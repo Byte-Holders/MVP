@@ -11,7 +11,13 @@ export default function Footer() {
             className="w-[2px] h-[14px] rounded-full flex-shrink-0"
             style={{ background: 'var(--h-bar)' }}
           />
-          <span style={{ color: 'var(--h-text-muted)', fontSize: '13px', fontWeight: 500 }}>
+          <span
+            style={{
+              color: 'var(--h-text-muted)',
+              fontSize: '13px',
+              fontWeight: 500,
+            }}
+          >
             CodeGuardian
           </span>
         </div>
@@ -19,13 +25,23 @@ export default function Footer() {
         {/* CENTER: gruppo */}
         <span
           className="hidden sm:block"
-          style={{ color: 'var(--h-text-muted)', fontSize: '12px', fontWeight: 500 }}
+          style={{
+            color: 'var(--h-text-muted)',
+            fontSize: '12px',
+            fontWeight: 500,
+          }}
         >
           Realizzato dal gruppo Byte-Holders
         </span>
 
         {/* RIGHT: copyright */}
-        <span style={{ color: 'var(--h-text-muted)', fontSize: '12px', fontWeight: 500 }}>
+        <span
+          style={{
+            color: 'var(--h-text-muted)',
+            fontSize: '12px',
+            fontWeight: 500,
+          }}
+        >
           &copy; {year}
         </span>
       </div>

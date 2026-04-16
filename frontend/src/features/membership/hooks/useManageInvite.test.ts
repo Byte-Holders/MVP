@@ -11,7 +11,9 @@ vi.mock('../model/manageInviteData', () => ({
 import { manageInviteRepository } from '../model/manageInviteData'
 
 const makeWrapper = () => {
-  const client = new QueryClient({ defaultOptions: { mutations: { retry: false } } })
+  const client = new QueryClient({
+    defaultOptions: { mutations: { retry: false } },
+  })
   return ({ children }: { children: React.ReactNode }) =>
     createElement(QueryClientProvider, { client }, children)
 }
@@ -22,20 +24,29 @@ describe('useManageInvite', () => {
   it('chiama manageInvite con i parametri corretti', async () => {
     vi.mocked(manageInviteRepository.manageInvite).mockResolvedValue(undefined)
 
-    const { result } = renderHook(() => useManageInvite(), { wrapper: makeWrapper() })
+    const { result } = renderHook(() => useManageInvite(), {
+      wrapper: makeWrapper(),
+    })
 
     act(() => {
       result.current.mutate({ membershipId: 'inv-1', action: 'Accept' })
     })
 
     await waitFor(() => expect(result.current.isSuccess).toBe(true))
-    expect(manageInviteRepository.manageInvite).toHaveBeenCalledWith('inv-1', 'Accept')
+    expect(manageInviteRepository.manageInvite).toHaveBeenCalledWith(
+      'inv-1',
+      'Accept',
+    )
   })
 
   it('espone isError se la mutation fallisce', async () => {
-    vi.mocked(manageInviteRepository.manageInvite).mockRejectedValue(new Error('fail'))
+    vi.mocked(manageInviteRepository.manageInvite).mockRejectedValue(
+      new Error('fail'),
+    )
 
-    const { result } = renderHook(() => useManageInvite(), { wrapper: makeWrapper() })
+    const { result } = renderHook(() => useManageInvite(), {
+      wrapper: makeWrapper(),
+    })
 
     act(() => {
       result.current.mutate({ membershipId: 'inv-1', action: 'Reject' })

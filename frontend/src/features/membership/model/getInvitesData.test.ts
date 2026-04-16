@@ -26,8 +26,10 @@ describe('getInvitesRepository', () => {
     expect(result).toEqual(mockInvites)
   })
 
-  it('propaga l\'errore se apiGet fallisce', async () => {
+  it("propaga l'errore se apiGet fallisce", async () => {
     vi.mocked(apiGet).mockRejectedValue(new Error('Network error'))
-    await expect(getInvitesRepository.getInvites()).rejects.toThrow('Network error')
+    await expect(getInvitesRepository.getInvites()).rejects.toThrow(
+      'Network error',
+    )
   })
 })

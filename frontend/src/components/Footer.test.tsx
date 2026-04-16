@@ -11,7 +11,9 @@ describe('Footer', () => {
 
   it('mostra il nome del gruppo', () => {
     render(<Footer />)
-    expect(screen.getByText('Realizzato dal gruppo Byte-Holders')).toBeInTheDocument()
+    expect(
+      screen.getByText('Realizzato dal gruppo Byte-Holders'),
+    ).toBeInTheDocument()
   })
 
   it('mostra il nome del prodotto', () => {
