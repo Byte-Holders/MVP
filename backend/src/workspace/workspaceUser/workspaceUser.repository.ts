@@ -97,4 +97,18 @@ export class WorkspaceUserRepository implements IWorkspaceUserRepository {
     }
     return true;
   }
+
+  async getWorkspaceOwner(workspaceId: string): Promise<string> {
+    const workspace = await this.workspaceModel
+      .findById(workspaceId)
+      .lean()
+      .exec();
+    if (!workspace) {
+      throw new NotFoundException(
+        'workspace con id ' + workspaceId + ' non trovato',
+      );
+    }
+    return workspace.ownerId.toString();
+  }
+
 }

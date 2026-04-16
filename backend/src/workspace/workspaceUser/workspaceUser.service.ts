@@ -11,10 +11,11 @@ import {
   IWorkspaceUserRepositoryToken,
 } from './interfaces/IWorkspaceUserRepository.interface';
 import { UserOfWorkspaceInfo } from './type/userOfWorkspace.type';
+import { ICheckIfUserInWorkspace } from './interfaces/ICheckIfUserInWorkspace';
 
 @Injectable()
 export class WorkspaceUserService
-  implements IWorkspaceUserService, IAddUserToWorkspace
+  implements IWorkspaceUserService, IAddUserToWorkspace, ICheckIfUserInWorkspace
 {
   constructor(
     @Inject(IWorkspaceUserRepositoryToken)
@@ -37,6 +38,13 @@ export class WorkspaceUserService
           userId +
           ' non è un membro del workspace con id ' +
           workspaceId,
+      );
+    }
+    if (
+      await this.workspaceUserRepository.getWorkspaceOwner(workspaceId) === userId
+    ) {
+      throw new PreconditionFailedException(
+        "L'utente che si tenta di rimuovere è il proprietario del workspace con id"
       );
     }
     await this.workspaceUserRepository.removeUserFromWorkspace(
@@ -67,5 +75,12 @@ export class WorkspaceUserService
       );
     }
     await this.workspaceUserRepository.addUserToWorkspace(user, workspaceId);
+  }
+
+  async checkIfUserIsInWorkspace(workspaceId: string, userId: string) {
+    return await this.workspaceUserRepository.checkIfUserIsInWorkspace(
+      workspaceId,
+      userId,
+    );
   }
 }

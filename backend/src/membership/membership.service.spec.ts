@@ -7,16 +7,15 @@ import {
 } from '@nestjs/common';
 import { ManageInviteAction, MembershipStatus } from './dto/membership.dto';
 
-// Importa i Token esatti che usi nel Service
 import { IMembershipRepositoryToken } from './interfaces/IMembershipRepository.interface';
 import { FindUserByUsernameToken } from '../user/interfaces/IfindUserByUsername.interface';
 import { IAddUserToWorkspaceToken } from '../workspace/workspaceUser/interfaces/IAddUserToWorkspace.interface';
+import { ICheckIfUserInWorkspaceToken } from 'src/workspace/workspaceUser/interfaces/ICheckIfUserInWorkspace';
 import { WorkspaceRole } from '../workspace/roles.enum';
 
 describe('MembershipService', () => {
   let service: MembershipService;
 
-  // 1. Definiamo i Mock per le tre dipendenze esterne
   const mockRepository = {
     addInvite: jest.fn(),
     findPendingInvite: jest.fn(),
@@ -33,14 +32,16 @@ describe('MembershipService', () => {
     addUserToWorkspace: jest.fn(),
   };
 
+  const mockCheckIfUserInWorkspace = {
+    checkIfUserIsInWorkspace: jest.fn(),
+  };
+
   beforeEach(async () => {
-    // Resettiamo i mock prima di ogni test
     jest.clearAllMocks();
 
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         MembershipService,
-        // Iniettiamo i mock usando i Custom Token
         {
           provide: IMembershipRepositoryToken,
           useValue: mockRepository,
@@ -53,6 +54,10 @@ describe('MembershipService', () => {
           provide: IAddUserToWorkspaceToken,
           useValue: mockAddUserToWorkspace,
         },
+        {
+          provide: ICheckIfUserInWorkspaceToken,
+          useValue: mockCheckIfUserInWorkspace,
+        },
       ],
     }).compile();
 
@@ -63,7 +68,6 @@ describe('MembershipService', () => {
     expect(service).toBeDefined();
   });
 
-  // --- TEST PER: inviteUser ---
   describe('inviteUser', () => {
     const mockInviteInfo = {
       recipientUsername: 'mario.rossi',
@@ -87,7 +91,7 @@ describe('MembershipService', () => {
         username: 'mario.rossi',
         email: 'mario.rossi@example.com',
       });
-      // Simuliamo che il db trovi un invito già esistente
+      mockCheckIfUserInWorkspace.checkIfUserIsInWorkspace.mockResolvedValue(false);
       mockRepository.findPendingInvite.mockResolvedValue({ _id: 'invite1' });
 
       await expect(service.inviteUser(mockInviteInfo)).rejects.toThrow(
@@ -102,11 +106,11 @@ describe('MembershipService', () => {
         username: 'mario.rossi',
         email: 'mario.rossi@example.com',
       });
-      mockRepository.findPendingInvite.mockResolvedValue(null); // Nessun invito pendente trovato
+      mockCheckIfUserInWorkspace.checkIfUserIsInWorkspace.mockResolvedValue(false);
+      mockRepository.findPendingInvite.mockResolvedValue(null);
 
       await service.inviteUser(mockInviteInfo);
 
-      // Verifichiamo che addInvite sia stato chiamato con i parametri corretti (incluso lo stato Pending)
       expect(mockRepository.addInvite).toHaveBeenCalledWith({
         workspaceId: 'w1',
         senderId: 's1',
@@ -117,7 +121,6 @@ describe('MembershipService', () => {
     });
   });
 
-  // --- TEST PER: getInvites ---
   describe('getInvites', () => {
     it('dovrebbe restituire la lista degli inviti pendenti', async () => {
       const mockPopulatedInvites = [
@@ -132,7 +135,6 @@ describe('MembershipService', () => {
     });
   });
 
-  // --- TEST PER: manageInvite ---
   describe('manageInvite', () => {
     const mockManageActionAccept = {
       id: 'inv1',
@@ -155,7 +157,6 @@ describe('MembershipService', () => {
       mockRepository.findPendingInviteById.mockResolvedValue({
         recipientId: 'u1',
       });
-      // Simuliamo che la lista non contenga il nostro invito o manchi l'username
       mockRepository.findPendingInvites.mockResolvedValue([{ _id: 'inv2' }]);
 
       await expect(
@@ -165,7 +166,6 @@ describe('MembershipService', () => {
 
     describe('Azione: Accept', () => {
       beforeEach(() => {
-        // Setup di base valido per tutti i test "Accept"
         mockRepository.findPendingInviteById.mockResolvedValue({
           recipientId: 'u1',
           workspaceId: 'w1',
@@ -190,7 +190,6 @@ describe('MembershipService', () => {
           username: 'mario.rossi',
         });
 
-        // Simuliamo l'errore del workspace service
         mockAddUserToWorkspace.addUserToWorkspace.mockRejectedValue(
           new PreconditionFailedException(),
         );
@@ -199,7 +198,6 @@ describe('MembershipService', () => {
           service.manageInvite(mockManageActionAccept),
         ).rejects.toThrow(PreconditionFailedException);
 
-        // Verifica cruciale: ci assicuriamo che in caso di errore, lo status sia stato messo su Rejected
         expect(mockRepository.updateInvite).toHaveBeenCalledWith(
           'inv1',
           MembershipStatus.Rejected,
@@ -213,11 +211,10 @@ describe('MembershipService', () => {
           username: 'mario.rossi',
           email: 'email@example.com',
         });
-        mockAddUserToWorkspace.addUserToWorkspace.mockResolvedValue(true); // Successo
+        mockAddUserToWorkspace.addUserToWorkspace.mockResolvedValue(true); 
 
         await service.manageInvite(mockManageActionAccept);
 
-        // Verifichiamo che il service per aggiungere l'utente sia stato chiamato
         expect(mockAddUserToWorkspace.addUserToWorkspace).toHaveBeenCalledWith(
           {
             userId: 'u1',
@@ -226,7 +223,6 @@ describe('MembershipService', () => {
           },
           'w1',
         );
-        // Verifichiamo che l'invito sia stato salvato come accettato
         expect(mockRepository.updateInvite).toHaveBeenCalledWith(
           'inv1',
           MembershipStatus.Accepted,
@@ -236,7 +232,6 @@ describe('MembershipService', () => {
 
     describe('Azione: Reject', () => {
       it("dovrebbe aggiornare l'invito a Rejected in caso di azione Reject", async () => {
-        // Setup di base
         mockRepository.findPendingInviteById.mockResolvedValue({
           recipientId: 'u1',
         });
@@ -246,7 +241,6 @@ describe('MembershipService', () => {
 
         await service.manageInvite(mockManageActionReject);
 
-        // Verifichiamo che salti tutta la logica di 'Accept' e vada diretto al Reject
         expect(
           mockAddUserToWorkspace.addUserToWorkspace,
         ).not.toHaveBeenCalled();
