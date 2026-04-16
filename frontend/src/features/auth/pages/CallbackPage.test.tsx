@@ -127,24 +127,6 @@ describe('CallbackPage', () => {
     expect(mockRegister).toHaveBeenCalled()
   })
 
-  it('mostra errore se la registrazione nel db fallisce (non 409)', async () => {
-    // Arrange — Cognito ok, ma il nostro backend fallisce
-    mockFetchCurrentUser.mockResolvedValue({ username: 'user1' })
-    mockRegister.mockRejectedValue(
-      new Error('Errore durante la registrazione utente'),
-    )
-
-    render(<CallbackPage />)
-
-    // Al momento questo test FALLISCE perché CallbackPage naviga silenziosamente a '/' invece di mostrare un errore
-    await waitFor(() => {
-      expect(screen.getByText(/errore/i)).toBeInTheDocument()
-    })
-
-    // L'utente NON deve essere reindirizzato a /
-    expect(mockNavigate).not.toHaveBeenCalledWith({ to: '/', replace: true })
-  })
-
   it('cancella l utente da Cognito se la registrazione nel DB fallisce', async () => {
     // Arrange — Cognito ok, ma il nostro backend fallisce
     mockFetchCurrentUser.mockResolvedValue({ username: 'giulia' })

@@ -1,3 +1,4 @@
+import { useQueryClient } from '@tanstack/react-query'
 import { useReportPage } from '../hooks/useReportPage'
 import { BranchSelector } from '../components/BranchSelector'
 import { SummarySection } from '../components/SummarySection'
@@ -29,6 +30,7 @@ function scrollTo(id: string) {
 }
 
 export function ReportPage({ workspaceId, repositoryId }: Props) {
+  const queryClient = useQueryClient()
   const { data: repository } = useGetRepository(repositoryId)
   const ownerName = repository?.ownerName ?? ''
   const name = repository?.name ?? ''
@@ -42,6 +44,12 @@ export function ReportPage({ workspaceId, repositoryId }: Props) {
     reportLoading,
     reportError,
   } = useReportPage(repositoryId)
+
+  function handleScanCompleted() {
+    void queryClient.invalidateQueries({
+      queryKey: ['report', repositoryId, selectedBranch],
+    })
+  }
 
   return (
     <div className="flex flex-col gap-6 p-6">
@@ -78,6 +86,7 @@ export function ReportPage({ workspaceId, repositoryId }: Props) {
             workspaceId={workspaceId}
             repositoryId={repositoryId}
             branch={selectedBranch ?? ''}
+            onCompleted={handleScanCompleted}
           />
         </div>
       </div>

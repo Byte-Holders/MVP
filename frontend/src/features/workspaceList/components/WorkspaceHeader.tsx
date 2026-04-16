@@ -7,29 +7,33 @@ type Props = {
   workspaceId: string
 }
 
-const ROLE_CONFIG: Record<
-  string,
-  { bg: string; text: string; border: string }
-> = {
-  OWNER: {
-    bg: 'bg-amber-500/10  dark:bg-amber-500/20',
-    text: 'text-amber-600  dark:text-amber-300',
-    border: 'border-amber-500/40',
-  },
-  ADMIN: {
-    bg: 'bg-indigo-500/10 dark:bg-indigo-500/20',
-    text: 'text-indigo-600 dark:text-indigo-300',
-    border: 'border-indigo-500/40',
-  },
-  MEMBER: {
-    bg: 'bg-teal-500/10   dark:bg-teal-500/20',
-    text: 'text-teal-600   dark:text-teal-300',
-    border: 'border-teal-500/40',
-  },
-}
+const ROLE_CONFIG: Record<string, { bg: string; text: string; border: string }> =
+  {
+    'project manager': {
+      bg: 'bg-fuchsia-500/10 dark:bg-fuchsia-500/20',
+      text: 'text-fuchsia-600 dark:text-fuchsia-300',
+      border: 'border-fuchsia-500/40',
+    },
+    'tech lead': {
+      bg: 'bg-purple-500/10 dark:bg-purple-500/20',
+      text: 'text-purple-600 dark:text-purple-300',
+      border: 'border-purple-500/40',
+    },
+    developer: {
+      bg: 'bg-violet-500/10 dark:bg-violet-500/20',
+      text: 'text-violet-600 dark:text-violet-300',
+      border: 'border-violet-500/40',
+    },
+  }
+
+const DEFAULT_ROLE_CONFIG = ROLE_CONFIG['developer']
 
 function roleConfig(role: string) {
-  return ROLE_CONFIG[role.toUpperCase()] ?? ROLE_CONFIG['MEMBER']
+  return ROLE_CONFIG[role.toLowerCase()] ?? DEFAULT_ROLE_CONFIG
+}
+
+function formatRole(role: string) {
+  return role.replace(/\b\w/g, (c) => c.toUpperCase())
 }
 
 function initials(name: string) {
@@ -60,8 +64,8 @@ export function WorkspaceHeader({ workspaceId }: Props) {
   return (
     <div className="page-wrap px-4 pb-0 pt-14">
       <section className="island-shell rise-in relative overflow-hidden rounded-[2rem] px-6 py-8 sm:px-10 sm:py-10">
-        <div className="pointer-events-none absolute -left-20 -top-24 h-56 w-56 rounded-full bg-[radial-gradient(circle,rgba(79,184,178,0.32),transparent_66%)]" />
-        <div className="pointer-events-none absolute -bottom-20 -right-20 h-56 w-56 rounded-full bg-[radial-gradient(circle,rgba(47,106,74,0.18),transparent_66%)]" />
+        <div className="pointer-events-none absolute -left-20 -top-24 h-56 w-56 rounded-full bg-[radial-gradient(circle,rgba(124,92,231,0.28),transparent_66%)]" />
+        <div className="pointer-events-none absolute -bottom-20 -right-20 h-56 w-56 rounded-full bg-[radial-gradient(circle,rgba(90,61,191,0.16),transparent_66%)]" />
 
         <div className="relative flex items-start gap-5">
           {/* Avatar */}
@@ -86,16 +90,9 @@ export function WorkspaceHeader({ workspaceId }: Props) {
               <span
                 className={`rounded-full border px-3 py-0.5 text-xs font-semibold ${cfg.bg} ${cfg.text} ${cfg.border}`}
               >
-                {workspace.role}
+                {formatRole(workspace.role)}
               </span>
             </div>
-
-            <p className="text-sm text-[var(--sea-ink-soft)]">
-              Owner:{' '}
-              <span className="font-medium text-[var(--sea-ink)]">
-                {workspace.owner}
-              </span>
-            </p>
 
             {/* Stats */}
             <div className="flex flex-wrap gap-4 mt-1">

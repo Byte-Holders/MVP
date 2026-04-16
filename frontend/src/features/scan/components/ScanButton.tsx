@@ -1,22 +1,37 @@
-import { useScan, useStopScan } from '../hooks/useScan'
+import { useEffect } from 'react'
+import { useQueryClient } from '@tanstack/react-query'
+import { useScan, useScanStatus, useStopScan } from '../hooks/useScan'
+
+const TERMINAL_STATES = ['completed', 'stopped', 'error']
 
 interface ScanButtonProps {
   workspaceId: string
   repositoryId: string
   branch: string
+  onCompleted?: () => void
 }
 
 export function ScanButton({
   workspaceId,
   repositoryId,
   branch,
+  onCompleted,
 }: ScanButtonProps) {
   const { triggerScan, scanId, isPending, isSuccess, error, reset } = useScan({
     workspaceId,
     repositoryId,
     branch,
   })
-  const { triggerStop, isStopping, stopError, resetStop } = useStopScan()
+  const { triggerStop, isStopping, stopError } = useStopScan()
+  const { scanStatus } = useScanStatus(scanId)
+  const queryClient = useQueryClient()
+
+  useEffect(() => {
+    if (!scanStatus || !TERMINAL_STATES.includes(scanStatus)) return
+    if (scanStatus === 'completed') onCompleted?.()
+    queryClient.removeQueries({ queryKey: ['scanStatus', scanId] })
+    reset()
+  }, [scanStatus, onCompleted, reset, queryClient, scanId])
 
   const scanRunning = isSuccess && !!scanId
 
@@ -36,12 +51,7 @@ export function ScanButton({
       ) : (
         <button
           onClick={() => {
-            triggerStop(scanId, {
-              onSuccess: () => {
-                resetStop()
-                reset()
-              },
-            })
+            triggerStop(scanId)
           }}
           disabled={isStopping}
           className="rounded-lg bg-red-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-red-500 disabled:opacity-50"

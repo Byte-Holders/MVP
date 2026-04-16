@@ -1,4 +1,4 @@
-import { apiPost, apiPatch } from '../../../api/apiClient'
+import { apiGet, apiPost, apiPatch } from '../../../api/apiClient'
 import type { IScanRepository } from '../interfaces/model/IScanRepository'
 
 export interface StartScanInfo {
@@ -15,6 +15,10 @@ class ScanRepository implements IScanRepository {
 
   async stopScan(scanId: string): Promise<void> {
     return apiPatch('/api/scan', { scanId })
+  }
+
+  async getScanStatus(scanId: string): Promise<string> {
+    return apiGet<string>(`/api/scan/${scanId}/status`)
   }
 }
 

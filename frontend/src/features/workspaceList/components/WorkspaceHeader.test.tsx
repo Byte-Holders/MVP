@@ -22,7 +22,7 @@ const mockWorkspace = {
   id: 'ws-1',
   name: 'My Workspace',
   owner: 'alice',
-  role: 'OWNER',
+  role: 'developer',
 }
 
 describe('WorkspaceHeader', () => {
@@ -50,23 +50,22 @@ describe('WorkspaceHeader', () => {
     expect(container.firstChild).toBeNull()
   })
 
-  it('dovrebbe mostrare nome e owner del workspace', () => {
+  it('dovrebbe mostrare il nome del workspace', () => {
     vi.mocked(useGetWorkspace).mockReturnValue({
       data: mockWorkspace,
       isLoading: false,
     } as any)
     render(<WorkspaceHeader workspaceId="ws-1" />)
     expect(screen.getByText('My Workspace')).toBeInTheDocument()
-    expect(screen.getByText('alice')).toBeInTheDocument()
   })
 
-  it('dovrebbe mostrare il badge del ruolo', () => {
+  it('dovrebbe mostrare il badge del ruolo formattato', () => {
     vi.mocked(useGetWorkspace).mockReturnValue({
       data: mockWorkspace,
       isLoading: false,
     } as any)
     render(<WorkspaceHeader workspaceId="ws-1" />)
-    expect(screen.getByText('OWNER')).toBeInTheDocument()
+    expect(screen.getByText('Developer')).toBeInTheDocument()
   })
 
   it('dovrebbe mostrare le iniziali del workspace nell avatar', () => {
@@ -114,23 +113,33 @@ describe('WorkspaceHeader', () => {
     expect(screen.queryByText('repository')).not.toBeInTheDocument()
   })
 
-  it('dovrebbe applicare la classe corretta per il ruolo ADMIN', () => {
+  it('dovrebbe applicare la classe corretta per il ruolo tech lead', () => {
     vi.mocked(useGetWorkspace).mockReturnValue({
-      data: { ...mockWorkspace, role: 'ADMIN' },
+      data: { ...mockWorkspace, role: 'tech lead' },
       isLoading: false,
     } as any)
     render(<WorkspaceHeader workspaceId="ws-1" />)
-    const badge = screen.getByText('ADMIN')
-    expect(badge.className).toContain('indigo')
+    const badge = screen.getByText('Tech Lead')
+    expect(badge.className).toContain('purple')
   })
 
-  it('dovrebbe usare la config MEMBER come fallback per ruoli sconosciuti', () => {
+  it('dovrebbe applicare la classe corretta per il ruolo project manager', () => {
     vi.mocked(useGetWorkspace).mockReturnValue({
-      data: { ...mockWorkspace, role: 'GUEST' },
+      data: { ...mockWorkspace, role: 'project manager' },
       isLoading: false,
     } as any)
     render(<WorkspaceHeader workspaceId="ws-1" />)
-    const badge = screen.getByText('GUEST')
-    expect(badge.className).toContain('teal')
+    const badge = screen.getByText('Project Manager')
+    expect(badge.className).toContain('fuchsia')
+  })
+
+  it('dovrebbe usare la config developer come fallback per ruoli sconosciuti', () => {
+    vi.mocked(useGetWorkspace).mockReturnValue({
+      data: { ...mockWorkspace, role: 'guest' },
+      isLoading: false,
+    } as any)
+    render(<WorkspaceHeader workspaceId="ws-1" />)
+    const badge = screen.getByText('Guest')
+    expect(badge.className).toContain('violet')
   })
 })

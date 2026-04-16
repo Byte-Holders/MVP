@@ -39,11 +39,12 @@ describe('UpdateTokenForm Component', () => {
     const user = userEvent.setup()
     renderWithClient(<UpdateTokenForm {...props} />)
 
+    await user.click(screen.getByRole('button', { name: /aggiorna github token/i }))
     await user.type(
       screen.getByPlaceholderText('GitHub token'),
       'myInvalidToken',
     )
-    await user.click(screen.getByRole('button', { name: /aggiorna token/i }))
+    await user.click(screen.getByRole('button', { name: /salva/i }))
 
     expect(screen.getByText('Token non valido')).toBeInTheDocument()
     expect(updateTokenRepository.updateToken).not.toHaveBeenCalled()
@@ -58,11 +59,12 @@ describe('UpdateTokenForm Component', () => {
     )
     renderWithClient(<UpdateTokenForm {...props} />)
 
+    await user.click(screen.getByRole('button', { name: /aggiorna github token/i }))
     await user.type(
       screen.getByPlaceholderText('GitHub token'),
       'ghp_' + 'a'.repeat(36),
     )
-    await user.click(screen.getByRole('button', { name: /aggiorna token/i }))
+    await user.click(screen.getByRole('button', { name: /salva/i }))
 
     expect(await screen.findByText(errorMessage)).toBeInTheDocument()
   })
