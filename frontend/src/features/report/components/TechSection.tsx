@@ -65,7 +65,7 @@ export function TechSection({ techReport, allDeps }: Props) {
               </ResponsiveContainer>
               <div className="flex flex-col gap-1.5">
                 {langData.map((l, i) => (
-                  <div key={l.name} className="flex items-center gap-2 text-xs">
+                  <div key={l.name} className="flex items-center gap-2 text-sm">
                     <span
                       className="h-2.5 w-2.5 flex-shrink-0 rounded-full"
                       style={{ background: PIE_COLORS[i % PIE_COLORS.length] }}

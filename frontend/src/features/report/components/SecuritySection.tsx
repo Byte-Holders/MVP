@@ -399,7 +399,9 @@ export function SecuritySection({ vulnerabilitiesReport, depsReport }: Props) {
                       <th className="text-left px-3 py-1.5 font-medium">
                         Pacchetto
                       </th>
-                      <th className="text-left px-3 py-1.5 font-medium">CVE</th>
+                      <th className="text-left px-3 py-1.5 font-medium">
+                        Criticità
+                      </th>
                       <th className="text-left px-3 py-1.5 font-medium">Fix</th>
                     </tr>
                   </thead>
