@@ -58,10 +58,10 @@ export class CoverageNodeService implements INodeScanService {
 
   private parseOutput(split: string[]): CoverageReport {
     return {
-      statements: parseFloat(split[0]),
-      branches: parseFloat(split[1]),
-      functions: parseFloat(split[2]),
-      lines: parseFloat(split[3]),
+      statements: parseFloat(split[0]) || 0,
+      branches: parseFloat(split[1]) || 0,
+      functions: parseFloat(split[2]) || 0,
+      lines: parseFloat(split[3]) || 0,
     };
   }
 
