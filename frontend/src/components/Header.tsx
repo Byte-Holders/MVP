@@ -7,118 +7,58 @@ import { NewWorkspaceDialog } from '@/features/createWorkspace/components/NewWor
 export default function Header() {
   const { isAuthenticated, isLoading, login, logout } = useAuthContext()
 
+  const navBtn =
+    'border border-[var(--chip-line)] bg-[var(--chip-bg)] px-3 py-1.5 text-sm font-semibold text-[var(--sea-ink)] shadow-[0_8px_22px_rgba(30,90,72,0.08)] transition hover:-translate-y-0.5'
+
   return (
-    <header className="sticky top-0 z-50 border-b border-[var(--h-line)] bg-[var(--h-bg)] backdrop-blur-md">
-      <style>{`
-        :root {
-          --h-bg: #17141f;
-          --h-line: rgba(255,255,255,0.07);
-          --h-text: #c8c3da;
-          --h-text-muted: #6b657a;
-          --h-accent: rgba(108, 92, 231, 0.18);
-          --h-accent-border: rgba(108, 92, 231, 0.22);
-          --h-accent-hover: rgba(108, 92, 231, 0.26);
-          --h-bar: rgba(130, 110, 220, 0.55);
-          --h-btn-bg: rgba(255,255,255,0.05);
-          --h-btn-border: rgba(255,255,255,0.09);
-          --h-btn-hover: rgba(255,255,255,0.09);
-          --h-cta-bg: rgba(108,92,231,0.15);
-          --h-cta-border: rgba(108,92,231,0.3);
-          --h-cta-hover: rgba(108,92,231,0.24);
-          --h-cta-text: #a898e8;
-        }
-      `}</style>
-
+    <header className="sticky top-0 z-50 border-b border-[var(--h-line)] bg-[var(--header-bg)] backdrop-blur-md">
       <nav className="flex items-center h-[72px] px-4 gap-2">
-        <div className="flex items-center gap-1 flex-shrink-0">
-          <div
-            className="w-[3px] h-[26px] rounded-full mr-2 flex-shrink-0"
-            style={{ background: 'var(--h-bar)' }}
-          />
+        {/* LEFT */}
+        <div className="flex items-center gap-2 flex-shrink-0">
+          {isAuthenticated && (
+            <>
+              <Link to="/workspaces" className={navBtn}>
+                Workspace
+              </Link>
 
-          <Link
-            to="/workspaces"
-            className="nav-btn"
-            activeProps={{
-              style: {
-                border: '0.5px solid var(--h-bar)',
-                background: 'var(--h-accent)',
-              },
-            }}
-            style={{
-              fontSize: '15px',
-              fontWeight: 600,
-              padding: '8px 16px',
-              borderRadius: '8px',
-              border: '0.5px solid var(--h-btn-border)',
-              background: 'var(--h-btn-bg)',
-              color: 'var(--h-text)',
-              textDecoration: 'none',
-              transition: 'background 150ms, border-color 150ms',
-              whiteSpace: 'nowrap',
-            }}
-          >
-            Workspace
-          </Link>
-
-          <Link
-            to="/membership"
-            className="nav-btn"
-            activeProps={{
-              style: {
-                border: '0.5px solid var(--h-bar)',
-                background: 'var(--h-accent)',
-              },
-            }}
-            style={{
-              fontSize: '15px',
-              fontWeight: 600,
-              padding: '8px 16px',
-              borderRadius: '8px',
-              border: '0.5px solid var(--h-btn-border)',
-              background: 'var(--h-btn-bg)',
-              color: 'var(--h-text)',
-              textDecoration: 'none',
-              transition: 'background 150ms, border-color 150ms',
-              whiteSpace: 'nowrap',
-            }}
-          >
-            Inviti
-          </Link>
+              <Link to="/membership" className={navBtn}>
+                Inviti
+              </Link>
+            </>
+          )}
         </div>
 
-        {/* ── CENTER: logo placeholder ── */}
+        {/* CENTER */}
         <div className="flex-1 flex justify-center items-center">
           <Link to="/">
             <img
               src="/logo_codeguardian.png"
               alt="Logo"
-              className="h-15 w-auto cursor-pointer"
+              className="h-12 w-auto cursor-pointer"
             />
           </Link>
         </div>
 
-        {/* ── RIGHT: access + theme ── */}
+        {/* RIGHT */}
         <div className="flex items-center gap-2 flex-shrink-0">
           {!isLoading &&
             (isAuthenticated ? (
               <>
                 <NewWorkspaceDialog />
-                <button
-                  onClick={logout}
-                  className="inline-flex items-center gap-2 rounded-full border border-[var(--chip-line)] bg-[var(--chip-bg)] px-3 py-1.5 text-sm text-[var(--sea-ink)] no-underline shadow-[0_8px_24px_rgba(30,90,72,0.08)] sm:px-4 sm:py-2"
-                >
+
+                <button onClick={logout} className={`rounded-full ${navBtn}`}>
                   Logout
                 </button>
               </>
             ) : (
               <button
                 onClick={() => login()}
-                className="inline-flex items-center gap-2 rounded-full border border-[var(--chip-line)] bg-[var(--chip-bg)] px-3 py-1.5 text-sm text-[var(--sea-ink)] no-underline shadow-[0_8px_24px_rgba(30,90,72,0.08)] sm:px-4 sm:py-2"
+                className={`rounded-full ${navBtn}`}
               >
                 Accedi
               </button>
             ))}
+
           <ThemeToggle />
         </div>
       </nav>

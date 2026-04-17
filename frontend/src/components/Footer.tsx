@@ -2,7 +2,7 @@ export default function Footer() {
   const year = new Date().getFullYear()
 
   return (
-    <footer className="border-t border-[var(--h-line)] bg-[var(--h-bg)]">
+    <footer className="border-t border-[var(--h-line)] bg-[var(--header-bg)] backdrop-blur-md">
       <div className="flex items-center justify-between px-6 py-3">
         {/* LEFT: logo + nome */}
         <div className="flex items-center gap-2.5">
