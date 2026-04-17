@@ -122,7 +122,7 @@ describe('Header', () => {
   describe('navigazione', () => {
     beforeEach(() => {
       vi.mocked(useAuthContext).mockReturnValue({
-        isAuthenticated: false,
+        isAuthenticated: true, // ← era false
         isLoading: false,
         login: mockLogin,
         logout: mockLogout,
@@ -142,6 +142,32 @@ describe('Header', () => {
     it('mostra il logo con link alla homepage', () => {
       render(<Header />)
       expect(screen.getByAltText('Logo')).toBeInTheDocument()
+    })
+  })
+
+  describe('navigazione — utente non autenticato', () => {
+    beforeEach(() => {
+      vi.mocked(useAuthContext).mockReturnValue({
+        isAuthenticated: false,
+        isLoading: false,
+        login: mockLogin,
+        logout: mockLogout,
+      } as any)
+    })
+
+    it('non mostra il link Workspace', () => {
+      render(<Header />)
+      expect(screen.queryByText('Workspace')).not.toBeInTheDocument()
+    })
+
+    it('non mostra il link Inviti', () => {
+      render(<Header />)
+      expect(screen.queryByText('Inviti')).not.toBeInTheDocument()
+    })
+
+    it('mostra il pulsante Accedi', () => {
+      render(<Header />)
+      expect(screen.getByText('Accedi')).toBeInTheDocument()
     })
   })
 })
