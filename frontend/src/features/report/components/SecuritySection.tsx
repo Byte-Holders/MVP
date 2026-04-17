@@ -69,6 +69,11 @@ function codeSeverityLabel(score: number) {
   return 'Low'
 }
 
+function normalizeImpact(impact: string): string {
+  if (!impact) return ''
+  return impact.charAt(0).toUpperCase() + impact.slice(1).toLowerCase()
+}
+
 export function SecuritySection({ vulnerabilitiesReport, depsReport }: Props) {
   const [expandedVuln, setExpandedVuln] = useState<string | null>(null)
   const [depsOpen, setDepsOpen] = useState(false)
@@ -106,7 +111,7 @@ export function SecuritySection({ vulnerabilitiesReport, depsReport }: Props) {
         }
       : vulnerabilitiesReport.vulnerabilities.reduce<Record<string, number>>(
           (acc, v) => {
-            const l = codeSeverityLabel(v.severity)
+            const l = normalizeImpact(v.impact) || codeSeverityLabel(v.severity)
             acc[l] = (acc[l] ?? 0) + 1
             return acc
           },
@@ -290,7 +295,7 @@ export function SecuritySection({ vulnerabilitiesReport, depsReport }: Props) {
           </p>
           <div className="flex flex-col gap-2">
             {vulnerabilitiesReport.vulnerabilities.map((v, i) => {
-              const label = codeSeverityLabel(v.severity)
+              const label = normalizeImpact(v.impact) || codeSeverityLabel(v.severity)
               const cfg = severityConfig(label)
               const key = `${v.id}-${v.path}-${i}`
               const isOpen = expandedVuln === key
