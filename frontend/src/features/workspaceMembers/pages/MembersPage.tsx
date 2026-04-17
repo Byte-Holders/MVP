@@ -11,10 +11,8 @@ export function MembersPage({ workspaceId }: Props) {
     useMembersPage(workspaceId)
 
   return (
-    <div className="flex flex-col gap-6 p-6">
-      <h1 className="text-xl font-semibold text-[var(--sea-ink)]">
-        Membri del workspace
-      </h1>
+    <div className="flex flex-col gap-6 px-6 py-6 max-w-[1200px] mx-auto w-full">
+      <h2 className="display-title text-xl">Membri del workspace</h2>
 
       <div className="rounded-2xl border border-[var(--h-line)] bg-[var(--surface)] p-5">
         <InviteForm

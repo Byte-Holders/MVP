@@ -10,7 +10,7 @@ export function WorkspaceListItem({ workspace }: Props) {
       to="/workspaces/$workspaceId/repositories"
       params={{ workspaceId: workspace.id }}
     >
-      <Card className="hover:shadow-md transition-all cursor-pointer">
+      <Card className="island-shell mt-8 rounded-2xl p-6 hover:shadow-md transition-all cursor-pointer text-[var(--sea-ink)]">
         <CardContent className="flex items-center justify-between p-4">
           {/* LEFT */}
           <div className="flex items-center gap-4">
