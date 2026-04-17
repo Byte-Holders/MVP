@@ -289,84 +289,102 @@ export function SecuritySection({ vulnerabilitiesReport, depsReport }: Props) {
       {/* ── Vulnerabilità codice: lista espandibile ─────────────────────────── */}
       {vulnerabilitiesReport.vulnerabilities.length > 0 && (
         <div>
-          <p className="mb-2 text-sm font-medium text-[var(--sea-ink)] opacity-60">
-            Vulnerabilità nel codice (
-            {vulnerabilitiesReport.vulnerabilities.length})
-          </p>
-          <div className="flex flex-col gap-2">
-            {vulnerabilitiesReport.vulnerabilities.map((v, i) => {
-              const label =
-                normalizeImpact(v.impact) || codeSeverityLabel(v.severity)
-              const cfg = severityConfig(label)
-              const key = `${v.id}-${v.path}-${i}`
-              const isOpen = expandedVuln === key
-
-              return (
-                <div
-                  key={key}
-                  className="rounded-lg border border-[var(--chip-line)] text-xs"
-                >
-                  <button
-                    onClick={() => setExpandedVuln(isOpen ? null : key)}
-                    className="flex w-full items-center justify-between gap-2 p-3 text-left"
-                  >
-                    <div className="flex items-center gap-2 min-w-0">
-                      <span
-                        className={`flex-shrink-0 inline-block w-24 text-center rounded-full py-0.5 text-sm font-semibold ${cfg.bg} ${cfg.text}`}
-                      >
-                        {label}
-                      </span>
-                      <span className="font-medium text-[var(--sea-ink)] break-words min-w-0">
-                        {v.description || v.id}
-                      </span>
-                    </div>
-                    <span className="flex-shrink-0 opacity-40">
-                      {isOpen ? '▲' : '▼'}
-                    </span>
-                  </button>
-
-                  {isOpen && (
-                    <div className="border-t border-[var(--chip-line)] p-3 flex flex-col gap-2">
-                      <p className="font-mono text-sm text-[var(--sea-ink)] opacity-50">
-                        {v.path}
-                      </p>
-                      {v.remediation && (
-                        <div>
-                          <span className="font-medium text-[var(--sea-ink)] opacity-60">
-                            Rimedio
-                          </span>
-                          <div className="prose prose-sm dark:prose-invert max-w-none text-sm text-[var(--sea-ink)] opacity-80 mt-1">
-                            <ReactMarkdown remarkPlugins={[remarkGfm]}>
-                              {v.remediation}
-                            </ReactMarkdown>
-                          </div>
-                        </div>
-                      )}
-                      {/* eslint-disable-next-line @typescript-eslint/no-unnecessary-condition */}
-                      {v.cwe && (
-                        <span className="rounded bg-[var(--chip-line)] px-1.5 py-0.5 text-sm text-[var(--sea-ink)] opacity-70 w-fit">
-                          {v.cwe}
-                        </span>
-                      )}
-                      {/* eslint-disable-next-line @typescript-eslint/no-unnecessary-condition */}
-                      {v.owasp && v.owasp.length > 0 && (
-                        <div className="flex flex-wrap gap-1">
-                          {v.owasp.map((o) => (
-                            <span
-                              key={o}
-                              className="rounded bg-[var(--lagoon)]/10 px-1.5 py-0.5 text-sm text-[var(--lagoon-deep)]"
-                            >
-                              {o}
-                            </span>
-                          ))}
-                        </div>
-                      )}
-                    </div>
-                  )}
-                </div>
+          {(() => {
+            const dedupedVulns = vulnerabilitiesReport.vulnerabilities.reduce<
+              typeof vulnerabilitiesReport.vulnerabilities
+            >((acc, v) => {
+              const dupIdx = acc.findIndex(
+                (e) => e.id === v.id && e.path === v.path,
               )
-            })}
-          </div>
+              if (dupIdx === -1) {
+                acc.push(v)
+              } else if (v.remediation && !acc[dupIdx].remediation) {
+                acc[dupIdx] = v
+              }
+              return acc
+            }, [])
+            return (
+              <>
+                <p className="mb-2 text-sm font-medium text-[var(--sea-ink)] opacity-60">
+                  Vulnerabilità nel codice ({dedupedVulns.length})
+                </p>
+                <div className="flex flex-col gap-2">
+                  {dedupedVulns.map((v, i) => {
+                    const label =
+                      normalizeImpact(v.impact) || codeSeverityLabel(v.severity)
+                    const cfg = severityConfig(label)
+                    const key = `${v.id}-${v.path}-${i}`
+                    const isOpen = expandedVuln === key
+
+                    return (
+                      <div
+                        key={key}
+                        className="rounded-lg border border-[var(--chip-line)] text-xs"
+                      >
+                        <button
+                          onClick={() => setExpandedVuln(isOpen ? null : key)}
+                          className="flex w-full items-center justify-between gap-2 p-3 text-left"
+                        >
+                          <div className="flex items-center gap-2 min-w-0">
+                            <span
+                              className={`flex-shrink-0 inline-block w-24 text-center rounded-full py-0.5 text-sm font-semibold ${cfg.bg} ${cfg.text}`}
+                            >
+                              {label}
+                            </span>
+                            <span className="font-medium text-[var(--sea-ink)] break-words min-w-0">
+                              {v.description || v.id}
+                            </span>
+                          </div>
+                          <span className="flex-shrink-0 opacity-40">
+                            {isOpen ? '▲' : '▼'}
+                          </span>
+                        </button>
+
+                        {isOpen && (
+                          <div className="border-t border-[var(--chip-line)] p-3 flex flex-col gap-2">
+                            <p className="font-mono text-sm text-[var(--sea-ink)] opacity-50">
+                              {v.path}
+                            </p>
+                            {v.remediation && (
+                              <div>
+                                <span className="font-medium text-[var(--sea-ink)] opacity-60">
+                                  Rimedio
+                                </span>
+                                <div className="prose prose-sm dark:prose-invert max-w-none text-sm text-[var(--sea-ink)] opacity-80 mt-1">
+                                  <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                                    {v.remediation}
+                                  </ReactMarkdown>
+                                </div>
+                              </div>
+                            )}
+                            { }
+                            {v.cwe && (
+                              <span className="rounded bg-[var(--chip-line)] px-1.5 py-0.5 text-sm text-[var(--sea-ink)] opacity-70 w-fit">
+                                {v.cwe}
+                              </span>
+                            )}
+                            { }
+                            {v.owasp && v.owasp.length > 0 && (
+                              <div className="flex flex-wrap gap-1">
+                                {v.owasp.map((o) => (
+                                  <span
+                                    key={o}
+                                    className="rounded bg-[var(--lagoon)]/10 px-1.5 py-0.5 text-sm text-[var(--lagoon-deep)]"
+                                  >
+                                    {o}
+                                  </span>
+                                ))}
+                              </div>
+                            )}
+                          </div>
+                        )}
+                      </div>
+                    )
+                  })}
+                </div>
+              </>
+            )
+          })()}
         </div>
       )}
 
