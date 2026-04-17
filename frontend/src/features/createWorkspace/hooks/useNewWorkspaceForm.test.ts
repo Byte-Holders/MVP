@@ -78,7 +78,9 @@ describe('useNewWorkspaceForm', () => {
     })
 
     await waitFor(() =>
-      expect(mockNavigate).toHaveBeenCalledWith({ to: '/workspace/ws-new' }),
+      expect(mockNavigate).toHaveBeenCalledWith({
+        to: '/workspaces/ws-new/repositories',
+      }),
     )
   })
 
