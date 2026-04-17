@@ -10,7 +10,9 @@ import { Type } from 'class-transformer';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
 export class ReportTargetDto {
-  @ApiPropertyOptional({ description: 'Owner del repository (utente o organizzazione GitHub)' })
+  @ApiPropertyOptional({
+    description: 'Owner del repository (utente o organizzazione GitHub)',
+  })
   @IsOptional()
   @IsString()
   @IsNotEmpty()
@@ -37,7 +39,10 @@ export class ReportMetadataDto {
   @IsDateString()
   endScanTime!: string;
 
-  @ApiProperty({ description: 'Target della scansione', type: () => ReportTargetDto })
+  @ApiProperty({
+    description: 'Target della scansione',
+    type: () => ReportTargetDto,
+  })
   @IsDefined()
   @ValidateNested()
   @Type(() => ReportTargetDto)

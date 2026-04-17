@@ -7,7 +7,11 @@ export class ReportSummaryDto {
   @IsNotEmpty()
   summary!: string;
 
-  @ApiProperty({ description: 'Voto complessivo del report (0–10)', minimum: 0, maximum: 10 })
+  @ApiProperty({
+    description: 'Voto complessivo del report (0–10)',
+    minimum: 0,
+    maximum: 10,
+  })
   @IsNumber()
   @Min(0)
   @Max(10)

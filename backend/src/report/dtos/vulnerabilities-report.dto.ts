@@ -18,7 +18,9 @@ export class CodeVulnerabilityDto {
   @IsNotEmpty()
   id!: string;
 
-  @ApiProperty({ description: 'Percorso del file in cui è stata rilevata la vulnerabilità' })
+  @ApiProperty({
+    description: 'Percorso del file in cui è stata rilevata la vulnerabilità',
+  })
   @IsString()
   @IsNotEmpty()
   path!: string;
@@ -31,7 +33,11 @@ export class CodeVulnerabilityDto {
   @IsString()
   remediation!: string;
 
-  @ApiProperty({ description: 'Punteggio di severità CVSS (0–10)', minimum: 0, maximum: 10 })
+  @ApiProperty({
+    description: 'Punteggio di severità CVSS (0–10)',
+    minimum: 0,
+    maximum: 10,
+  })
   @IsNumber()
   @Min(0)
   @Max(10)
@@ -41,7 +47,9 @@ export class CodeVulnerabilityDto {
   @IsString()
   impact!: string;
 
-  @ApiProperty({ description: 'Categoria della vulnerabilità (es. Injection, XSS)' })
+  @ApiProperty({
+    description: 'Categoria della vulnerabilità (es. Injection, XSS)',
+  })
   @IsString()
   category!: string;
 
@@ -50,7 +58,10 @@ export class CodeVulnerabilityDto {
   @IsString()
   cwe?: string;
 
-  @ApiPropertyOptional({ description: 'Categorie OWASP Top 10 associate', type: [String] })
+  @ApiPropertyOptional({
+    description: 'Categorie OWASP Top 10 associate',
+    type: [String],
+  })
   @Transform(({ value }) => value ?? [])
   @IsArray()
   @IsString({ each: true })
@@ -58,19 +69,29 @@ export class CodeVulnerabilityDto {
 }
 
 export class VulnerabilitiesReportDto {
-  @ApiProperty({ description: 'Vulnerabilità rilevate nel codice sorgente', type: [CodeVulnerabilityDto] })
+  @ApiProperty({
+    description: 'Vulnerabilità rilevate nel codice sorgente',
+    type: [CodeVulnerabilityDto],
+  })
   @IsArray()
   @ValidateNested({ each: true })
   @Type(() => CodeVulnerabilityDto)
   vulnerabilities!: CodeVulnerabilityDto[];
 
-  @ApiProperty({ description: 'Voto di sicurezza del codice (0–10)', minimum: 0, maximum: 10 })
+  @ApiProperty({
+    description: 'Voto di sicurezza del codice (0–10)',
+    minimum: 0,
+    maximum: 10,
+  })
   @IsNumber()
   @Min(0)
   @Max(10)
   mark!: number;
 
-  @ApiPropertyOptional({ description: 'Conteggio aggregato delle vulnerabilità per severità', type: () => VulnCountsDto })
+  @ApiPropertyOptional({
+    description: 'Conteggio aggregato delle vulnerabilità per severità',
+    type: () => VulnCountsDto,
+  })
   @IsOptional()
   @ValidateNested()
   @Type(() => VulnCountsDto)

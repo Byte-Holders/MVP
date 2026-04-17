@@ -22,12 +22,16 @@ export class DependencyDto {
 }
 
 export class DepVulnerabilityDto {
-  @ApiProperty({ description: 'Identificatore CVE o ID univoco della vulnerabilità' })
+  @ApiProperty({
+    description: 'Identificatore CVE o ID univoco della vulnerabilità',
+  })
   @IsString()
   @IsNotEmpty()
   id!: string;
 
-  @ApiProperty({ description: 'Severità della vulnerabilità (Critical, High, Medium, Low)' })
+  @ApiProperty({
+    description: 'Severità della vulnerabilità (Critical, High, Medium, Low)',
+  })
   @IsString()
   @IsNotEmpty()
   severity!: string;
@@ -47,31 +51,44 @@ export class DepVulnerabilityDto {
   @IsString()
   description?: string;
 
-  @ApiPropertyOptional({ description: 'Versione del pacchetto che risolve la vulnerabilità' })
+  @ApiPropertyOptional({
+    description: 'Versione del pacchetto che risolve la vulnerabilità',
+  })
   @IsOptional()
   @IsString()
   fixVersion?: string;
 }
 
 export class DepsReportDto {
-  @ApiPropertyOptional({ description: 'Lista completa delle dipendenze rilevate', type: [DependencyDto] })
+  @ApiPropertyOptional({
+    description: 'Lista completa delle dipendenze rilevate',
+    type: [DependencyDto],
+  })
   @IsOptional()
   @IsArray()
   @ValidateNested({ each: true })
   @Type(() => DependencyDto)
   list?: DependencyDto[];
 
-  @ApiProperty({ description: 'Vulnerabilità trovate nelle dipendenze', type: [DepVulnerabilityDto] })
+  @ApiProperty({
+    description: 'Vulnerabilità trovate nelle dipendenze',
+    type: [DepVulnerabilityDto],
+  })
   @IsArray()
   @ValidateNested({ each: true })
   @Type(() => DepVulnerabilityDto)
   vulnerabilities!: DepVulnerabilityDto[];
 
-  @ApiProperty({ description: 'Analisi testuale delle vulnerabilità nelle dipendenze' })
+  @ApiProperty({
+    description: 'Analisi testuale delle vulnerabilità nelle dipendenze',
+  })
   @IsString()
   vulnerabilityAnalysis!: string;
 
-  @ApiPropertyOptional({ description: 'Conteggio aggregato delle vulnerabilità per severità', type: () => VulnCountsDto })
+  @ApiPropertyOptional({
+    description: 'Conteggio aggregato delle vulnerabilità per severità',
+    type: () => VulnCountsDto,
+  })
   @IsOptional()
   @ValidateNested()
   @Type(() => VulnCountsDto)

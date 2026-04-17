@@ -13,25 +13,41 @@ import { Type } from 'class-transformer';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class CoverageReportDto {
-  @ApiProperty({ description: 'Percentuale di copertura degli statement (0–100)', minimum: 0, maximum: 100 })
+  @ApiProperty({
+    description: 'Percentuale di copertura degli statement (0–100)',
+    minimum: 0,
+    maximum: 100,
+  })
   @IsNumber()
   @Min(0)
   @Max(100)
   statements!: number;
 
-  @ApiProperty({ description: 'Percentuale di copertura dei branch (0–100)', minimum: 0, maximum: 100 })
+  @ApiProperty({
+    description: 'Percentuale di copertura dei branch (0–100)',
+    minimum: 0,
+    maximum: 100,
+  })
   @IsNumber()
   @Min(0)
   @Max(100)
   branches!: number;
 
-  @ApiProperty({ description: 'Percentuale di copertura delle funzioni (0–100)', minimum: 0, maximum: 100 })
+  @ApiProperty({
+    description: 'Percentuale di copertura delle funzioni (0–100)',
+    minimum: 0,
+    maximum: 100,
+  })
   @IsNumber()
   @Min(0)
   @Max(100)
   functions!: number;
 
-  @ApiProperty({ description: 'Percentuale di copertura delle righe (0–100)', minimum: 0, maximum: 100 })
+  @ApiProperty({
+    description: 'Percentuale di copertura delle righe (0–100)',
+    minimum: 0,
+    maximum: 100,
+  })
   @IsNumber()
   @Min(0)
   @Max(100)
@@ -56,7 +72,10 @@ export class FailedTestDto {
 }
 
 export class TestReportDto {
-  @ApiProperty({ description: 'Dati di copertura del codice', type: () => CoverageReportDto })
+  @ApiProperty({
+    description: 'Dati di copertura del codice',
+    type: () => CoverageReportDto,
+  })
   @IsDefined()
   @ValidateNested()
   @Type(() => CoverageReportDto)
