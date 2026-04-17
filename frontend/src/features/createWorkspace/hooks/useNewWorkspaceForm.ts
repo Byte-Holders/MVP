@@ -29,7 +29,7 @@ export function useNewWorkspaceForm(
       try {
         const newWorkspace = await repo.createWorkspace({ name: value.name })
         await router.invalidate()
-        navigate({ to: `/workspace/${newWorkspace.id}` })
+        navigate({ to: `/workspaces/${newWorkspace.id}/repositories` })
       } catch (error: any) {
         setServerError(error.message)
       }
