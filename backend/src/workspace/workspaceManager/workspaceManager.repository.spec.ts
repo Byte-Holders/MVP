@@ -12,8 +12,12 @@ describe('WorkspaceManagerRepository', () => {
     }
     save = jest.fn().mockResolvedValue(this);
     static findByIdAndDelete = jest.fn();
-    static findById = jest.fn().mockReturnValue({ exec: jest.fn().mockResolvedValue({}) });
-    static find = jest.fn().mockReturnValue({ exec: jest.fn().mockResolvedValue([]) });
+    static findById = jest
+      .fn()
+      .mockReturnValue({ exec: jest.fn().mockResolvedValue({}) });
+    static find = jest
+      .fn()
+      .mockReturnValue({ exec: jest.fn().mockResolvedValue([]) });
   }
 
   beforeEach(async () => {
@@ -27,7 +31,9 @@ describe('WorkspaceManagerRepository', () => {
       ],
     }).compile();
 
-    repository = module.get<WorkspaceManagerRepository>(WorkspaceManagerRepository);
+    repository = module.get<WorkspaceManagerRepository>(
+      WorkspaceManagerRepository,
+    );
   });
 
   afterEach(() => {
@@ -35,7 +41,12 @@ describe('WorkspaceManagerRepository', () => {
   });
 
   it('should create a workspace', async () => {
-    const data: any = { name: 'Test', ownerId: '1', initialMembers: [], creationDate: new Date() };
+    const data: any = {
+      name: 'Test',
+      ownerId: '1',
+      initialMembers: [],
+      creationDate: new Date(),
+    };
     const result = await repository.create(data);
     expect(result.save).toBeDefined();
   });
@@ -47,7 +58,9 @@ describe('WorkspaceManagerRepository', () => {
 
   it('should find by member id', async () => {
     const result = await repository.findByMemberId('user1');
-    expect(MockWorkspaceModel.find).toHaveBeenCalledWith({ 'members.userId': 'user1' });
+    expect(MockWorkspaceModel.find).toHaveBeenCalledWith({
+      'members.userId': 'user1',
+    });
     expect(result).toEqual([]);
   });
 

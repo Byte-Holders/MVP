@@ -24,7 +24,9 @@ describe('WorkspaceRepositoryRepository', () => {
       ],
     }).compile();
 
-    repository = module.get<WorkspaceRepositoryRepository>(WorkspaceRepositoryRepository);
+    repository = module.get<WorkspaceRepositoryRepository>(
+      WorkspaceRepositoryRepository,
+    );
   });
 
   afterEach(() => {
@@ -34,7 +36,9 @@ describe('WorkspaceRepositoryRepository', () => {
   describe('getRepositories', () => {
     it('should return an array of repository string IDs', async () => {
       const mockWorkspace = {
-        repositories: [{ repoId: new Types.ObjectId('507f1f77bcf86cd799439011') }],
+        repositories: [
+          { repoId: new Types.ObjectId('507f1f77bcf86cd799439011') },
+        ],
       };
       mockWorkspaceModel.findById.mockResolvedValue(mockWorkspace);
 
@@ -56,10 +60,19 @@ describe('WorkspaceRepositoryRepository', () => {
     it('should successfully add a repository', async () => {
       mockWorkspaceModel.updateOne.mockResolvedValue({ matchedCount: 1 });
 
-      await repository.addRepository('workspace123', '507f1f77bcf86cd799439011');
+      await repository.addRepository(
+        'workspace123',
+        '507f1f77bcf86cd799439011',
+      );
       expect(mockWorkspaceModel.updateOne).toHaveBeenCalledWith(
         { _id: 'workspace123' },
-        { $push: { repositories: { repoId: new Types.ObjectId('507f1f77bcf86cd799439011') } } },
+        {
+          $push: {
+            repositories: {
+              repoId: new Types.ObjectId('507f1f77bcf86cd799439011'),
+            },
+          },
+        },
       );
     });
 
@@ -74,17 +87,32 @@ describe('WorkspaceRepositoryRepository', () => {
 
   describe('removeRepository', () => {
     it('should successfully remove a repository', async () => {
-      mockWorkspaceModel.updateOne.mockResolvedValue({ matchedCount: 1, modifiedCount: 1 });
+      mockWorkspaceModel.updateOne.mockResolvedValue({
+        matchedCount: 1,
+        modifiedCount: 1,
+      });
 
-      await repository.removeRepository('507f1f77bcf86cd799439011', 'workspace123');
+      await repository.removeRepository(
+        '507f1f77bcf86cd799439011',
+        'workspace123',
+      );
       expect(mockWorkspaceModel.updateOne).toHaveBeenCalledWith(
         { _id: 'workspace123' },
-        { $pull: { repositories: { repoId: new Types.ObjectId('507f1f77bcf86cd799439011') } } },
+        {
+          $pull: {
+            repositories: {
+              repoId: new Types.ObjectId('507f1f77bcf86cd799439011'),
+            },
+          },
+        },
       );
     });
 
     it('should throw NotFoundException if workspace is not matched', async () => {
-      mockWorkspaceModel.updateOne.mockResolvedValue({ matchedCount: 0, modifiedCount: 0 });
+      mockWorkspaceModel.updateOne.mockResolvedValue({
+        matchedCount: 0,
+        modifiedCount: 0,
+      });
 
       await expect(
         repository.removeRepository('507f1f77bcf86cd799439011', 'workspace123'),
@@ -92,11 +120,16 @@ describe('WorkspaceRepositoryRepository', () => {
     });
 
     it('should throw NotFoundException if repository is not found in workspace', async () => {
-      mockWorkspaceModel.updateOne.mockResolvedValue({ matchedCount: 1, modifiedCount: 0 });
+      mockWorkspaceModel.updateOne.mockResolvedValue({
+        matchedCount: 1,
+        modifiedCount: 0,
+      });
 
       await expect(
         repository.removeRepository('507f1f77bcf86cd799439011', 'workspace123'),
-      ).rejects.toThrow(new NotFoundException('Repository non trovata nel workspace'));
+      ).rejects.toThrow(
+        new NotFoundException('Repository non trovata nel workspace'),
+      );
     });
   });
 });

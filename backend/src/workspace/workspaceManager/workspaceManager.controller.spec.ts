@@ -23,7 +23,9 @@ describe('WorkspaceManagerController', () => {
       ],
     }).compile();
 
-    controller = module.get<WorkspaceManagerController>(WorkspaceManagerController);
+    controller = module.get<WorkspaceManagerController>(
+      WorkspaceManagerController,
+    );
   });
 
   afterEach(() => {
@@ -33,12 +35,17 @@ describe('WorkspaceManagerController', () => {
   it('should create a workspace', async () => {
     const dto: CreateWorkspaceDto = { name: 'Test Workspace' };
     const user: any = { userId: '1', username: 'testuser' };
-    
-    mockService.createWorkspace.mockResolvedValue({ id: '123', name: 'Test Workspace' });
-    
+
+    mockService.createWorkspace.mockResolvedValue({
+      id: '123',
+      name: 'Test Workspace',
+    });
+
     // Correzione: uso di jest.spyOn() per mockare moduli/classi
     jest.spyOn(WorkspaceMapper, 'toCreateBO').mockReturnValue({} as any);
-    jest.spyOn(WorkspaceMapper, 'toCreateResponseDto').mockReturnValue({ workspaceId: '123' } as any);
+    jest
+      .spyOn(WorkspaceMapper, 'toCreateResponseDto')
+      .mockReturnValue({ workspaceId: '123' } as any);
 
     const result = await controller.create(dto, user);
     expect(mockService.createWorkspace).toHaveBeenCalled();
