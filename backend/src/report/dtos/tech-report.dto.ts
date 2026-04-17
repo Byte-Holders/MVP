@@ -10,7 +10,10 @@ import { Type } from 'class-transformer';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class TechEntryDto {
-  @ApiProperty({ description: 'Nome della libreria o framework', example: 'express' })
+  @ApiProperty({
+    description: 'Nome della libreria o framework',
+    example: 'express',
+  })
   @IsString()
   @IsNotEmpty()
   name!: string;
@@ -22,12 +25,19 @@ export class TechEntryDto {
 }
 
 export class LanguageDto {
-  @ApiProperty({ description: 'Nome del linguaggio di programmazione', example: 'TypeScript' })
+  @ApiProperty({
+    description: 'Nome del linguaggio di programmazione',
+    example: 'TypeScript',
+  })
   @IsString()
   @IsNotEmpty()
   name!: string;
 
-  @ApiProperty({ description: 'Percentuale di utilizzo nel repository (0–100)', minimum: 0, example: 78.3 })
+  @ApiProperty({
+    description: 'Percentuale di utilizzo nel repository (0–100)',
+    minimum: 0,
+    example: 78.3,
+  })
   @IsNumber()
   @Min(0)
   value!: number;

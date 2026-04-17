@@ -22,12 +22,18 @@ export class DependencyDto {
 }
 
 export class DepVulnerabilityDto {
-  @ApiProperty({ description: 'Identificatore CVE o ID univoco della vulnerabilità', example: 'CVE-2021-23337' })
+  @ApiProperty({
+    description: 'Identificatore CVE o ID univoco della vulnerabilità',
+    example: 'CVE-2021-23337',
+  })
   @IsString()
   @IsNotEmpty()
   id!: string;
 
-  @ApiProperty({ description: 'Severità della vulnerabilità (Critical, High, Medium, Low)', example: 'High' })
+  @ApiProperty({
+    description: 'Severità della vulnerabilità (Critical, High, Medium, Low)',
+    example: 'High',
+  })
   @IsString()
   @IsNotEmpty()
   severity!: string;
@@ -37,20 +43,27 @@ export class DepVulnerabilityDto {
   @IsNotEmpty()
   packageName!: string;
 
-  @ApiProperty({ description: 'Versione del pacchetto affetta', example: '4.17.20' })
+  @ApiProperty({
+    description: 'Versione del pacchetto affetta',
+    example: '4.17.20',
+  })
   @IsString()
   @IsNotEmpty()
   packageVersion!: string;
 
   @ApiPropertyOptional({
     description: 'Descrizione della vulnerabilità',
-    example: 'Command injection via template function in lodash versions prior to 4.17.21',
+    example:
+      'Command injection via template function in lodash versions prior to 4.17.21',
   })
   @IsOptional()
   @IsString()
   description?: string;
 
-  @ApiPropertyOptional({ description: 'Versione del pacchetto che risolve la vulnerabilità', example: '4.17.21' })
+  @ApiPropertyOptional({
+    description: 'Versione del pacchetto che risolve la vulnerabilità',
+    example: '4.17.21',
+  })
   @IsOptional()
   @IsString()
   fixVersion?: string;
@@ -78,7 +91,8 @@ export class DepsReportDto {
 
   @ApiProperty({
     description: 'Analisi testuale delle vulnerabilità nelle dipendenze',
-    example: 'Sono state rilevate 2 vulnerabilità critiche in lodash e axios. Si consiglia un aggiornamento immediato.',
+    example:
+      'Sono state rilevate 2 vulnerabilità critiche in lodash e axios. Si consiglia un aggiornamento immediato.',
   })
   @IsString()
   vulnerabilityAnalysis!: string;
