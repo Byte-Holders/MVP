@@ -186,7 +186,7 @@ export class DependencyNodeHelper {
         Separa le dipendenze in:
         - "frameworks": la lista di framework utilizzati all'interno del progetto. Compaiono sicuramente, e solamente, all'interno del file package.json
         - "libraries": tutte le librerie presenti nel package.json ma non all'interno del campo "frameworks" definito al punto precedente. Di ciascuna libreria deve essere anche presente la versione effettiva installata, che puoi trovare all'interno del report sulle dipendenze
-        - "vulnerabilityAnalysis": una breve analisi riassuntiva delle vulnerabilità presenti all'interno della lista delle vulnerabilità. La lunghezza del riassunto è vincolata a massimo 100 parole.
+        - "vulnerabilityAnalysis": una descrizione esaustiva e discorsiva delle vulnerabilità presenti all'interno della lista delle vulnerabilità. Hai a disposizione massimo 1000 caratteri. Utilizza il linguaggio markdown per rendere il tutto più leggibile. Assicurati di produrre markdown valido.
 
         Assicurati che il documento JSON che produci sia valido.`,
         ),

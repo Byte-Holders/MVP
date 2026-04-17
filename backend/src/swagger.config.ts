@@ -19,7 +19,8 @@ export function setupSwagger(app: INestApplication): void {
     .addTag('workspace-repositories', 'Repository associate a un workspace')
     .addTag('WorkspaceUser', 'Membri di un workspace')
     .addTag('Membership', 'Inviti e gestione membership')
-    .addTag('ScanManager', 'Avvio e stato delle scansioni')
+    .addTag('ScanManager', 'Avvio e interruzione delle scansioni')
+    .addTag('ScanStatus', 'Stato delle scansioni')
     .addTag('repositories', 'Repository GitHub')
     .addTag('reports', 'Report di analisi')
     .build();

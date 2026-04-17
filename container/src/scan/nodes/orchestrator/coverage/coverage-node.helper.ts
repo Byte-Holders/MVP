@@ -17,7 +17,7 @@ export class CoverageNodeHelper {
       name: 'sh',
       args: [
         '-c',
-        `cd "${targetPath}" && npm install --silent && npx jest --no-colors --coverage --coverageReporters="text-summary" --json --outputFile="${resultsPath}" 2>&1`,
+        `cd "${targetPath}" && npm install --silent && (npx jest --no-colors --coverage --coverageReporters="text-summary" --json --outputFile="${resultsPath}" 2>&1; true)`,
       ],
     };
     const stdout = await executeCli(command);

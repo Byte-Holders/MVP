@@ -27,7 +27,7 @@ import { StopScanDto } from './dtos/stop-scan.dto';
 import { StartScanResponseDto } from './dtos/start-scan-response.dto';
 import { JwtAuthGuard } from '../../auth/jwt-auth.guard';
 
-@ApiTags('scan')
+@ApiTags('ScanManager')
 @ApiBearerAuth('access-token')
 @Controller('/scan')
 export class ScanManagerController {

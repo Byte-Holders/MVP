@@ -33,10 +33,12 @@ export class SynthesizerNodeService {
 Restituisci SOLO un JSON con questa struttura, senza markdown:
 {
   "summary": "<riassunto discorsivo>",
-  "mark": <voto intero da 1 a 10>
+  "mark": <voto>
 }
-Il riassunto discorsivo deve essere markdown VALIDO, dunque deve avere tipo string, e fornire una panoramica dei risultati ricevuti, senza andare nel tecnico o fare riferimento alla logica interna del
+Il <riassunto discorsivo> deve essere markdown VALIDO, dunque deve avere tipo string, e fornire una panoramica dei risultati ricevuti, senza andare nel tecnico o fare riferimento alla logica interna del
 prodotto analizzato.
+Il <voto> deve essere un valore intero compreso tra 0 e 10, che corrisponda alla media tra il voto della documentazione e della sicurezza, pesato su una scala da 0 a 6, e la code coverage presente
+nell'analisi dei test, in cui una coverage del 100% su ogni valore vale 4 punti, mentre ciascuna delle quattro metriche (statements, branches, functions, lines) inferiore al 70% causa la perdita di un punto.
 Assicurati di restituire un JSON valido, e solo un JSON valido.`,
         ),
         new HumanMessage(`Dati analisi:\n${context}`),
