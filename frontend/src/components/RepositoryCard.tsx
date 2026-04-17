@@ -86,7 +86,7 @@ export default function RepositoryCard({
 
       <div className="flex flex-col gap-2">
         <ScoreBar
-          label="Documentation"
+          label="Documentazione"
           value={documentationScore}
           max={10}
           unit="/10"
