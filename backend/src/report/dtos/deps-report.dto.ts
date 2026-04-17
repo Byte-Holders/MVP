@@ -57,14 +57,20 @@ export class DepVulnerabilityDto {
 }
 
 export class DepsReportDto {
-  @ApiPropertyOptional({ description: 'Lista completa delle dipendenze rilevate', type: [DependencyDto] })
+  @ApiPropertyOptional({
+    description: 'Lista completa delle dipendenze rilevate',
+    type: [DependencyDto],
+  })
   @IsOptional()
   @IsArray()
   @ValidateNested({ each: true })
   @Type(() => DependencyDto)
   list?: DependencyDto[];
 
-  @ApiProperty({ description: 'Vulnerabilità trovate nelle dipendenze', type: [DepVulnerabilityDto] })
+  @ApiProperty({
+    description: 'Vulnerabilità trovate nelle dipendenze',
+    type: [DepVulnerabilityDto],
+  })
   @IsArray()
   @ValidateNested({ each: true })
   @Type(() => DepVulnerabilityDto)
@@ -77,7 +83,10 @@ export class DepsReportDto {
   @IsString()
   vulnerabilityAnalysis!: string;
 
-  @ApiPropertyOptional({ description: 'Conteggio aggregato delle vulnerabilità per severità', type: () => VulnCountsDto })
+  @ApiPropertyOptional({
+    description: 'Conteggio aggregato delle vulnerabilità per severità',
+    type: () => VulnCountsDto,
+  })
   @IsOptional()
   @ValidateNested()
   @Type(() => VulnCountsDto)

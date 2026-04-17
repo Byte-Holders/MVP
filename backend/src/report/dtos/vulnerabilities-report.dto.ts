@@ -64,7 +64,10 @@ export class CodeVulnerabilityDto {
 }
 
 export class VulnerabilitiesReportDto {
-  @ApiProperty({ description: 'Vulnerabilità rilevate nel codice sorgente', type: [CodeVulnerabilityDto] })
+  @ApiProperty({
+    description: 'Vulnerabilità rilevate nel codice sorgente',
+    type: [CodeVulnerabilityDto],
+  })
   @IsArray()
   @ValidateNested({ each: true })
   @Type(() => CodeVulnerabilityDto)
@@ -76,7 +79,10 @@ export class VulnerabilitiesReportDto {
   @Max(10)
   mark!: number;
 
-  @ApiPropertyOptional({ description: 'Conteggio aggregato delle vulnerabilità per severità', type: () => VulnCountsDto })
+  @ApiPropertyOptional({
+    description: 'Conteggio aggregato delle vulnerabilità per severità',
+    type: () => VulnCountsDto,
+  })
   @IsOptional()
   @ValidateNested()
   @Type(() => VulnCountsDto)

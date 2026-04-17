@@ -34,19 +34,29 @@ export class LanguageDto {
 }
 
 export class TechReportDto {
-  @ApiProperty({ description: 'Librerie rilevate nel progetto', type: [TechEntryDto] })
+  @ApiProperty({
+    description: 'Librerie rilevate nel progetto',
+    type: [TechEntryDto],
+  })
   @IsArray()
   @ValidateNested({ each: true })
   @Type(() => TechEntryDto)
   libraries!: TechEntryDto[];
 
-  @ApiProperty({ description: 'Framework rilevati nel progetto', type: [TechEntryDto] })
+  @ApiProperty({
+    description: 'Framework rilevati nel progetto',
+    type: [TechEntryDto],
+  })
   @IsArray()
   @ValidateNested({ each: true })
   @Type(() => TechEntryDto)
   frameworks!: TechEntryDto[];
 
-  @ApiProperty({ description: 'Linguaggi di programmazione rilevati con percentuale di utilizzo', type: [LanguageDto] })
+  @ApiProperty({
+    description:
+      'Linguaggi di programmazione rilevati con percentuale di utilizzo',
+    type: [LanguageDto],
+  })
   @IsArray()
   @ValidateNested({ each: true })
   @Type(() => LanguageDto)

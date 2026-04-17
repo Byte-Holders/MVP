@@ -37,7 +37,10 @@ export class ReportMetadataDto {
   @IsDateString()
   endScanTime!: string;
 
-  @ApiProperty({ description: 'Target della scansione', type: () => ReportTargetDto })
+  @ApiProperty({
+    description: 'Target della scansione',
+    type: () => ReportTargetDto,
+  })
   @IsDefined()
   @ValidateNested()
   @Type(() => ReportTargetDto)

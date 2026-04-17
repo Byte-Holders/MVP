@@ -8,31 +8,46 @@ import { TestReportDto } from './test-report.dto';
 import { TechReportDto } from './tech-report.dto';
 
 export class ReportDataDto {
-  @ApiProperty({ description: 'Report sulle dipendenze e relative vulnerabilità', type: () => DepsReportDto })
+  @ApiProperty({
+    description: 'Report sulle dipendenze e relative vulnerabilità',
+    type: () => DepsReportDto,
+  })
   @IsNotEmpty()
   @ValidateNested()
   @Type(() => DepsReportDto)
   depsReport!: DepsReportDto;
 
-  @ApiProperty({ description: 'Report sulle vulnerabilità nel codice sorgente', type: () => VulnerabilitiesReportDto })
+  @ApiProperty({
+    description: 'Report sulle vulnerabilità nel codice sorgente',
+    type: () => VulnerabilitiesReportDto,
+  })
   @IsNotEmpty()
   @ValidateNested()
   @Type(() => VulnerabilitiesReportDto)
   vulnerabilitiesReport!: VulnerabilitiesReportDto;
 
-  @ApiProperty({ description: 'Report sulla documentazione del progetto', type: () => DocsReportDto })
+  @ApiProperty({
+    description: 'Report sulla documentazione del progetto',
+    type: () => DocsReportDto,
+  })
   @IsNotEmpty()
   @ValidateNested()
   @Type(() => DocsReportDto)
   docsReport!: DocsReportDto;
 
-  @ApiProperty({ description: 'Report sull\'esecuzione dei test', type: () => TestReportDto })
+  @ApiProperty({
+    description: "Report sull'esecuzione dei test",
+    type: () => TestReportDto,
+  })
   @IsNotEmpty()
   @ValidateNested()
   @Type(() => TestReportDto)
   testReport!: TestReportDto;
 
-  @ApiProperty({ description: 'Report sulle tecnologie rilevate nel progetto', type: () => TechReportDto })
+  @ApiProperty({
+    description: 'Report sulle tecnologie rilevate nel progetto',
+    type: () => TechReportDto,
+  })
   @IsNotEmpty()
   @ValidateNested()
   @Type(() => TechReportDto)

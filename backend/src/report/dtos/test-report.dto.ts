@@ -59,7 +59,10 @@ export class FailedTestDto {
 }
 
 export class TestReportDto {
-  @ApiProperty({ description: 'Dati di copertura del codice', type: () => CoverageReportDto })
+  @ApiProperty({
+    description: 'Dati di copertura del codice',
+    type: () => CoverageReportDto,
+  })
   @IsDefined()
   @ValidateNested()
   @Type(() => CoverageReportDto)
