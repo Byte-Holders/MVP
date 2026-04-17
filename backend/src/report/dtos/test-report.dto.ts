@@ -13,25 +13,25 @@ import { Type } from 'class-transformer';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class CoverageReportDto {
-  @ApiProperty({ description: 'Percentuale di copertura degli statement (0–100)', minimum: 0, maximum: 100 })
+  @ApiProperty({ description: 'Percentuale di copertura degli statement (0–100)', minimum: 0, maximum: 100, example: 82.5 })
   @IsNumber()
   @Min(0)
   @Max(100)
   statements!: number;
 
-  @ApiProperty({ description: 'Percentuale di copertura dei branch (0–100)', minimum: 0, maximum: 100 })
+  @ApiProperty({ description: 'Percentuale di copertura dei branch (0–100)', minimum: 0, maximum: 100, example: 74.1 })
   @IsNumber()
   @Min(0)
   @Max(100)
   branches!: number;
 
-  @ApiProperty({ description: 'Percentuale di copertura delle funzioni (0–100)', minimum: 0, maximum: 100 })
+  @ApiProperty({ description: 'Percentuale di copertura delle funzioni (0–100)', minimum: 0, maximum: 100, example: 90.0 })
   @IsNumber()
   @Min(0)
   @Max(100)
   functions!: number;
 
-  @ApiProperty({ description: 'Percentuale di copertura delle righe (0–100)', minimum: 0, maximum: 100 })
+  @ApiProperty({ description: 'Percentuale di copertura delle righe (0–100)', minimum: 0, maximum: 100, example: 83.7 })
   @IsNumber()
   @Min(0)
   @Max(100)
@@ -39,17 +39,20 @@ export class CoverageReportDto {
 }
 
 export class FailedTestDto {
-  @ApiProperty({ description: 'Nome del test fallito' })
+  @ApiProperty({ description: 'Nome del test fallito', example: 'should return 401 when token is expired' })
   @IsString()
   @IsNotEmpty()
   name!: string;
 
-  @ApiProperty({ description: 'Percorso del file contenente il test' })
+  @ApiProperty({ description: 'Percorso del file contenente il test', example: 'src/auth/auth.service.spec.ts' })
   @IsString()
   @IsNotEmpty()
   path!: string;
 
-  @ApiProperty({ description: 'Messaggio di errore sintetico del test' })
+  @ApiProperty({
+    description: 'Messaggio di errore sintetico del test',
+    example: 'Expected status 401 but received 500: Cannot read properties of undefined',
+  })
   @IsString()
   @IsNotEmpty()
   messageSummary!: string;
@@ -68,7 +71,7 @@ export class TestReportDto {
   @Type(() => FailedTestDto)
   failedTests!: FailedTestDto[];
 
-  @ApiProperty({ description: 'Numero totale di test eseguiti', minimum: 0 })
+  @ApiProperty({ description: 'Numero totale di test eseguiti', minimum: 0, example: 148 })
   @IsInt()
   @Min(0)
   testsRun!: number;
