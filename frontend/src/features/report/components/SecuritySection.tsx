@@ -139,7 +139,7 @@ export function SecuritySection({ vulnerabilitiesReport, depsReport }: Props) {
       </h2>
 
       <ScoreBar
-        label="Voto"
+        label="Voto della sicurezza del codice"
         value={parseFloat(vulnerabilitiesReport.mark.toFixed(1))}
       />
 
