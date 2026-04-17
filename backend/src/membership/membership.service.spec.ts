@@ -91,7 +91,9 @@ describe('MembershipService', () => {
         username: 'mario.rossi',
         email: 'mario.rossi@example.com',
       });
-      mockCheckIfUserInWorkspace.checkIfUserIsInWorkspace.mockResolvedValue(false);
+      mockCheckIfUserInWorkspace.checkIfUserIsInWorkspace.mockResolvedValue(
+        false,
+      );
       mockRepository.findPendingInvite.mockResolvedValue({ _id: 'invite1' });
 
       await expect(service.inviteUser(mockInviteInfo)).rejects.toThrow(
@@ -106,7 +108,9 @@ describe('MembershipService', () => {
         username: 'mario.rossi',
         email: 'mario.rossi@example.com',
       });
-      mockCheckIfUserInWorkspace.checkIfUserIsInWorkspace.mockResolvedValue(false);
+      mockCheckIfUserInWorkspace.checkIfUserIsInWorkspace.mockResolvedValue(
+        false,
+      );
       mockRepository.findPendingInvite.mockResolvedValue(null);
 
       await service.inviteUser(mockInviteInfo);
@@ -211,7 +215,7 @@ describe('MembershipService', () => {
           username: 'mario.rossi',
           email: 'email@example.com',
         });
-        mockAddUserToWorkspace.addUserToWorkspace.mockResolvedValue(true); 
+        mockAddUserToWorkspace.addUserToWorkspace.mockResolvedValue(true);
 
         await service.manageInvite(mockManageActionAccept);
 

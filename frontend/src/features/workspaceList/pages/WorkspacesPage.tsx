@@ -1,7 +1,7 @@
 import { WorkspaceList } from '@/features/workspaceList/components/WorkspaceList'
 
 export function WorkspacesPage() {
-  //pagina principale che mostra la lista dei workspace dell'utente
+  // pagina principale che mostra la lista dei workspace dell'utente
   return (
     <main className="page-wrap px-4 pb-8 pt-14 min-h-[calc(100vh-120px)]">
       <section className="island-shell rise-in relative overflow-hidden rounded-[2rem] px-6 py-10 sm:px-10 sm:py-14">

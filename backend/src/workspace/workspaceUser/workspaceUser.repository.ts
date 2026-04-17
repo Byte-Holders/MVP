@@ -110,5 +110,4 @@ export class WorkspaceUserRepository implements IWorkspaceUserRepository {
     }
     return workspace.ownerId.toString();
   }
-
 }

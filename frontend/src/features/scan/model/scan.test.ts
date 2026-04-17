@@ -51,7 +51,7 @@ describe('scanRepository', () => {
     it('dovrebbe chiamare apiPatch con il scanId corretto', async () => {
       vi.mocked(apiPatch).mockResolvedValue(undefined)
       await scanRepository.stopScan('scan-abc')
-      expect(apiPatch).toHaveBeenCalledWith('/api/scan', { scanId: 'scan-abc' })
+      expect(apiPatch).toHaveBeenCalledWith('/api/scan/scan-abc')
     })
 
     it('dovrebbe propagare gli errori della API', async () => {

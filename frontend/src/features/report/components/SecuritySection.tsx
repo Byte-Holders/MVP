@@ -1,4 +1,6 @@
 import { useState } from 'react'
+import ReactMarkdown from 'react-markdown'
+import remarkGfm from 'remark-gfm'
 import {
   Bar,
   BarChart,
@@ -153,9 +155,7 @@ export function SecuritySection({ vulnerabilitiesReport, depsReport }: Props) {
             <span className="text-xl font-bold text-[var(--sea-ink)]">
               {count}
             </span>
-            <span className="text-[10px] leading-tight opacity-50">
-              {label}
-            </span>
+            <span className="text-sm leading-tight opacity-50">{label}</span>
           </div>
         ))}
       </div>
@@ -165,7 +165,7 @@ export function SecuritySection({ vulnerabilitiesReport, depsReport }: Props) {
         {/* Vulnerabilità codice */}
         {codePieData.length > 0 && (
           <div>
-            <p className="mb-3 text-xs font-medium text-[var(--sea-ink)] opacity-60">
+            <p className="mb-3 text-sm font-medium text-[var(--sea-ink)] opacity-60">
               Vulnerabilità codice per severità
             </p>
             <ResponsiveContainer width="100%" height={160}>
@@ -217,7 +217,7 @@ export function SecuritySection({ vulnerabilitiesReport, depsReport }: Props) {
         {/* Dipendenze vulnerabili */}
         {depsPieData.length > 0 && (
           <div>
-            <p className="mb-3 text-xs font-medium text-[var(--sea-ink)] opacity-60">
+            <p className="mb-3 text-sm font-medium text-[var(--sea-ink)] opacity-60">
               Dipendenze vulnerabili per severità
             </p>
             <ResponsiveContainer width="100%" height={160}>
@@ -267,10 +267,24 @@ export function SecuritySection({ vulnerabilitiesReport, depsReport }: Props) {
         )}
       </div>
 
+      {/* ── Analisi testuale ───────────────────────────────────────────────── */}
+      {depsReport.vulnerabilityAnalysis && (
+        <div className="rounded-xl border border-[var(--chip-line)] p-3">
+          <p className="mb-1 text-sm font-medium text-[var(--sea-ink)] opacity-60">
+            Analisi
+          </p>
+          <div className="prose prose-sm dark:prose-invert max-w-none text-sm text-[var(--sea-ink)] opacity-80">
+            <ReactMarkdown remarkPlugins={[remarkGfm]}>
+              {depsReport.vulnerabilityAnalysis}
+            </ReactMarkdown>
+          </div>
+        </div>
+      )}
+
       {/* ── Vulnerabilità codice: lista espandibile ─────────────────────────── */}
       {vulnerabilitiesReport.vulnerabilities.length > 0 && (
         <div>
-          <p className="mb-2 text-xs font-medium text-[var(--sea-ink)] opacity-60">
+          <p className="mb-2 text-sm font-medium text-[var(--sea-ink)] opacity-60">
             Vulnerabilità nel codice (
             {vulnerabilitiesReport.vulnerabilities.length})
           </p>
@@ -292,11 +306,11 @@ export function SecuritySection({ vulnerabilitiesReport, depsReport }: Props) {
                   >
                     <div className="flex items-center gap-2 min-w-0">
                       <span
-                        className={`flex-shrink-0 rounded-full px-2 py-0.5 text-[10px] font-semibold ${cfg.bg} ${cfg.text}`}
+                        className={`flex-shrink-0 inline-block w-24 text-center rounded-full py-0.5 text-sm font-semibold ${cfg.bg} ${cfg.text}`}
                       >
                         {label}
                       </span>
-                      <span className="font-medium text-[var(--sea-ink)] truncate">
+                      <span className="font-medium text-[var(--sea-ink)] break-words min-w-0">
                         {v.description || v.id}
                       </span>
                     </div>
@@ -307,22 +321,24 @@ export function SecuritySection({ vulnerabilitiesReport, depsReport }: Props) {
 
                   {isOpen && (
                     <div className="border-t border-[var(--chip-line)] p-3 flex flex-col gap-2">
-                      <p className="font-mono text-[10px] text-[var(--sea-ink)] opacity-50">
+                      <p className="font-mono text-sm text-[var(--sea-ink)] opacity-50">
                         {v.path}
                       </p>
                       {v.remediation && (
                         <div>
                           <span className="font-medium text-[var(--sea-ink)] opacity-60">
-                            Rimedio:{' '}
+                            Rimedio
                           </span>
-                          <span className="text-[var(--sea-ink)] opacity-80">
-                            {v.remediation}
-                          </span>
+                          <div className="prose prose-sm dark:prose-invert max-w-none text-sm text-[var(--sea-ink)] opacity-80 mt-1">
+                            <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                              {v.remediation}
+                            </ReactMarkdown>
+                          </div>
                         </div>
                       )}
                       {/* eslint-disable-next-line @typescript-eslint/no-unnecessary-condition */}
                       {v.cwe && (
-                        <span className="rounded bg-[var(--chip-line)] px-1.5 py-0.5 text-[10px] text-[var(--sea-ink)] opacity-70 w-fit">
+                        <span className="rounded bg-[var(--chip-line)] px-1.5 py-0.5 text-sm text-[var(--sea-ink)] opacity-70 w-fit">
                           {v.cwe}
                         </span>
                       )}
@@ -332,7 +348,7 @@ export function SecuritySection({ vulnerabilitiesReport, depsReport }: Props) {
                           {v.owasp.map((o) => (
                             <span
                               key={o}
-                              className="rounded bg-[var(--lagoon)]/10 px-1.5 py-0.5 text-[10px] text-[var(--lagoon-deep)]"
+                              className="rounded bg-[var(--lagoon)]/10 px-1.5 py-0.5 text-sm text-[var(--lagoon-deep)]"
                             >
                               {o}
                             </span>
@@ -383,7 +399,9 @@ export function SecuritySection({ vulnerabilitiesReport, depsReport }: Props) {
                       <th className="text-left px-3 py-1.5 font-medium">
                         Pacchetto
                       </th>
-                      <th className="text-left px-3 py-1.5 font-medium">CVE</th>
+                      <th className="text-left px-3 py-1.5 font-medium">
+                        Criticità
+                      </th>
                       <th className="text-left px-3 py-1.5 font-medium">Fix</th>
                     </tr>
                   </thead>
@@ -407,11 +425,11 @@ export function SecuritySection({ vulnerabilitiesReport, depsReport }: Props) {
                                     className="flex items-center gap-1.5 min-w-0"
                                   >
                                     <span
-                                      className={`flex-shrink-0 rounded-full px-2 py-0.5 text-[10px] font-semibold ${cfg.bg} ${cfg.text}`}
+                                      className={`flex-shrink-0 inline-block w-24 text-center rounded-full py-0.5 text-sm font-semibold ${cfg.bg} ${cfg.text}`}
                                     >
                                       {v.severity}
                                     </span>
-                                    <span className="text-[10px] text-[var(--sea-ink)] opacity-70 truncate">
+                                    <span className="text-sm text-[var(--sea-ink)] opacity-70 break-words min-w-0">
                                       {v.description ?? v.id}
                                     </span>
                                   </div>
@@ -433,18 +451,6 @@ export function SecuritySection({ vulnerabilitiesReport, depsReport }: Props) {
             </div>
           )
         })()}
-
-      {/* ── Analisi testuale ───────────────────────────────────────────────── */}
-      {depsReport.vulnerabilityAnalysis && (
-        <div className="rounded-xl border border-[var(--chip-line)] p-3">
-          <p className="mb-1 text-xs font-medium text-[var(--sea-ink)] opacity-60">
-            Analisi
-          </p>
-          <p className="text-xs leading-relaxed text-[var(--sea-ink)] opacity-80">
-            {depsReport.vulnerabilityAnalysis}
-          </p>
-        </div>
-      )}
 
       {totalCodeVulns === 0 && totalDepsVulns === 0 && (
         <p className="text-xs text-green-600 dark:text-green-400">

@@ -6,6 +6,7 @@ import {
 } from '@nestjs/common';
 import { IAddUserToWorkspace } from './interfaces/IAddUserToWorkspace.interface';
 import { IWorkspaceUserService } from './interfaces/IWorkspaceUserService';
+import type { IUserRoleReader } from './interfaces/IUserRoleReader';
 import {
   type IWorkspaceUserRepository,
   IWorkspaceUserRepositoryToken,
@@ -15,7 +16,11 @@ import { ICheckIfUserInWorkspace } from './interfaces/ICheckIfUserInWorkspace';
 
 @Injectable()
 export class WorkspaceUserService
-  implements IWorkspaceUserService, IAddUserToWorkspace, ICheckIfUserInWorkspace
+  implements
+    IWorkspaceUserService,
+    IAddUserToWorkspace,
+    IUserRoleReader,
+    ICheckIfUserInWorkspace
 {
   constructor(
     @Inject(IWorkspaceUserRepositoryToken)
@@ -41,10 +46,11 @@ export class WorkspaceUserService
       );
     }
     if (
-      await this.workspaceUserRepository.getWorkspaceOwner(workspaceId) === userId
+      (await this.workspaceUserRepository.getWorkspaceOwner(workspaceId)) ===
+      userId
     ) {
       throw new PreconditionFailedException(
-        "L'utente che si tenta di rimuovere è il proprietario del workspace con id"
+        "L'utente che si tenta di rimuovere è il proprietario del workspace con id",
       );
     }
     await this.workspaceUserRepository.removeUserFromWorkspace(

@@ -7,6 +7,7 @@ import { WorkspaceUserService } from './workspaceUser.service';
 import { IWorkspaceUserRepositoryToken } from './interfaces/IWorkspaceUserRepository.interface';
 import { IWorkspaceUserServiceToken } from './interfaces/IWorkspaceUserService';
 import { IAddUserToWorkspaceToken } from './interfaces/IAddUserToWorkspace.interface';
+import { IUserRoleReaderToken } from './interfaces/IUserRoleReader';
 import { ICheckIfUserInWorkspaceToken } from './interfaces/ICheckIfUserInWorkspace';
 
 @Module({
@@ -30,10 +31,19 @@ import { ICheckIfUserInWorkspaceToken } from './interfaces/ICheckIfUserInWorkspa
       useClass: WorkspaceUserService,
     },
     {
+      provide: IUserRoleReaderToken,
+      useClass: WorkspaceUserService,
+    },
+    {
       provide: ICheckIfUserInWorkspaceToken,
       useClass: WorkspaceUserService,
     },
   ],
-  exports: [IWorkspaceUserServiceToken, IAddUserToWorkspaceToken, ICheckIfUserInWorkspaceToken],
+  exports: [
+    IWorkspaceUserServiceToken,
+    IAddUserToWorkspaceToken,
+    IUserRoleReaderToken,
+    ICheckIfUserInWorkspaceToken,
+  ],
 })
 export class WorkspaceUserModule {}

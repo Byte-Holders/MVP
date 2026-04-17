@@ -92,7 +92,7 @@ export default function RepositoryCard({
           unit="/10"
         />
         <ScoreBar label="Code Coverage" value={codeCoverage} />
-        <ScoreBar label="CVSS" value={cvss} max={10} unit="/10" />
+        <ScoreBar label="Sicurezza" value={cvss} max={10} unit="/10" />
       </div>
 
       {formattedDate && (

@@ -22,7 +22,7 @@ export function BranchSelector({
       id="branch-select"
       value={selectedBranch}
       onChange={(e) => onChange(e.target.value)}
-      className="rounded-lg border border-[var(--chip-line)] bg-[var(--chip-bg)] px-3 py-1.5 text-xs text-[var(--sea-ink)] focus:outline-none"
+      className="rounded-lg border border-[var(--chip-line)] bg-[var(--chip-bg)] px-3 py-1.5 text-sm text-[var(--sea-ink)] focus:outline-none"
     >
       {branches.map((b) => (
         <option key={b} value={b}>

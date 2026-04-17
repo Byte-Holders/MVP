@@ -14,7 +14,7 @@ class ScanRepository implements IScanRepository {
   }
 
   async stopScan(scanId: string): Promise<void> {
-    return apiPatch('/api/scan', { scanId })
+    return apiPatch(`/api/scan/${scanId}`)
   }
 
   async getScanStatus(scanId: string): Promise<string> {

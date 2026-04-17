@@ -6,5 +6,6 @@ export function useGetReport(repositoryId: string, branch: string | undefined) {
     queryKey: ['report', repositoryId, branch],
     queryFn: () => getReportRepository.getReport(repositoryId, branch!),
     enabled: !!branch,
+    retry: false,
   })
 }

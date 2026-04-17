@@ -3,7 +3,7 @@ import { NotFoundException } from '@nestjs/common';
 import { ReportService } from './report.service';
 import { ReportRepositoryToken } from '../interfaces/ireport.repository.interface';
 import { RepositoryScoreWriterToken } from '../../repository/interfaces/repository.score-writer.interface';
-import { IWorkspaceUserServiceToken } from '../../workspace/workspaceUser/interfaces/IWorkspaceUserService';
+import { IUserRoleReaderToken } from '../../workspace/workspaceUser/interfaces/IUserRoleReader';
 import { WorkspaceRole } from '../../workspace/roles.enum';
 import type { ReportInfo } from '../types/report.type';
 import {
@@ -141,7 +141,7 @@ describe('ReportService', () => {
           useValue: { updateScores: jest.fn() },
         },
         {
-          provide: IWorkspaceUserServiceToken,
+          provide: IUserRoleReaderToken,
           useValue: mockWorkspaceUserService,
         },
         {
@@ -178,16 +178,16 @@ describe('ReportService', () => {
       });
     });
 
-    it('does not save the new report if the scan status rejects', async () => {
+    it('still saves the report even if the scan status update rejects', async () => {
       mockScanStatusService.setScanStatusFromToken.mockRejectedValue(
         new Error(),
       );
 
       await expect(
         service.saveReport(makeReport(), MOCK_TOKEN),
-      ).rejects.toThrow();
+      ).resolves.not.toThrow();
 
-      expect(mockRepository.saveReport).not.toHaveBeenCalled();
+      expect(mockRepository.saveReport).toHaveBeenCalled();
     });
   });
 
