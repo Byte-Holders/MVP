@@ -148,8 +148,8 @@ export function SecuritySection({ vulnerabilitiesReport, depsReport }: Props) {
         {(
           [
             ['Vulnerabilità codice', totalCodeVulns],
-            ['Dipendenze vulnerabili', totalDepsVulns],
             ['Critiche (codice)', codeVulnsBySeverity['Critical'] ?? 0],
+            ['Dipendenze vulnerabili', totalDepsVulns],
             ['Critiche (dipendenze)', depsBySeverity['Critical'] ?? 0],
           ] as [string, number][]
         ).map(([label, count]) => (
@@ -295,7 +295,8 @@ export function SecuritySection({ vulnerabilitiesReport, depsReport }: Props) {
           </p>
           <div className="flex flex-col gap-2">
             {vulnerabilitiesReport.vulnerabilities.map((v, i) => {
-              const label = normalizeImpact(v.impact) || codeSeverityLabel(v.severity)
+              const label =
+                normalizeImpact(v.impact) || codeSeverityLabel(v.severity)
               const cfg = severityConfig(label)
               const key = `${v.id}-${v.path}-${i}`
               const isOpen = expandedVuln === key
