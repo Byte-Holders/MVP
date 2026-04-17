@@ -357,13 +357,13 @@ export function SecuritySection({ vulnerabilitiesReport, depsReport }: Props) {
                                 </div>
                               </div>
                             )}
-                            { }
+                            {}
                             {v.cwe && (
                               <span className="rounded bg-[var(--chip-line)] px-1.5 py-0.5 text-sm text-[var(--sea-ink)] opacity-70 w-fit">
                                 {v.cwe}
                               </span>
                             )}
-                            { }
+                            {}
                             {v.owasp && v.owasp.length > 0 && (
                               <div className="flex flex-wrap gap-1">
                                 {v.owasp.map((o) => (
