@@ -78,6 +78,7 @@ describe('SecurityNodeService', () => {
       helper.isSemgrepInstalled.mockResolvedValueOnce(true);
       helper.executeSemgrep.mockResolvedValueOnce(undefined);
       helper.parseResults.mockResolvedValueOnce(mockUnits);
+      helper.translateDescriptions.mockResolvedValueOnce(mockUnits);
       helper.getMark.mockReturnValueOnce(mockMark);
 
       const result = await service.scan({ repoPath: '/workspace/my-repo' });
