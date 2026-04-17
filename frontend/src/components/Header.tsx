@@ -32,7 +32,7 @@ export default function Header() {
         <div className="flex-1 flex justify-center items-center">
           <Link to="/">
             <img
-              src="/logo_codeguardian.png"
+              src="/logo_codeguardian1.png"
               alt="Logo"
               className="h-12 w-auto cursor-pointer"
             />
