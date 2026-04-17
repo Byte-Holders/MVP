@@ -379,9 +379,8 @@ Partendo da tutti i report che hai ricevuto, riassumili producendo un unico repo
 4. Porzioni del progetto più carenti in documentazione. Questo lo puoi ottenere guardando in generale i report parziali che ti vengono forniti, associando il punteggio del report parziale con il
 percorso indicato dal punto 1. dello stesso
 
-L'unica situazione in cui ti è permesso trasgredire la struttura sovrastante è quando il punteggio assegnato al punto 1. è 0/2. In tal caso, riporta semplicemente all'interno di una
-<descrizione> che non è possibile effettuare un'analisi sui commenti perché non ci sono funzioni pubbliche sono commentate, e utilizza il seguente formato:
-1. **Errore (0/10):** <descrizione>
+L'unica situazione in cui devi trasgredire la struttura sovrastante è quando il punteggio assegnato al punto 1. è 0/2. In tal caso, il tuo output deve contenere ESCLUSIVAMENTE il seguente punto - niente punto 2., punto 3. né punto 4.:
+1. **Errore (0/10):** <descrizione in cui spieghi che non è possibile effettuare un'analisi significativa sui commenti perché non ci sono funzioni pubbliche documentate>
 
 Assicurati che ciascun punto sia ben commentato ed argomentato.
 Evita di essere sintetico, a favore dell'essere esaustivo.
@@ -405,23 +404,26 @@ Il secondo report è composto dalle seguenti sezioni:
 oppure
 1. **Errore (0/10):** <descrizione>
 
-Restituisci ESCLUSIVAMENTE il numero tra 0 a 10 che la media della somma dei <voti> indicati da ciascun report.
+Segui scrupolosamente questa procedura di calcolo:
+1. Estrai i <voti> dal primo report: chiama questi valori A (Panoramica), B (Completezza), C (Linguaggio). Calcola S1 = A + B + C.
+2. Estrai i <voti> dal secondo report:
+   - Se il secondo report ha la struttura normale (Metodi pubblici / Coerenza / Completezza), chiama i valori D, E, F e calcola S2 = D + E + F.
+   - Se il secondo report contiene esclusivamente la voce **Errore (0/10):**, allora S2 = 0.
+3. Calcola il risultato come (S1 + S2) / 2.
+4. Restituisci ESCLUSIVAMENTE quel numero, senza virgolette e senza altro testo.
 
-Ad esempio, se il primo report è
+Il risultato può essere decimale, con al più una cifra dopo la virgola. Non arrotondarlo mai all'intero più vicino.
+
+A titolo illustrativo della procedura, se il primo report è
 1. **Panoramica (1/5)** <descrizione>
-2. **Completezza (2/3)** <descrizione>
+2. **Completezza (3/3)** <descrizione>
 3. **Linguaggio (2/2)** <descrizione>
 e il secondo report è
 1. **Metodi pubblici (2/2):** <descrizione>
 2. **Coerenza (3/4):** <descrizione>
-3. **Completezza (1/4):** <descrizione>
-restituisce ESCLUSIVAMENTE il numero "5.5", senza virgolette. Il numero lo ottieni sommando i voti di ciascun report (1+2+2=5 e 2+3+1=6) e poi facendo la media dei due punteggi ((5+6)/2 = 5.5).
+3. **Completezza (4/4):** <descrizione>
+si ha A=1, B=3, C=2 → S1=6; D=2, E=3, F=4 → S2=9; risultato = (6+9)/2 = 7.5.
+Devi quindi restituire "7.5".
 
-Analogamente, se il primo report è
-1. **Panoramica (4/5)** <descrizione>
-2. **Completezza (0/3)** <descrizione>
-3. **Linguaggio (1/2)** <descrizione>
-e il secondo report è
-1. **Errore (0/10):** <descrizione>
-allora restituisci ESCLUSIVAMENTE il numero "2.5", senza virgolette. Il numero lo ottieni sommando i voti di ciascun report (4+0+1=5 e 0=0) e poi facendo la media dei due punteggi ((5+0)/2 = 2.5).
-Non aggiungere testo, spiegazioni, procedimenti o simboli. Solo il numero.`;
+Se invece il secondo report contiene esclusivamente la voce **Errore (0/10):**, si ha S2=0 e il risultato è S1/2.
+Questi esempi illustrano la procedura: i valori concreti che riceverai saranno diversi e devi sempre ricalcolare da zero.`;
