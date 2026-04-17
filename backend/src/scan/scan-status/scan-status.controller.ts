@@ -29,7 +29,7 @@ import { ScanStatus } from './enums/scan-status.enum';
 import { ScanAuthGuard } from '../scan-auth/scan-auth.guard';
 import { JwtAuthGuard } from '../../auth/jwt-auth.guard';
 
-@ApiTags('scan')
+@ApiTags('ScanStatus')
 @Controller('/scan/:scanId/status')
 export class ScanStatusController {
   constructor(
