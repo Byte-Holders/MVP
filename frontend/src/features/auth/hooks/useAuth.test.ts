@@ -1,26 +1,20 @@
 import { renderHook, waitFor, act } from '@testing-library/react'
 import { useAuth } from './useAuth'
 import { describe, it, expect, vi, beforeEach } from 'vitest'
+import type { IAuthApi } from '../interfaces/model/IAuthApi'
 
-// Mocka il model layer — nessuna chiamata reale ad Amplify
-vi.mock('../model/authApi', () => ({
+const mockApi: IAuthApi = {
   fetchCurrentUser: vi.fn(),
   fetchSession: vi.fn(),
   signIn: vi.fn(),
   logOut: vi.fn(),
-}))
+  removeCurrentUser: vi.fn(),
+}
 
-import {
-  fetchCurrentUser,
-  fetchSession,
-  signIn,
-  logOut,
-} from '../model/authApi'
-
-const mockFetchCurrentUser = fetchCurrentUser as ReturnType<typeof vi.fn>
-const mockFetchSession = fetchSession as ReturnType<typeof vi.fn>
-const mockSignIn = signIn as ReturnType<typeof vi.fn>
-const mockLogOut = logOut as ReturnType<typeof vi.fn>
+const mockFetchCurrentUser = mockApi.fetchCurrentUser as ReturnType<typeof vi.fn>
+const mockFetchSession = mockApi.fetchSession as ReturnType<typeof vi.fn>
+const mockSignIn = mockApi.signIn as ReturnType<typeof vi.fn>
+const mockLogOut = mockApi.logOut as ReturnType<typeof vi.fn>
 
 describe('useAuth', () => {
   beforeEach(() => {
@@ -34,7 +28,7 @@ describe('useAuth', () => {
     // checkAuth non risolve ancora — blocca la promise
     mockFetchCurrentUser.mockImplementation(() => new Promise(() => {}))
 
-    const { result } = renderHook(() => useAuth())
+    const { result } = renderHook(() => useAuth(mockApi))
 
     expect(result.current.isLoading).toBe(true)
     expect(result.current.isAuthenticated).toBe(false)
@@ -49,7 +43,7 @@ describe('useAuth', () => {
       tokens: { idToken: 'id-token-xyz' },
     })
 
-    const { result } = renderHook(() => useAuth())
+    const { result } = renderHook(() => useAuth(mockApi))
 
     await waitFor(() => expect(result.current.isLoading).toBe(false))
 
@@ -62,7 +56,7 @@ describe('useAuth', () => {
     // Sessione senza tokens — utente non autenticato
     mockFetchSession.mockResolvedValue({ tokens: undefined })
 
-    const { result } = renderHook(() => useAuth())
+    const { result } = renderHook(() => useAuth(mockApi))
 
     await waitFor(() => expect(result.current.isLoading).toBe(false))
 
@@ -75,7 +69,7 @@ describe('useAuth', () => {
     // Utente non loggato — Amplify lancia un errore
     mockFetchCurrentUser.mockRejectedValue(new Error('No current user'))
 
-    const { result } = renderHook(() => useAuth())
+    const { result } = renderHook(() => useAuth(mockApi))
 
     await waitFor(() => expect(result.current.isLoading).toBe(false))
 
@@ -86,7 +80,7 @@ describe('useAuth', () => {
   it('imposta isLoading false anche in caso di errore', async () => {
     mockFetchCurrentUser.mockRejectedValue(new Error('Network error'))
 
-    const { result } = renderHook(() => useAuth())
+    const { result } = renderHook(() => useAuth(mockApi))
 
     await waitFor(() => expect(result.current.isLoading).toBe(false))
 
@@ -101,7 +95,7 @@ describe('useAuth', () => {
     mockFetchSession.mockResolvedValue({ tokens: { idToken: 'token' } })
     mockSignIn.mockResolvedValue(undefined)
 
-    const { result } = renderHook(() => useAuth())
+    const { result } = renderHook(() => useAuth(mockApi))
     await waitFor(() => expect(result.current.isLoading).toBe(false))
 
     await act(async () => {
@@ -116,7 +110,7 @@ describe('useAuth', () => {
     mockFetchSession.mockResolvedValue({ tokens: { idToken: 'token' } })
     mockSignIn.mockResolvedValue(undefined)
 
-    const { result } = renderHook(() => useAuth())
+    const { result } = renderHook(() => useAuth(mockApi))
     await waitFor(() => expect(result.current.isLoading).toBe(false))
 
     await act(async () => {
@@ -133,7 +127,7 @@ describe('useAuth', () => {
     mockFetchSession.mockResolvedValue({ tokens: { idToken: 'token' } })
     mockLogOut.mockResolvedValue(undefined)
 
-    const { result } = renderHook(() => useAuth())
+    const { result } = renderHook(() => useAuth(mockApi))
     await waitFor(() => expect(result.current.isLoading).toBe(false))
 
     await act(async () => {
@@ -148,7 +142,7 @@ describe('useAuth', () => {
     mockFetchSession.mockResolvedValue({ tokens: { idToken: 'token' } })
     mockLogOut.mockResolvedValue(undefined)
 
-    const { result } = renderHook(() => useAuth())
+    const { result } = renderHook(() => useAuth(mockApi))
     await waitFor(() => expect(result.current.isAuthenticated).toBe(true))
 
     await act(async () => {

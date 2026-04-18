@@ -1,7 +1,7 @@
 import { Link } from '@tanstack/react-router'
 import ThemeToggle from './ThemeToggle'
 
-import { useAuthContext } from '../features/auth/AuthContext'
+import { useAuthContext } from '../features/auth/hooks/useAuthContext'
 import { NewWorkspaceDialog } from '@/features/createWorkspace/components/NewWorkspaceDialog'
 
 export default function Header() {

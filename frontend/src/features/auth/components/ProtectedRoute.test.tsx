@@ -3,7 +3,7 @@ import { ProtectedRoute } from './ProtectedRoute'
 import { describe, it, expect, vi } from 'vitest'
 
 // Mocka useAuthContext per controllare lo stato auth nei test
-vi.mock('../AuthContext', () => ({
+vi.mock('../hooks/useAuthContext', () => ({
   useAuthContext: vi.fn(),
 }))
 
@@ -15,7 +15,7 @@ vi.mock('@tanstack/react-router', () => ({
   }),
 }))
 
-import { useAuthContext } from '../AuthContext'
+import { useAuthContext } from '../hooks/useAuthContext'
 const mockUseAuthContext = useAuthContext as ReturnType<typeof vi.fn>
 
 describe('ProtectedRoute', () => {
