@@ -5,7 +5,9 @@ import type { IAuthApi } from '../interfaces/model/IAuthApi'
 import type { ICallbackPageViewModel } from '../interfaces/viewModel/IUseCallbackPage'
 import { useRegister } from './useRegister'
 
-export function useCallbackPage(api: IAuthApi = authApi): ICallbackPageViewModel {
+export function useCallbackPage(
+  api: IAuthApi = authApi,
+): ICallbackPageViewModel {
   const navigate = useNavigate()
   const { register } = useRegister()
 

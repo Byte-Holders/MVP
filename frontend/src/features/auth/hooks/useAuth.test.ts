@@ -11,7 +11,9 @@ const mockApi: IAuthApi = {
   removeCurrentUser: vi.fn(),
 }
 
-const mockFetchCurrentUser = mockApi.fetchCurrentUser as ReturnType<typeof vi.fn>
+const mockFetchCurrentUser = mockApi.fetchCurrentUser as ReturnType<
+  typeof vi.fn
+>
 const mockFetchSession = mockApi.fetchSession as ReturnType<typeof vi.fn>
 const mockSignIn = mockApi.signIn as ReturnType<typeof vi.fn>
 const mockLogOut = mockApi.logOut as ReturnType<typeof vi.fn>
