@@ -8,8 +8,12 @@ vi.mock('@tanstack/react-query', () => ({
   useQueryClient: vi.fn(() => ({ invalidateQueries: vi.fn() })),
 }))
 
-vi.mock('../model/getInvitesData', () => ({ getInvitesRepository: { getInvites: vi.fn() } }))
-vi.mock('../model/manageInviteData', () => ({ manageInviteRepository: { manageInvite: vi.fn() } }))
+vi.mock('../model/getInvitesData', () => ({
+  getInvitesRepository: { getInvites: vi.fn() },
+}))
+vi.mock('../model/manageInviteData', () => ({
+  manageInviteRepository: { manageInvite: vi.fn() },
+}))
 
 import { useQuery, useMutation } from '@tanstack/react-query'
 
