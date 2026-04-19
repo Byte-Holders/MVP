@@ -2,11 +2,16 @@ import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { renderHook, act } from '@testing-library/react'
 import { useInvitePage } from './useInvitePage'
 
-vi.mock('./useGetInvites', () => ({ useGetInvites: vi.fn() }))
-vi.mock('./useManageInvite', () => ({ useManageInvite: vi.fn() }))
+vi.mock('@tanstack/react-query', () => ({
+  useQuery: vi.fn(),
+  useMutation: vi.fn(),
+  useQueryClient: vi.fn(() => ({ invalidateQueries: vi.fn() })),
+}))
 
-import { useGetInvites } from './useGetInvites'
-import { useManageInvite } from './useManageInvite'
+vi.mock('../model/getInvitesData', () => ({ getInvitesRepository: { getInvites: vi.fn() } }))
+vi.mock('../model/manageInviteData', () => ({ manageInviteRepository: { manageInvite: vi.fn() } }))
+
+import { useQuery, useMutation } from '@tanstack/react-query'
 
 const invite = {
   _id: 'inv-1',
@@ -22,11 +27,11 @@ describe('useInvitePage', () => {
 
   beforeEach(() => {
     vi.clearAllMocks()
-    vi.mocked(useGetInvites).mockReturnValue({
+    vi.mocked(useQuery).mockReturnValue({
       data: [invite],
       isLoading: false,
     } as any)
-    vi.mocked(useManageInvite).mockReturnValue({
+    vi.mocked(useMutation).mockReturnValue({
       mutate: mockMutate,
       isPending: false,
     } as any)
@@ -51,7 +56,7 @@ describe('useInvitePage', () => {
   })
 
   it('restituisce array vuoto se data è undefined', () => {
-    vi.mocked(useGetInvites).mockReturnValue({
+    vi.mocked(useQuery).mockReturnValue({
       data: undefined,
       isLoading: true,
     } as any)
