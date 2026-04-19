@@ -1,8 +1,10 @@
+import { ProtectedRoute } from '@/features/auth/components/ProtectedRoute'
 import { WorkspaceList } from '@/features/workspaceList/components/WorkspaceList'
 
 export function WorkspacesPage() {
   // pagina principale che mostra la lista dei workspace dell'utente
   return (
+    <ProtectedRoute>
     <main className="page-wrap px-4 pb-8 pt-14 min-h-[calc(100vh-120px)]">
       <section className="island-shell rise-in relative overflow-hidden rounded-[2rem] px-6 py-10 sm:px-10 sm:py-14">
         <div className="pointer-events-none absolute -left-20 -top-24 h-56 w-56 rounded-full bg-[radial-gradient(circle,rgba(124,92,231,0.28),transparent_66%)]" />
@@ -17,5 +19,6 @@ export function WorkspacesPage() {
       </section>
       <WorkspaceList />
     </main>
+    </ProtectedRoute>
   )
 }

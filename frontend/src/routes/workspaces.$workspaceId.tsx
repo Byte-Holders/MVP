@@ -1,15 +1,9 @@
-import { createFileRoute, Outlet } from '@tanstack/react-router'
-import { WorkspaceHeader } from '@/features/workspaceList/components/WorkspaceHeader'
+import { createFileRoute } from '@tanstack/react-router'
+import { WorkspacePage } from '@/features/workspaceList/pages/WorkspacePage'
 
 export const Route = createFileRoute('/workspaces/$workspaceId')({
   component: function WorkspaceLayout() {
     const { workspaceId } = Route.useParams()
-
-    return (
-      <div className="flex flex-col min-h-[calc(100vh-72px)]">
-        <WorkspaceHeader workspaceId={workspaceId} />
-        <Outlet />
-      </div>
-    )
+    return <WorkspacePage workspaceId={workspaceId} />
   },
 })
