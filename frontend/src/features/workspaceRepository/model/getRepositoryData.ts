@@ -8,4 +8,5 @@ class GetRepositoryRepository implements IGetRepositoryRepository {
   }
 }
 
-export const getRepositoryRepository: IGetRepositoryRepository = new GetRepositoryRepository()
+export const getRepositoryRepository: IGetRepositoryRepository =
+  new GetRepositoryRepository()
