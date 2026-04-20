@@ -6,6 +6,7 @@ import {
   deleteUser,
 } from 'aws-amplify/auth'
 import { cognitoConfig } from '../../../lib/amplify'
+import type { IAuthApi } from '../interfaces/model/IAuthApi'
 
 export async function fetchCurrentUser() {
   return amplifyGetCurrentUser()
@@ -28,4 +29,12 @@ export async function logOut() {
 
 export async function removeCurrentUser(): Promise<void> {
   await deleteUser()
+}
+
+export const authApi: IAuthApi = {
+  fetchCurrentUser,
+  fetchSession,
+  signIn,
+  logOut,
+  removeCurrentUser,
 }

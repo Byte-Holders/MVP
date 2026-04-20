@@ -1,7 +1,7 @@
 import { Link } from '@tanstack/react-router'
 import ThemeToggle from './ThemeToggle'
 
-import { useAuthContext } from '../features/auth/AuthContext'
+import { useAuthContext } from '../features/auth/hooks/useAuthContext'
 import { NewWorkspaceDialog } from '@/features/createWorkspace/components/NewWorkspaceDialog'
 
 export default function Header() {
@@ -32,7 +32,7 @@ export default function Header() {
         <div className="flex-1 flex justify-center items-center">
           <Link to="/">
             <img
-              src="/logo_codeguardian.png"
+              src="/logo_codeguardian1.png"
               alt="Logo"
               className="h-12 w-auto cursor-pointer"
             />

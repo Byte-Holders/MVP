@@ -18,6 +18,14 @@ import type { RequestUser } from '../../auth/types/requestUser.type';
 import { WorkspaceMapper } from './WorkspaceMapper';
 import { Inject } from '@nestjs/common';
 import { WorkspaceResponseDto } from './dtos/WorkspaceResponseDto';
+import {
+  ApiTags,
+  ApiBearerAuth,
+  ApiOperation,
+  ApiParam,
+  ApiResponse,
+  ApiBody,
+} from '@nestjs/swagger';
 
 @Controller('workspaces')
 @UseGuards(JwtAuthGuard) // protegge tutti gli endpoint del controller
@@ -27,6 +35,31 @@ export class WorkspaceManagerController {
     private readonly service: IWorkspaceManagerService,
   ) {}
 
+  @ApiOperation({
+    summary: 'Crea un nuovo workspace',
+    description:
+      "Crea un workspace intestato all'utente autenticato. " +
+      'Il nome deve essere unico per lo stesso utente.',
+  })
+  @ApiBody({ type: CreateWorkspaceDto })
+  @ApiResponse({
+    status: 201,
+    description: 'Workspace creato con successo.',
+    type: CreateWorkspaceResponseDto,
+  })
+  @ApiResponse({
+    status: 409,
+    description:
+      "Esiste già un workspace con questo nome per l'utente corrente.",
+    schema: {
+      example: {
+        statusCode: 409,
+        message: 'Hai già un workspace chiamato "my-project"',
+        error: 'Conflict',
+      },
+    },
+  })
+  @ApiResponse({ status: 401, description: 'Token JWT mancante o non valido.' })
   @Post()
   async create(
     @Body() dto: CreateWorkspaceDto,
@@ -43,6 +76,24 @@ export class WorkspaceManagerController {
     return WorkspaceMapper.toCreateResponseDto(result);
   }
 
+  @ApiOperation({
+    summary: 'Elimina un workspace',
+    description: 'Solo il proprietario del workspace può eliminarlo.',
+  })
+  @ApiParam({
+    name: 'id',
+    description: 'ID MongoDB del workspace da eliminare',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Workspace eliminato con successo.',
+  })
+  @ApiResponse({
+    status: 403,
+    description: 'Solo il proprietario può eliminare il workspace.',
+  })
+  @ApiResponse({ status: 404, description: 'Workspace non trovato.' })
+  @ApiResponse({ status: 401, description: 'Token JWT mancante o non valido.' })
   @Delete(':id')
   async delete(
     @Param('id') workspaceId: string,
@@ -52,6 +103,17 @@ export class WorkspaceManagerController {
     await this.service.deleteWorkspace(workspaceId, user.userId);
   }
 
+  @ApiOperation({
+    summary: "Lista workspace dell'utente",
+    description:
+      "Restituisce tutti i workspace di cui l'utente autenticato è membro.",
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Lista workspace recuperata con successo.',
+    type: [WorkspaceResponseDto],
+  })
+  @ApiResponse({ status: 401, description: 'Token JWT mancante o non valido.' })
   @Get()
   async list(@User() user: RequestUser): Promise<WorkspaceResponseDto[]> {
     const bos = await this.service.getWorkspaces(user.userId);
