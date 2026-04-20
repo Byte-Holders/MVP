@@ -49,12 +49,12 @@ export class WorkspaceUserController {
   async removeUserFromWorkspace(
     @Param('workspaceId') workspaceId: string,
     @Param('userId') userId: string,
-    @User() user: RequestUser
+    @User() user: RequestUser,
   ) {
     await this.workspaceUserService.removeUserFromWorkspace(
       workspaceId,
       userId,
-      user.userId
+      user.userId,
     );
   }
 }

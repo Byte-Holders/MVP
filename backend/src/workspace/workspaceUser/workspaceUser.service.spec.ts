@@ -63,7 +63,7 @@ describe('WorkspaceUserService', () => {
   });
 
   describe('removeUserFromWorkspace', () => {
-    it("dovrebbe lanciare PreconditionFailedException se chi tenta di rimuovere non è project manager", async () => {
+    it('dovrebbe lanciare PreconditionFailedException se chi tenta di rimuovere non è project manager', async () => {
       const workspaceId = 'workspace-123';
       const userId = 'user-1';
       const removerOfUserId = 'user-remover';
@@ -93,7 +93,11 @@ describe('WorkspaceUserService', () => {
         true,
       );
 
-      await service.removeUserFromWorkspace(workspaceId, userId, removerOfUserId);
+      await service.removeUserFromWorkspace(
+        workspaceId,
+        userId,
+        removerOfUserId,
+      );
 
       expect(
         mockWorkspaceUserRepository.checkIfUserIsInWorkspace,

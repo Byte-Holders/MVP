@@ -32,9 +32,20 @@ export class WorkspaceUserService
     return await this.workspaceUserRepository.getUsersOfWorkspace(workspaceId);
   }
 
-  async removeUserFromWorkspace(workspaceId: string, userId: string, removerOfUserId: string) {
-    if(await this.workspaceUserRepository.getUserRoleForRepository(workspaceId, removerOfUserId) != WorkspaceRole.PROJECT_MANAGER){
-      throw new PreconditionFailedException("L'utente per poter rimuovere deve essere project manager del workspace");
+  async removeUserFromWorkspace(
+    workspaceId: string,
+    userId: string,
+    removerOfUserId: string,
+  ) {
+    if (
+      (await this.workspaceUserRepository.getUserRoleForRepository(
+        workspaceId,
+        removerOfUserId,
+      )) != WorkspaceRole.PROJECT_MANAGER
+    ) {
+      throw new PreconditionFailedException(
+        "L'utente per poter rimuovere deve essere project manager del workspace",
+      );
     }
     if (
       !(await this.workspaceUserRepository.checkIfUserIsInWorkspace(

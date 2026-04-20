@@ -65,7 +65,11 @@ describe('WorkspaceUserController', () => {
     it("dovrebbe chiamare il service per rimuovere l'utente", async () => {
       const workspaceId = 'workspace-123';
       const userId = 'user-1';
-      const user = { userId: 'user-remover', username: 'remover', sub: "sub123" };
+      const user = {
+        userId: 'user-remover',
+        username: 'remover',
+        sub: 'sub123',
+      };
 
       mockWorkspaceUserService.removeUserFromWorkspace.mockResolvedValueOnce(
         undefined,
