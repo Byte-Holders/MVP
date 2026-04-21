@@ -17,35 +17,35 @@ export class RemediationNodeService implements INodeScanService {
   constructor(private readonly helper: RemediationNodeHelper) {}
 
   async scan({
-               vulnerabilitiesReport,
-               vulnerabilitiesReportPath,
-             }: {
+    vulnerabilitiesReport,
+    vulnerabilitiesReportPath,
+  }: {
     vulnerabilitiesReport: VulnerabilitiesReport | null | undefined;
     vulnerabilitiesReportPath?: string;
   }): Promise<Partial<WorkflowState>> {
     if (
-        !vulnerabilitiesReportPath ||
-        vulnerabilitiesReport?.vulnerabilities.length == 0
+      !vulnerabilitiesReportPath ||
+      vulnerabilitiesReport?.vulnerabilities.length == 0
     ) {
       this.logger.warn('Non è stato generato un report da semgrep');
       return {};
     }
 
     this.logger.log(
-        `Generazione remediation per ${vulnerabilitiesReport?.vulnerabilities?.length} vulnerabilità`,
+      `Generazione remediation per ${vulnerabilitiesReport?.vulnerabilities?.length} vulnerabilità`,
     );
 
     try {
       await access(vulnerabilitiesReportPath);
     } catch (e: unknown) {
       this.logger.error(
-          `Errore accesso a report di semgrep: ${(e as Error).message}`,
+        `Errore accesso a report di semgrep: ${(e as Error).message}`,
       );
       return {};
     }
 
     const rawJson = JSON.parse(
-        await readFile(vulnerabilitiesReportPath, 'utf-8'),
+      await readFile(vulnerabilitiesReportPath, 'utf-8'),
     ) as {
       results?: { path: string }[];
     };
@@ -66,32 +66,32 @@ export class RemediationNodeService implements INodeScanService {
     ];
 
     const vulnerabilityMap = this.helper.groupResultsByFile(
-        rawJson.results as { path: string; check_id: string }[],
+      rawJson.results as { path: string; check_id: string }[],
     );
 
     await Promise.all(
-        [...vulnerabilityMap.entries()].map(async ([filePath, results]) => {
-          const fileContent = await this.helper.readFileContent(filePath);
-          if (!fileContent) return;
-          try {
-            const remediations = await this.helper.generateRemediations(
-                filePath,
-                results,
-                fileContent,
-                model,
-            );
-            this.helper.applyRemediations(vulnerabilities, remediations);
+      [...vulnerabilityMap.entries()].map(async ([filePath, results]) => {
+        const fileContent = await this.helper.readFileContent(filePath);
+        if (!fileContent) return;
+        try {
+          const remediations = await this.helper.generateRemediations(
+            filePath,
+            results,
+            fileContent,
+            model,
+          );
+          this.helper.applyRemediations(vulnerabilities, remediations);
 
-            this.logger.log(
-                `Risolte ${remediations.length} vulnerabilità in ${filePath}`,
-            );
-          } catch (error) {
-            this.logger.error(
-                `Errore risoluzione vulnerabilità in ${filePath}`,
-                error,
-            );
-          }
-        }),
+          this.logger.log(
+            `Risolte ${remediations.length} vulnerabilità in ${filePath}`,
+          );
+        } catch (error) {
+          this.logger.error(
+            `Errore risoluzione vulnerabilità in ${filePath}`,
+            error,
+          );
+        }
+      }),
     );
 
     return {

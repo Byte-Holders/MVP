@@ -54,14 +54,14 @@ export class RemediationNodeHelper {
   }
 
   async generateRemediations(
-      filePath: string,
-      results: SemgrepResult[],
-      fileContent: string,
-      model: ChatBedrockConverse,
+    filePath: string,
+    results: SemgrepResult[],
+    fileContent: string,
+    model: ChatBedrockConverse,
   ): Promise<RemediationEntry[]> {
     const response = await model.invoke([
       new SystemMessage(
-          `Sei un esperto di sicurezza del software. Analizza le vulnerabilità Semgrep fornite e restituisci un JSON array di oggetti, uno per ogni vulnerabilità:
+        `Sei un esperto di sicurezza del software. Analizza le vulnerabilità Semgrep fornite e restituisci un JSON array di oggetti, uno per ogni vulnerabilità:
           [{ "id": "<check_id>", "remediation": "<descrizione>" }]
           Il campo <descrizione> deve essere di tipo STRING e markdown VALIDO e strutturato come segue:\n\n
           - **Esempio:** esempio che può portare alla vulnerabilità rilevata. Dedica massimo 300 caratteri per questo punto.\n\n
@@ -78,20 +78,20 @@ export class RemediationNodeHelper {
           `,
       ),
       new HumanMessage(
-          `Vulnerabilità trovate in ${filePath}:\n${JSON.stringify(results, null, 2)}\n\nContenuto del file:\n${fileContent}`,
+        `Vulnerabilità trovate in ${filePath}:\n${JSON.stringify(results, null, 2)}\n\nContenuto del file:\n${fileContent}`,
       ),
     ]);
 
     const content = (response.content as string)
-        .replace(/```json|```/g, '')
-        .trim();
+      .replace(/```json|```/g, '')
+      .trim();
 
     return JSON.parse(content) as RemediationEntry[];
   }
 
   applyRemediations(
-      vulnerabilities: VulnerabilityUnit[],
-      remediations: RemediationEntry[],
+    vulnerabilities: VulnerabilityUnit[],
+    remediations: RemediationEntry[],
   ): void {
     for (const fix of remediations) {
       const unit = vulnerabilities.find((u) => u.id === fix.id);
