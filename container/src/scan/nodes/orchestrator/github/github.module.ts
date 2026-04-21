@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import { LinguistAdapter } from './linguist-adapter';
+import { GithubNodeHelper } from './github-node.helper';
 import {
   GITHUB_NODE_SERVICE_TOKEN,
   GithubNodeService,
@@ -8,7 +8,7 @@ import {
 @Module({
   providers: [
     { provide: GITHUB_NODE_SERVICE_TOKEN, useClass: GithubNodeService },
-    LinguistAdapter,
+    GithubNodeHelper,
   ],
   exports: [GITHUB_NODE_SERVICE_TOKEN],
 })

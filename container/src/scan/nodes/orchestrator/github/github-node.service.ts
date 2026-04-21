@@ -1,22 +1,24 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { WorkflowState } from '../workflow-state.type';
-import { LinguistAdapter, LanguageBreakdown } from './linguist-adapter';
+import { GithubNodeHelper, LanguageBreakdown } from './github-node.helper';
 import { Language } from './language.type';
 import { INodeScanService } from '../inode-scan-service.interface';
 
 export const GITHUB_NODE_SERVICE_TOKEN = 'GithubNodeService';
 
+type GithubNodeResult = { languages: Language[] };
+
 @Injectable()
 export class GithubNodeService implements INodeScanService {
   private readonly logger = new Logger(GithubNodeService.name);
 
-  constructor(private readonly linguist: LinguistAdapter) {}
+  constructor(private readonly linguist: GithubNodeHelper) {}
 
   async scan({
     repoPath,
   }: {
     repoPath: string;
-  }): Promise<Partial<WorkflowState>> {
+  }): Promise<GithubNodeResult> {
     this.logger.debug(`Ottenimento linguaggi`);
     let languages: Language[] = [];
 

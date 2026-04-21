@@ -164,6 +164,26 @@ describe('SecurityNodeHelper', () => {
       expect(units.length).toBe(0);
     });
 
+    it('should wrap a scalar owasp string into an array', async () => {
+      const mockSemgrepOutput = {
+        results: [
+          {
+            check_id: 'vuln-owasp',
+            extra: {
+              metadata: {
+                owasp: 'A03:2021',
+              },
+            },
+          },
+        ],
+      };
+
+      mockedReadFile.mockResolvedValueOnce(JSON.stringify(mockSemgrepOutput));
+
+      const units = await helper.parseResults('/path.json');
+      expect(units[0].owasp).toEqual(['A03:2021']);
+    });
+
     it('should pass handling an array of cwe and extract the first element', async () => {
       const mockSemgrepOutput = {
         results: [

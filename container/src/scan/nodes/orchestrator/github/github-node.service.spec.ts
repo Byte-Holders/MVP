@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/unbound-method */
 import { Test } from '@nestjs/testing';
 import { GithubNodeService } from './github-node.service';
-import { LinguistAdapter, LanguageBreakdown } from './linguist-adapter';
+import { GithubNodeHelper, LanguageBreakdown } from './github-node.helper';
 
 const mockLanguageBreakdown = (): LanguageBreakdown => ({
   TypeScript: 70,
@@ -13,7 +13,7 @@ const DEFAULT_TARGET = { repoPath: 'myRepoPath' };
 
 describe('GithubNodeService', () => {
   let githubNodeService: GithubNodeService;
-  let linguist: jest.Mocked<LinguistAdapter>;
+  let linguist: jest.Mocked<GithubNodeHelper>;
 
   beforeEach(async () => {
     linguist = { getLanguages: jest.fn() };
@@ -21,7 +21,7 @@ describe('GithubNodeService', () => {
     const app = await Test.createTestingModule({
       providers: [
         GithubNodeService,
-        { provide: LinguistAdapter, useValue: linguist },
+        { provide: GithubNodeHelper, useValue: linguist },
       ],
     }).compile();
 

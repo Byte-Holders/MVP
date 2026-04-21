@@ -4,11 +4,14 @@ import * as fs from 'fs';
 import { Injectable } from '@nestjs/common';
 import { CliCommand, executeCli } from '../../../exec.cli';
 
+type CoverageToolResult = {
+  stdout: string;
+  resultsPath: string;
+};
+
 @Injectable()
 export class CoverageNodeHelper {
-  async runCoverageTool(
-    targetPath: string,
-  ): Promise<{ stdout: string; resultsPath: string }> {
+  async runCoverageTool(targetPath: string): Promise<CoverageToolResult> {
     const resultsPath = path.join(
       os.tmpdir(),
       `jest-results-${Date.now()}.json`,
@@ -40,7 +43,7 @@ export class CoverageNodeHelper {
     return `(npx jest --no-colors --coverage --coverageReporters="text-summary" --json --outputFile="${resultsPath}" 2>&1; true)`;
   }
 
-  checkFileExists(filePath: string) {
+  checkFileExists(filePath: string): boolean {
     return fs.existsSync(filePath);
   }
 

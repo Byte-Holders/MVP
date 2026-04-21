@@ -8,6 +8,8 @@ import { INodeScanService } from '../inode-scan-service.interface';
 
 export const COVERAGE_NODE_SERVICE_TOKEN = 'CoverageNodeService';
 
+type CoverageNodeResult = { testReport: TestReport };
+
 @Injectable()
 export class CoverageNodeService implements INodeScanService {
   private readonly logger = new Logger(CoverageNodeService.name);
@@ -18,7 +20,7 @@ export class CoverageNodeService implements INodeScanService {
     repoPath,
   }: {
     repoPath: string;
-  }): Promise<Partial<WorkflowState>> {
+  }): Promise<CoverageNodeResult> {
     this.logger.log(`Inizio analisi coverage (percorso: ${repoPath})`);
 
     let testReport: TestReport = {

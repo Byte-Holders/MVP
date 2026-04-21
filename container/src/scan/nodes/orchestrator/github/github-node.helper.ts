@@ -3,7 +3,7 @@ import { Injectable } from '@nestjs/common';
 export type LanguageBreakdown = Record<string, number>;
 
 @Injectable()
-export class LinguistAdapter {
+export class GithubNodeHelper {
   async getLanguages(repoPath: string): Promise<LanguageBreakdown> {
     const linguist = await import('linguist-js');
     const { languages } = await linguist.default(repoPath);

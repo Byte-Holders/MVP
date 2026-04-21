@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { GithubModule } from './github.module';
-import { LinguistAdapter } from './linguist-adapter';
+import { GithubNodeHelper } from './github-node.helper';
 import {
   GITHUB_NODE_SERVICE_TOKEN,
   GithubNodeService,
@@ -26,8 +26,8 @@ describe('GithubModule', () => {
   });
 
   it('should pass resolving LinguistAdapter', () => {
-    const adapter = module.get<LinguistAdapter>(LinguistAdapter);
+    const adapter = module.get<GithubNodeHelper>(GithubNodeHelper);
     expect(adapter).toBeDefined();
-    expect(adapter).toBeInstanceOf(LinguistAdapter);
+    expect(adapter).toBeInstanceOf(GithubNodeHelper);
   });
 });

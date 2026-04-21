@@ -23,7 +23,7 @@ type SemgrepResult = {
 type SemgrepMetadata = {
   category: string;
   cwe: string | string[];
-  owasp: string[];
+  owasp: string | string[];
   impact?: string;
 };
 
@@ -94,9 +94,12 @@ export class SecurityNodeHelper {
       category: r.extra?.metadata?.category ?? '',
       cwe:
         typeof r.extra?.metadata?.cwe === 'string'
-          ? r.extra?.metadata?.cwe
-          : r.extra?.metadata?.cwe[0],
-      owasp: r.extra?.metadata?.owasp ?? [],
+          ? r.extra.metadata.cwe
+          : (r.extra?.metadata?.cwe?.[0] ?? ''),
+      owasp:
+        typeof r.extra?.metadata?.owasp === 'string'
+          ? [r.extra.metadata.owasp]
+          : (r.extra?.metadata?.owasp ?? []),
     }));
   }
 
@@ -120,7 +123,7 @@ export class SecurityNodeHelper {
     try {
       const response = await model.invoke([
         new SystemMessage(
-          `Sei un esperto di sicurezza. Traduci in italiano le descrizioni delle vulnerabilità fornite nel JSON. 
+          `Sei un esperto di sicurezza. Traduci in italiano le descrizioni delle vulnerabilità fornite nel JSON.
            Mantieni le chiavi numeriche originali. Rispondi SOLO con il JSON del dizionario tradotto, senza markdown.`,
         ),
         new HumanMessage(JSON.stringify(descriptionsMap)),
