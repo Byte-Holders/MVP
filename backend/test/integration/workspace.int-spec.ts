@@ -22,7 +22,7 @@ describe('Workspace Integration Tests', () => {
 
     if (!mongoUri) {
       throw new Error(
-          "La variabile d'ambiente MONGO_URI deve essere impostata per i test di integrazione.",
+        "La variabile d'ambiente MONGO_URI deve essere impostata per i test di integrazione.",
       );
     }
 
