@@ -63,16 +63,41 @@ describe('WorkspaceUserService', () => {
   });
 
   describe('removeUserFromWorkspace', () => {
+    it('dovrebbe lanciare PreconditionFailedException se chi tenta di rimuovere non è project manager', async () => {
+      const workspaceId = 'workspace-123';
+      const userId = 'user-1';
+      const removerOfUserId = 'user-remover';
+
+      // Simuliamo che l'utente che tenta di rimuovere non sia un project manager
+      mockWorkspaceUserRepository.getUserRoleForRepository.mockResolvedValueOnce(
+        WorkspaceRole.DEVELOPER,
+      );
+
+      await expect(
+        service.removeUserFromWorkspace(workspaceId, userId, removerOfUserId),
+      ).rejects.toThrow(PreconditionFailedException);
+    });
+
     it('dovrebbe rimuovere un utente se è presente nel workspace', async () => {
       const workspaceId = 'workspace-123';
       const userId = 'user-1';
+      const removerOfUserId = 'user-remover';
+
+      // Simuliamo che l'utente che tenta di rimuovere sia un project manager
+      mockWorkspaceUserRepository.getUserRoleForRepository.mockResolvedValueOnce(
+        WorkspaceRole.PROJECT_MANAGER,
+      );
 
       // Simuliamo che l'utente esista nel workspace
       mockWorkspaceUserRepository.checkIfUserIsInWorkspace.mockResolvedValueOnce(
         true,
       );
 
-      await service.removeUserFromWorkspace(workspaceId, userId);
+      await service.removeUserFromWorkspace(
+        workspaceId,
+        userId,
+        removerOfUserId,
+      );
 
       expect(
         mockWorkspaceUserRepository.checkIfUserIsInWorkspace,
@@ -85,14 +110,19 @@ describe('WorkspaceUserService', () => {
     it("dovrebbe lanciare NotFoundException se l'utente NON è presente nel workspace", async () => {
       const workspaceId = 'workspace-123';
       const userId = 'user-invalid';
+      const removerOfUserId = 'user-remover';
 
+      // Simuliamo che l'utente che tenta di rimuovere sia un project manager
+      mockWorkspaceUserRepository.getUserRoleForRepository.mockResolvedValueOnce(
+        WorkspaceRole.PROJECT_MANAGER,
+      );
       // Simuliamo che l'utente NON esista nel workspace
       mockWorkspaceUserRepository.checkIfUserIsInWorkspace.mockResolvedValueOnce(
         false,
       );
 
       await expect(
-        service.removeUserFromWorkspace(workspaceId, userId),
+        service.removeUserFromWorkspace(workspaceId, userId, removerOfUserId),
       ).rejects.toThrow(NotFoundException);
 
       // Verifichiamo che il metodo di rimozione non sia mai stato chiamato

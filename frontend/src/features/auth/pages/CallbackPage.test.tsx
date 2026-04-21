@@ -6,10 +6,18 @@ vi.mock('@tanstack/react-router', () => ({
   useNavigate: vi.fn(),
 }))
 
-vi.mock('../model/authApi', () => ({
-  fetchCurrentUser: vi.fn(),
-  removeCurrentUser: vi.fn(),
-}))
+vi.mock('../model/authApi', () => {
+  const fetchCurrentUser = vi.fn()
+  const removeCurrentUser = vi.fn()
+  return {
+    fetchCurrentUser,
+    removeCurrentUser,
+    authApi: {
+      fetchCurrentUser,
+      removeCurrentUser,
+    },
+  }
+})
 
 vi.mock('../hooks/useRegister', () => ({
   useRegister: vi.fn(),

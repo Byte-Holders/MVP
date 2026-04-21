@@ -3,7 +3,7 @@ import Footer from '@/components/Footer'
 import Header from '@/components/Header'
 import { createRootRoute, Outlet } from '@tanstack/react-router'
 import { TanStackRouterDevtoolsPanel } from '@tanstack/react-router-devtools'
-import { AuthProvider } from '../features/auth/AuthContext'
+import { AuthProvider } from '../features/auth/components/AuthProvider'
 import '../lib/amplify'
 
 export const Route = createRootRoute({

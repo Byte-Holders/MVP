@@ -1,6 +1,6 @@
 import { useEffect } from 'react'
 import { useNavigate, useRouterState } from '@tanstack/react-router'
-import { useAuthContext } from '../AuthContext'
+import { useAuthContext } from '../hooks/useAuthContext'
 
 export function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const { isAuthenticated, isLoading, login } = useAuthContext()

@@ -17,11 +17,11 @@ vi.mock('@/features/createWorkspace/components/NewWorkspaceDialog', () => ({
   NewWorkspaceDialog: () => <div data-testid="new-workspace-dialog" />,
 }))
 
-vi.mock('../features/auth/AuthContext', () => ({
+vi.mock('../features/auth/hooks/useAuthContext', () => ({
   useAuthContext: vi.fn(),
 }))
 
-import { useAuthContext } from '../features/auth/AuthContext'
+import { useAuthContext } from '../features/auth/hooks/useAuthContext'
 
 const mockLogin = vi.fn()
 const mockLogout = vi.fn()

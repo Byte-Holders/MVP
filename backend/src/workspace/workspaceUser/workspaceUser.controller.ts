@@ -14,6 +14,8 @@ import {
 import { GetUsersOfWorkspaceResponseDto } from './dto/getUserOfWorkspace.responseDto';
 import { JwtAuthGuard } from '../../auth/jwt-auth.guard';
 import { ApiOperation, ApiParam, ApiResponse } from '@nestjs/swagger';
+import { User } from 'src/auth/customDecorators/user.decorator';
+import { type RequestUser } from 'src/auth/types/requestUser.type';
 
 @UseGuards(JwtAuthGuard)
 @Controller('workspaces')
@@ -47,10 +49,12 @@ export class WorkspaceUserController {
   async removeUserFromWorkspace(
     @Param('workspaceId') workspaceId: string,
     @Param('userId') userId: string,
+    @User() user: RequestUser,
   ) {
     await this.workspaceUserService.removeUserFromWorkspace(
       workspaceId,
       userId,
+      user.userId,
     );
   }
 }

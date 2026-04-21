@@ -13,6 +13,7 @@ import {
 } from './interfaces/IWorkspaceUserRepository.interface';
 import { UserOfWorkspaceInfo } from './type/userOfWorkspace.type';
 import { ICheckIfUserInWorkspace } from './interfaces/ICheckIfUserInWorkspace';
+import { WorkspaceRole } from '../roles.enum';
 
 @Injectable()
 export class WorkspaceUserService
@@ -31,7 +32,21 @@ export class WorkspaceUserService
     return await this.workspaceUserRepository.getUsersOfWorkspace(workspaceId);
   }
 
-  async removeUserFromWorkspace(workspaceId: string, userId: string) {
+  async removeUserFromWorkspace(
+    workspaceId: string,
+    userId: string,
+    removerOfUserId: string,
+  ) {
+    if (
+      (await this.workspaceUserRepository.getUserRoleForRepository(
+        workspaceId,
+        removerOfUserId,
+      )) != WorkspaceRole.PROJECT_MANAGER
+    ) {
+      throw new PreconditionFailedException(
+        "L'utente per poter rimuovere deve essere project manager del workspace",
+      );
+    }
     if (
       !(await this.workspaceUserRepository.checkIfUserIsInWorkspace(
         workspaceId,
@@ -50,7 +65,7 @@ export class WorkspaceUserService
       userId
     ) {
       throw new PreconditionFailedException(
-        "L'utente che si tenta di rimuovere è il proprietario del workspace con id",
+        "L'utente che si tenta di rimuovere è il proprietario del workspace",
       );
     }
     await this.workspaceUserRepository.removeUserFromWorkspace(

@@ -1,8 +1,6 @@
-import type { Invite, InviteAction } from '../../types/index'
+import type { InviteAction } from '../../types/index'
+import type { InviteState } from '../../types/InviteState'
 
-export interface IInvitePageViewModel {
-  invites: Invite[]
-  isLoading: boolean
-  isPending: boolean
+export interface IInvitePageViewModel extends InviteState {
   handleAction: (membershipId: string, action: InviteAction) => void
 }

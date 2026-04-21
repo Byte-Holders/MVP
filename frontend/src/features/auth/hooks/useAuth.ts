@@ -1,19 +1,10 @@
 import { useState, useEffect } from 'react'
-import {
-  fetchCurrentUser,
-  fetchSession,
-  signIn,
-  logOut,
-} from '../model/authApi'
+import { authApi } from '../model/authApi'
+import type { IAuthApi } from '../interfaces/model/IAuthApi'
 import type { IAuthViewModel } from '../interfaces/viewModel/IUseAuth'
+import type { AuthState } from '../types/IAuthState'
 
-interface AuthState {
-  isAuthenticated: boolean
-  isLoading: boolean
-  user: { username: string } | null
-}
-
-export function useAuth(): IAuthViewModel {
+export function useAuth(api: IAuthApi = authApi): IAuthViewModel {
   const [authState, setAuthState] = useState<AuthState>({
     isAuthenticated: false,
     isLoading: true,
@@ -26,8 +17,8 @@ export function useAuth(): IAuthViewModel {
 
   async function checkAuth() {
     try {
-      const user = await fetchCurrentUser()
-      const session = await fetchSession()
+      const user = await api.fetchCurrentUser()
+      const session = await api.fetchSession()
       setAuthState({
         isAuthenticated: !!session.tokens,
         isLoading: false,
@@ -39,11 +30,11 @@ export function useAuth(): IAuthViewModel {
   }
 
   async function login(redirectTo?: string) {
-    await signIn(redirectTo)
+    await api.signIn(redirectTo)
   }
 
   async function logout() {
-    await logOut()
+    await api.logOut()
   }
 
   return { ...authState, login, logout, checkAuth }
