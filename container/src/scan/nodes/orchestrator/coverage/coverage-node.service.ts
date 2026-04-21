@@ -16,11 +16,7 @@ export class CoverageNodeService implements INodeScanService {
 
   constructor(private readonly helper: CoverageNodeHelper) {}
 
-  async scan({
-    repoPath,
-  }: {
-    repoPath: string;
-  }): Promise<CoverageNodeResult> {
+  async scan({ repoPath }: { repoPath: string }): Promise<CoverageNodeResult> {
     this.logger.log(`Inizio analisi coverage (percorso: ${repoPath})`);
 
     let testReport: TestReport = {

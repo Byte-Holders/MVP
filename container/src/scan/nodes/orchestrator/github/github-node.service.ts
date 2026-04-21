@@ -14,11 +14,7 @@ export class GithubNodeService implements INodeScanService {
 
   constructor(private readonly linguist: GithubNodeHelper) {}
 
-  async scan({
-    repoPath,
-  }: {
-    repoPath: string;
-  }): Promise<GithubNodeResult> {
+  async scan({ repoPath }: { repoPath: string }): Promise<GithubNodeResult> {
     this.logger.debug(`Ottenimento linguaggi`);
     let languages: Language[] = [];
 
