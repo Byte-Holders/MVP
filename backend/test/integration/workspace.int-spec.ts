@@ -18,8 +18,13 @@ describe('Workspace Integration Tests', () => {
 
   // 1. BEFORE ALL
   beforeAll(async () => {
-    const mongoUri =
-      'mongodb://admin:mypassword123@56.228.38.104:27017/CodeGuardianTest?authSource=admin';
+    const mongoUri = process.env.MONGO_URI;
+
+    if (!mongoUri) {
+      throw new Error(
+          "La variabile d'ambiente MONGO_URI deve essere impostata per i test di integrazione.",
+      );
+    }
 
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [
