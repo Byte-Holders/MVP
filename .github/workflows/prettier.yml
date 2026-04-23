@@ -1,0 +1,69 @@
+name: autofix.ci
+
+on:
+  pull_request:
+  push:
+    branches: [main, develop]
+
+jobs:
+  prettier-backend:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 20
+          cache: "npm"
+          cache-dependency-path: backend/package-lock.json
+
+      - name: Install dependencies
+        working-directory: backend
+        run: npm ci
+
+      - name: Auto formatting
+        working-directory: backend
+        run: npx prettier --write "**/*.{ts,js,json,md,yml,yaml}" --ignore-unknown
+
+      - uses: autofix-ci/action@7a166d7532b277f34e16238930461bf77f9d7ed8
+
+  prettier-container:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 20
+          cache: "npm"
+          cache-dependency-path: container/package-lock.json
+
+      - name: Install dependencies
+        working-directory: container
+        run: npm ci
+
+      - name: Auto formatting
+        working-directory: container
+        run: npx prettier --write "**/*.{ts,js,json,md,yml,yaml}" --ignore-unknown
+
+      - uses: autofix-ci/action@7a166d7532b277f34e16238930461bf77f9d7ed8
+
+  prettier-frontend:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 20
+          cache: "npm"
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Install dependencies
+        working-directory: frontend
+        run: npm ci
+
+      - name: Auto formatting
+        working-directory: frontend
+        run: npx prettier --write "**/*.{ts,tsx,js,jsx,json,md,yml,yaml,css,scss,html}" --ignore-unknown
+
+      - uses: autofix-ci/action@7a166d7532b277f34e16238930461bf77f9d7ed8

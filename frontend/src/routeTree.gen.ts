@@ -9,9 +9,33 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as WorkspacesRouteImport } from './routes/workspaces'
+import { Route as MembershipRouteImport } from './routes/membership'
+import { Route as CallbackRouteImport } from './routes/callback'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as WorkspacesIndexRouteImport } from './routes/workspaces.index'
+import { Route as WorkspacesWorkspaceIdRouteImport } from './routes/workspaces.$workspaceId'
+import { Route as WorkspacesWorkspaceIdRepositoriesRouteImport } from './routes/workspaces.$workspaceId.repositories'
+import { Route as WorkspacesWorkspaceIdMembersRouteImport } from './routes/workspaces.$workspaceId.members'
+import { Route as WorkspacesWorkspaceIdRepositoriesIndexRouteImport } from './routes/workspaces.$workspaceId.repositories.index'
+import { Route as WorkspacesWorkspaceIdRepositoriesRepositoryIdRouteImport } from './routes/workspaces.$workspaceId.repositories.$repositoryId'
 
+const WorkspacesRoute = WorkspacesRouteImport.update({
+  id: '/workspaces',
+  path: '/workspaces',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MembershipRoute = MembershipRouteImport.update({
+  id: '/membership',
+  path: '/membership',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CallbackRoute = CallbackRouteImport.update({
+  id: '/callback',
+  path: '/callback',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AboutRoute = AboutRouteImport.update({
   id: '/about',
   path: '/about',
@@ -22,35 +46,150 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const WorkspacesIndexRoute = WorkspacesIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => WorkspacesRoute,
+} as any)
+const WorkspacesWorkspaceIdRoute = WorkspacesWorkspaceIdRouteImport.update({
+  id: '/$workspaceId',
+  path: '/$workspaceId',
+  getParentRoute: () => WorkspacesRoute,
+} as any)
+const WorkspacesWorkspaceIdRepositoriesRoute =
+  WorkspacesWorkspaceIdRepositoriesRouteImport.update({
+    id: '/repositories',
+    path: '/repositories',
+    getParentRoute: () => WorkspacesWorkspaceIdRoute,
+  } as any)
+const WorkspacesWorkspaceIdMembersRoute =
+  WorkspacesWorkspaceIdMembersRouteImport.update({
+    id: '/members',
+    path: '/members',
+    getParentRoute: () => WorkspacesWorkspaceIdRoute,
+  } as any)
+const WorkspacesWorkspaceIdRepositoriesIndexRoute =
+  WorkspacesWorkspaceIdRepositoriesIndexRouteImport.update({
+    id: '/',
+    path: '/',
+    getParentRoute: () => WorkspacesWorkspaceIdRepositoriesRoute,
+  } as any)
+const WorkspacesWorkspaceIdRepositoriesRepositoryIdRoute =
+  WorkspacesWorkspaceIdRepositoriesRepositoryIdRouteImport.update({
+    id: '/$repositoryId',
+    path: '/$repositoryId',
+    getParentRoute: () => WorkspacesWorkspaceIdRepositoriesRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
+  '/callback': typeof CallbackRoute
+  '/membership': typeof MembershipRoute
+  '/workspaces': typeof WorkspacesRouteWithChildren
+  '/workspaces/$workspaceId': typeof WorkspacesWorkspaceIdRouteWithChildren
+  '/workspaces/': typeof WorkspacesIndexRoute
+  '/workspaces/$workspaceId/members': typeof WorkspacesWorkspaceIdMembersRoute
+  '/workspaces/$workspaceId/repositories': typeof WorkspacesWorkspaceIdRepositoriesRouteWithChildren
+  '/workspaces/$workspaceId/repositories/$repositoryId': typeof WorkspacesWorkspaceIdRepositoriesRepositoryIdRoute
+  '/workspaces/$workspaceId/repositories/': typeof WorkspacesWorkspaceIdRepositoriesIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
+  '/callback': typeof CallbackRoute
+  '/membership': typeof MembershipRoute
+  '/workspaces/$workspaceId': typeof WorkspacesWorkspaceIdRouteWithChildren
+  '/workspaces': typeof WorkspacesIndexRoute
+  '/workspaces/$workspaceId/members': typeof WorkspacesWorkspaceIdMembersRoute
+  '/workspaces/$workspaceId/repositories/$repositoryId': typeof WorkspacesWorkspaceIdRepositoriesRepositoryIdRoute
+  '/workspaces/$workspaceId/repositories': typeof WorkspacesWorkspaceIdRepositoriesIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
+  '/callback': typeof CallbackRoute
+  '/membership': typeof MembershipRoute
+  '/workspaces': typeof WorkspacesRouteWithChildren
+  '/workspaces/$workspaceId': typeof WorkspacesWorkspaceIdRouteWithChildren
+  '/workspaces/': typeof WorkspacesIndexRoute
+  '/workspaces/$workspaceId/members': typeof WorkspacesWorkspaceIdMembersRoute
+  '/workspaces/$workspaceId/repositories': typeof WorkspacesWorkspaceIdRepositoriesRouteWithChildren
+  '/workspaces/$workspaceId/repositories/$repositoryId': typeof WorkspacesWorkspaceIdRepositoriesRepositoryIdRoute
+  '/workspaces/$workspaceId/repositories/': typeof WorkspacesWorkspaceIdRepositoriesIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/about'
+  fullPaths:
+    | '/'
+    | '/about'
+    | '/callback'
+    | '/membership'
+    | '/workspaces'
+    | '/workspaces/$workspaceId'
+    | '/workspaces/'
+    | '/workspaces/$workspaceId/members'
+    | '/workspaces/$workspaceId/repositories'
+    | '/workspaces/$workspaceId/repositories/$repositoryId'
+    | '/workspaces/$workspaceId/repositories/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/about'
-  id: '__root__' | '/' | '/about'
+  to:
+    | '/'
+    | '/about'
+    | '/callback'
+    | '/membership'
+    | '/workspaces/$workspaceId'
+    | '/workspaces'
+    | '/workspaces/$workspaceId/members'
+    | '/workspaces/$workspaceId/repositories/$repositoryId'
+    | '/workspaces/$workspaceId/repositories'
+  id:
+    | '__root__'
+    | '/'
+    | '/about'
+    | '/callback'
+    | '/membership'
+    | '/workspaces'
+    | '/workspaces/$workspaceId'
+    | '/workspaces/'
+    | '/workspaces/$workspaceId/members'
+    | '/workspaces/$workspaceId/repositories'
+    | '/workspaces/$workspaceId/repositories/$repositoryId'
+    | '/workspaces/$workspaceId/repositories/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AboutRoute: typeof AboutRoute
+  CallbackRoute: typeof CallbackRoute
+  MembershipRoute: typeof MembershipRoute
+  WorkspacesRoute: typeof WorkspacesRouteWithChildren
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/workspaces': {
+      id: '/workspaces'
+      path: '/workspaces'
+      fullPath: '/workspaces'
+      preLoaderRoute: typeof WorkspacesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/membership': {
+      id: '/membership'
+      path: '/membership'
+      fullPath: '/membership'
+      preLoaderRoute: typeof MembershipRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/callback': {
+      id: '/callback'
+      path: '/callback'
+      fullPath: '/callback'
+      preLoaderRoute: typeof CallbackRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/about': {
       id: '/about'
       path: '/about'
@@ -65,22 +204,106 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/workspaces/': {
+      id: '/workspaces/'
+      path: '/'
+      fullPath: '/workspaces/'
+      preLoaderRoute: typeof WorkspacesIndexRouteImport
+      parentRoute: typeof WorkspacesRoute
+    }
+    '/workspaces/$workspaceId': {
+      id: '/workspaces/$workspaceId'
+      path: '/$workspaceId'
+      fullPath: '/workspaces/$workspaceId'
+      preLoaderRoute: typeof WorkspacesWorkspaceIdRouteImport
+      parentRoute: typeof WorkspacesRoute
+    }
+    '/workspaces/$workspaceId/repositories': {
+      id: '/workspaces/$workspaceId/repositories'
+      path: '/repositories'
+      fullPath: '/workspaces/$workspaceId/repositories'
+      preLoaderRoute: typeof WorkspacesWorkspaceIdRepositoriesRouteImport
+      parentRoute: typeof WorkspacesWorkspaceIdRoute
+    }
+    '/workspaces/$workspaceId/members': {
+      id: '/workspaces/$workspaceId/members'
+      path: '/members'
+      fullPath: '/workspaces/$workspaceId/members'
+      preLoaderRoute: typeof WorkspacesWorkspaceIdMembersRouteImport
+      parentRoute: typeof WorkspacesWorkspaceIdRoute
+    }
+    '/workspaces/$workspaceId/repositories/': {
+      id: '/workspaces/$workspaceId/repositories/'
+      path: '/'
+      fullPath: '/workspaces/$workspaceId/repositories/'
+      preLoaderRoute: typeof WorkspacesWorkspaceIdRepositoriesIndexRouteImport
+      parentRoute: typeof WorkspacesWorkspaceIdRepositoriesRoute
+    }
+    '/workspaces/$workspaceId/repositories/$repositoryId': {
+      id: '/workspaces/$workspaceId/repositories/$repositoryId'
+      path: '/$repositoryId'
+      fullPath: '/workspaces/$workspaceId/repositories/$repositoryId'
+      preLoaderRoute: typeof WorkspacesWorkspaceIdRepositoriesRepositoryIdRouteImport
+      parentRoute: typeof WorkspacesWorkspaceIdRepositoriesRoute
+    }
   }
 }
+
+interface WorkspacesWorkspaceIdRepositoriesRouteChildren {
+  WorkspacesWorkspaceIdRepositoriesRepositoryIdRoute: typeof WorkspacesWorkspaceIdRepositoriesRepositoryIdRoute
+  WorkspacesWorkspaceIdRepositoriesIndexRoute: typeof WorkspacesWorkspaceIdRepositoriesIndexRoute
+}
+
+const WorkspacesWorkspaceIdRepositoriesRouteChildren: WorkspacesWorkspaceIdRepositoriesRouteChildren =
+  {
+    WorkspacesWorkspaceIdRepositoriesRepositoryIdRoute:
+      WorkspacesWorkspaceIdRepositoriesRepositoryIdRoute,
+    WorkspacesWorkspaceIdRepositoriesIndexRoute:
+      WorkspacesWorkspaceIdRepositoriesIndexRoute,
+  }
+
+const WorkspacesWorkspaceIdRepositoriesRouteWithChildren =
+  WorkspacesWorkspaceIdRepositoriesRoute._addFileChildren(
+    WorkspacesWorkspaceIdRepositoriesRouteChildren,
+  )
+
+interface WorkspacesWorkspaceIdRouteChildren {
+  WorkspacesWorkspaceIdMembersRoute: typeof WorkspacesWorkspaceIdMembersRoute
+  WorkspacesWorkspaceIdRepositoriesRoute: typeof WorkspacesWorkspaceIdRepositoriesRouteWithChildren
+}
+
+const WorkspacesWorkspaceIdRouteChildren: WorkspacesWorkspaceIdRouteChildren = {
+  WorkspacesWorkspaceIdMembersRoute: WorkspacesWorkspaceIdMembersRoute,
+  WorkspacesWorkspaceIdRepositoriesRoute:
+    WorkspacesWorkspaceIdRepositoriesRouteWithChildren,
+}
+
+const WorkspacesWorkspaceIdRouteWithChildren =
+  WorkspacesWorkspaceIdRoute._addFileChildren(
+    WorkspacesWorkspaceIdRouteChildren,
+  )
+
+interface WorkspacesRouteChildren {
+  WorkspacesWorkspaceIdRoute: typeof WorkspacesWorkspaceIdRouteWithChildren
+  WorkspacesIndexRoute: typeof WorkspacesIndexRoute
+}
+
+const WorkspacesRouteChildren: WorkspacesRouteChildren = {
+  WorkspacesWorkspaceIdRoute: WorkspacesWorkspaceIdRouteWithChildren,
+  WorkspacesIndexRoute: WorkspacesIndexRoute,
+}
+
+const WorkspacesRouteWithChildren = WorkspacesRoute._addFileChildren(
+  WorkspacesRouteChildren,
+)
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AboutRoute: AboutRoute,
+  CallbackRoute: CallbackRoute,
+  MembershipRoute: MembershipRoute,
+  WorkspacesRoute: WorkspacesRouteWithChildren,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { createStart } from '@tanstack/react-start'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-  }
-}

@@ -1,6 +1,8 @@
 FROM node:20-alpine
 WORKDIR /app
-COPY package*.json ./
-RUN npm install
+RUN corepack enable && corepack prepare pnpm@latest --activate
+COPY package.json pnpm-lock.yaml ./
+RUN pnpm install
 EXPOSE 3000
-CMD ["npm", "run", "dev", "--", "--host"]
+CMD ["pnpm", "run", "dev"]
+
