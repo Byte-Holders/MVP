@@ -82,6 +82,9 @@ describe('MembershipService', () => {
       await expect(service.inviteUser(mockInviteInfo)).rejects.toThrow(
         NotFoundException,
       );
+
+      expect(mockRepository.findPendingInvite).not.toHaveBeenCalled();
+      expect(mockRepository.addInvite).not.toHaveBeenCalled();
     });
 
     it('dovrebbe lanciare BadRequestException se esiste già un invito pendente', async () => {
@@ -95,6 +98,22 @@ describe('MembershipService', () => {
         false,
       );
       mockRepository.findPendingInvite.mockResolvedValue({ _id: 'invite1' });
+
+      await expect(service.inviteUser(mockInviteInfo)).rejects.toThrow(
+        BadRequestException,
+      );
+    });
+
+    it("dovrebbe lanciare BadRequestException se l'utente destinatario appartiene già al workspace", async () => {
+      mockFindUserByUsername.findByUsername.mockResolvedValue({
+        _id: 'u1',
+        sub: 'sub123',
+        username: 'mario.rossi',
+        email: 'mario.rossi@example.com',
+      });
+      mockCheckIfUserInWorkspace.checkIfUserIsInWorkspace.mockResolvedValue(
+        true,
+      );
 
       await expect(service.inviteUser(mockInviteInfo)).rejects.toThrow(
         BadRequestException,

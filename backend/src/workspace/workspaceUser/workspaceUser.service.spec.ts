@@ -78,6 +78,29 @@ describe('WorkspaceUserService', () => {
       ).rejects.toThrow(PreconditionFailedException);
     });
 
+    it("dovrebbe lanciare PreconditionFailedException se si tenta di rimuovere l'owner del workspace", async () => {
+      const workspaceId = 'workspace-123';
+      const userId = 'user-1';
+      const removerOfUserId = 'user-remover';
+      // Simuliamo che l'utente che tenta di rimuovere sia un project manager
+      mockWorkspaceUserRepository.getUserRoleForRepository.mockResolvedValueOnce(
+        WorkspaceRole.PROJECT_MANAGER,
+      );
+      // L'utente da rimuovere è presente nel workspace (fondamentale per arrivare al controllo owner)
+      mockWorkspaceUserRepository.checkIfUserIsInWorkspace.mockResolvedValueOnce(
+        true,
+      );
+
+      // Simuliamo che l'utente da rimuovere sia l'owner
+      mockWorkspaceUserRepository.getWorkspaceOwner.mockResolvedValueOnce(
+        userId,
+      );
+
+      await expect(
+        service.removeUserFromWorkspace(workspaceId, userId, removerOfUserId),
+      ).rejects.toThrow(PreconditionFailedException);
+    });
+
     it('dovrebbe rimuovere un utente se è presente nel workspace', async () => {
       const workspaceId = 'workspace-123';
       const userId = 'user-1';

@@ -59,6 +59,100 @@ describe('WorkspaceManagerService', () => {
       );
     });
 
+    it('dovrebbe chiamare il repository con i dati corretti', async () => {
+      const datiCreazione = {
+        name: 'Nuovo WS',
+        ownerId: 'user1',
+        ownerUsername: 'user1',
+      };
+
+      mockRepository.create.mockResolvedValue({
+        _id: 'id1',
+        ...datiCreazione,
+        members: [],
+        repositories: [],
+      });
+
+      await service.createWorkspace(datiCreazione);
+
+      expect(mockRepository.create).toHaveBeenCalledWith(
+        expect.objectContaining({
+          name: 'Nuovo WS',
+          ownerId: 'user1',
+          ownerUsername: 'user1',
+          initialMembers: [
+            expect.objectContaining({
+              userId: 'user1',
+              role: WorkspaceRole.PROJECT_MANAGER,
+            }),
+          ],
+        }),
+      );
+    });
+
+    it('dovrebbe restituire un workspace con i dati corretti', async () => {
+      const datiCreazione = {
+        name: 'Nuovo WS',
+        ownerId: 'user1',
+        ownerUsername: 'user1',
+      };
+
+      mockRepository.create.mockResolvedValue({
+        _id: 'id-fittizio-123',
+        ...datiCreazione,
+
+        members: [
+          {
+            userId: 'user1',
+            userUsername: 'user1',
+            role: WorkspaceRole.PROJECT_MANAGER,
+          },
+        ],
+        repositories: [],
+      });
+
+      const risultato = await service.createWorkspace(datiCreazione);
+
+      expect(risultato).toMatchObject({
+        id: 'id-fittizio-123',
+        name: 'Nuovo WS',
+        ownerId: 'user1',
+        ownerUsername: 'user1',
+      });
+    });
+
+    it("dovrebbe aggiungere l'owner come membro con ruolo PROJECT_MANAGER", async () => {
+      const datiCreazione = {
+        name: 'Nuovo WS',
+        ownerId: 'user1',
+        ownerUsername: 'user1',
+      };
+
+      mockRepository.create.mockResolvedValue({
+        _id: 'id1',
+        ...datiCreazione,
+        members: [
+          {
+            userId: 'user1',
+            userUsername: 'user1',
+            role: WorkspaceRole.PROJECT_MANAGER,
+          },
+        ],
+        repositories: [],
+      });
+
+      const risultato = await service.createWorkspace(datiCreazione);
+
+      expect(risultato.members).toEqual(
+        expect.arrayContaining([
+          expect.objectContaining({
+            userId: 'user1',
+            role: WorkspaceRole.PROJECT_MANAGER,
+          }),
+        ]),
+      );
+    });
+
     it('dovrebbe creare il workspace con successo', async () => {
       const datiCreazione = {
         name: 'Nuovo WS',
@@ -85,7 +179,6 @@ describe('WorkspaceManagerService', () => {
       mockRepository.create.mockResolvedValue(fintoDocumentoSalvato);
 
       const risultato = await service.createWorkspace(datiCreazione);
-
       // Verifichiamo che il database sia stato chiamato 1 volta
       expect(mockRepository.create).toHaveBeenCalledTimes(1);
       // Verifichiamo che il mapper abbia restituito un oggetto (non vuoto)
